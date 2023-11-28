@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Auto-Maat klanten app</string>
+    <string name="splash_screen_text">Splash screen</string>
+    <string name="splash_screen_blue_header_descr">header</string>
+    <string name="splash_screen_blue_footer_descr">footer</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
