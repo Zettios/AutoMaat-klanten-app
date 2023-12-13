@@ -5,67 +5,44 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#03A9F4"
+    android:background="#4D66E5"
+    android:baselineAligned="false"
     tools:context=".NavigationFragment">
 
-    <LinearLayout
-        android:layout_width="0dp"
+    <ImageButton
+        android:id="@+id/ibCarList"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:background="?android:selectableItemBackground"
+        android:contentDescription="@string/car_list_nav_descr"
+        android:src="@drawable/car_solid" />
 
-        <ImageButton
-            android:id="@+id/imageButton1"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="#FFFFFF"
-            android:src="@drawable/ic_grey" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <ImageButton
+        android:id="@+id/ibCarReservations"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:background="?android:selectableItemBackground"
+        android:contentDescription="@string/car_reservation_nav_descr"
+        android:src="@drawable/calendar_days_solid" />
 
-        <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="#FFFFFF"
-            android:src="@drawable/ic_grey" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <ImageButton
+        android:id="@+id/ibAccidentReport"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:background="?android:selectableItemBackground"
+        android:contentDescription="@string/accident_report_nav_descr"
+        android:src="@drawable/car_burst_solid" />
 
-        <ImageButton
-            android:id="@+id/imageButton3"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="#FFFFFF"
-            android:src="@drawable/ic_grey" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <ImageButton
+        android:id="@+id/ibSupport"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/imageButton4"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="#FFFFFF"
-            android:src="@drawable/ic_grey" />
-    </LinearLayout>
+        android:background="?android:selectableItemBackground"
+        android:contentDescription="@string/support_nav_descr"
+        android:src="@drawable/headset_solid" />
 
 </LinearLayout>

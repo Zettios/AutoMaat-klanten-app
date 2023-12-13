@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name">Auto-Maat klanten app</string>
-    <string name="splash_screen_text">Splash screen</string>
+    <string name="splash_screen_logo">App splash screen with the text auto-maat</string>
     <string name="splash_screen_blue_header_descr">header</string>
     <string name="splash_screen_blue_footer_descr">footer</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="car_list_nav_descr">Navigeer naar auto lijst</string>
+    <string name="car_reservation_nav_descr">Navigeer naar auto reserveringen</string>
+    <string name="accident_report_nav_descr">Navigeer naar schade melding</string>
+    <string name="support_nav_descr">Navigeer naar support</string>
 </resources>
