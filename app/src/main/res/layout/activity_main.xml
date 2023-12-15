@@ -18,7 +18,8 @@
         android:background="#E91E63" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fcvContent"
+        android:id="@+id/fcvFragmentContainer"
+        android:name="com.example.auto_maatklantenapp.AutoLijstFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="80" />
