@@ -43,19 +43,19 @@ public class NavigationFragment extends Fragment {
         ImageButton ibSupport = (ImageButton) view.findViewById(R.id.ibSupport);
 
         ibCarList.setOnClickListener(v -> {
-            onNavSelectionListener.OnNavSelection(1);
+            onNavSelectionListener.OnNavSelection(NavSelection.CAR_LIST.getNumVal());
         });
 
         ibCarReservations.setOnClickListener(v -> {
-            onNavSelectionListener.OnNavSelection(2);
+            onNavSelectionListener.OnNavSelection(NavSelection.CAR_RESERVATION.getNumVal());
         });
 
         ibAccidentReport.setOnClickListener(v -> {
-            onNavSelectionListener.OnNavSelection(3);
+            onNavSelectionListener.OnNavSelection(NavSelection.ACCIDENT_REPORT.getNumVal());
         });
 
         ibSupport.setOnClickListener(v -> {
-            onNavSelectionListener.OnNavSelection(4);
+            onNavSelectionListener.OnNavSelection(NavSelection.SUPPORT.getNumVal());
         });
 
         return view;
