@@ -17,6 +17,12 @@
         android:layout_weight="10"
         android:background="#E91E63" />
 
+    <TextView
+        android:id="@+id/textViewCars"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fcvContent"
         android:layout_width="match_parent"
