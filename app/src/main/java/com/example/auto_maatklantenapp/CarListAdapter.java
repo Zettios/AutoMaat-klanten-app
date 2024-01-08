@@ -39,6 +39,7 @@ public class CarListAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     @Override
     public int getItemCount() {
+
         return cars.size();
     }
 }
