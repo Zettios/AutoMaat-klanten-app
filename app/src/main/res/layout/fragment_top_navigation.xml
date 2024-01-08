@@ -8,7 +8,6 @@
     tools:context=".TopNavigationFragment">
 
     <ImageView
-<<<<<<< HEAD
             android:id="@+id/imageView"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -17,16 +16,7 @@
             app:srcCompat="@drawable/auto_maat_logo_compact"
             android:scaleX="0.75"
             android:scaleY="0.75" />
-=======
-        android:id="@+id/imageView"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginStart="10dp"
-        android:layout_weight="1"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        app:srcCompat="@drawable/auto_maat_logo_compact" />
->>>>>>> 87f7b88546113faaaee73c7fade2172b78d2d181
+
 
     <Space
         android:layout_width="0dp"
