@@ -8,13 +8,26 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
-    private TextView view;
+    private TextView carModel;
+    private TextView carInfo;
+    private TextView price;
+
     public RecyclerViewHolder(@NonNull View itemView) {
         super(itemView);
-        view = itemView.findViewById(R.id.randomText);
+        carModel = itemView.findViewById(R.id.txtCarModel);
+        carInfo = itemView.findViewById(R.id.txtCarInfo);
+        price = itemView.findViewById(R.id.txtPrice);
     }
 
-    public TextView getView(){
-        return view;
+    public TextView getCarModel(){
+        return carModel;
+    }
+
+    public TextView getCarInfo() {
+        return carInfo;
+    }
+
+    public TextView getPrice() {
+        return price;
     }
 }

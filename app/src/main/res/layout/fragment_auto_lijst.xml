@@ -5,18 +5,42 @@
     android:id="@+id/clAutoLijstContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
     tools:context=".AutoLijstFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
-    <android.widget.SearchView
-        android:id="@+id/svAutoZoeken"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/llCarSearch"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/rvAutoLijst"
+        android:orientation="horizontal"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:weightSum="100"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- TODO: Make custom search view -->
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentContainerView"
+            android:name="com.example.auto_maatklantenapp.CarSearchBarFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:layout_weight="95" />
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="5"
+            android:background="?android:selectableItemBackground"
+            android:src="?android:attr/actionModeFindDrawable" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvAutoLijst"
@@ -25,6 +49,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/svAutoZoeken" />
+        app:layout_constraintTop_toBottomOf="@+id/llCarSearch" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

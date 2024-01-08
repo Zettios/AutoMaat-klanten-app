@@ -7,6 +7,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:searchHintIcon">@color/black</item>
+        <item name="android:searchIcon">@color/black</item>
+        <item name="android:searchButtonText">@color/black</item>
         <item name="android:navigationBarColor">@color/black</item>
         <item name="android:editTextColor">@color/black</item>
         <item name="android:textColorHint">@color/black</item>
