@@ -8,12 +8,14 @@
     tools:context=".TopNavigationFragment">
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginStart="10dp"
-        android:layout_weight="1"
-        app:srcCompat="@drawable/auto_maat_logo_compact" />
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/auto_maat_logo_compact"
+            android:scaleX="0.75"
+            android:scaleY="0.75" />
 
     <Space
         android:layout_width="0dp"
@@ -21,11 +23,13 @@
         android:layout_weight="4" />
 
     <ImageButton
-        android:id="@+id/imageButton"
-        android:background="?android:selectableItemBackground"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginRight="10dp"
-        android:layout_weight="1"
-        android:src="@drawable/user_regular" />
+            android:id="@+id/imageButton"
+            android:background="?android:selectableItemBackground"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:src="@drawable/user_regular"
+            android:scaleX="0.7"
+            android:scaleY="0.75" />
 </LinearLayout>
