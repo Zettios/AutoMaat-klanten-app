@@ -13,6 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,17 +43,43 @@ public class AutoLijstFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_auto_lijst, container, false);
 
-        List<Car> cars = new ArrayList<>();
+        ApiCalls api = new ApiCalls();
+        //List<Car> cars = new ArrayList<>();
 
-        for (int i = 0; i < 20; i++) {
-            cars.add(new Car("Brand "+i, "Model "+i, "GASOLINE", "None",
-                    "G-241-GH", 1, 1990, "1990-11-02", 999,
-                    4, "STATIONWAGON", "", "", ""));
-        }
+
+        api.GetDataFromCars(new ApiCallback() {
+            @Override
+            public void onSuccess(JSONArray jsonArray) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<Car> cars = new ArrayList<>();
+                        try {
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject carData = jsonArray.getJSONObject(i);
+                                cars.add(new Car(carData.getString("brand"), carData.getString("model"), carData.getString("fuel"),
+                                        carData.getString("options"), carData.getString("licensePlate"), carData.getInt("engineSize"),
+                                        carData.getInt("modelYear"), carData.getString("since"), carData.getInt("price"),
+                                        carData.getInt("nrOfSeats"), carData.getString("body"), carData.getString("inspections"),
+                                        carData.getString("repairs"), carData.getString("rentals")));
+                            }
+                            recyclerView.setAdapter(new CarListAdapter(cars));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(IOException e) {
+                e.printStackTrace();
+
+            }
+        });
 
         recyclerView = view.findViewById(R.id.rvAutoLijst);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        recyclerView.setAdapter(new CarListAdapter(cars));
 
         return view;
     }
