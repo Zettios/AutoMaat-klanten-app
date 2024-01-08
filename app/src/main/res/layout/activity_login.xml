@@ -11,7 +11,7 @@
             android:text="Login"
             android:layout_width="114dp"
             android:layout_height="45dp"
-            android:id="@+id/textView"
+            android:id="@+id/txtMerkSubTitle"
             android:textSize="32sp"
             android:textAlignment="viewStart"
             android:textStyle="bold"
@@ -25,10 +25,10 @@
             android:text="Log alstublieft in om verder te gaan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView4"
+            android:id="@+id/txtModelSubTitle"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="55dp"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/txtMerkSubTitle" />
 
     <EditText
             android:layout_width="300dp"
@@ -42,7 +42,7 @@
             android:layout_marginEnd="55dp"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="70dp"
-            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+            app:layout_constraintTop_toBottomOf="@+id/txtModelSubTitle" />
 
     <EditText
             android:layout_width="300dp"
@@ -87,7 +87,7 @@
             android:text="Heeft u nog geen account?"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/textView5"
+            android:id="@+id/txtBrandstofSubTitle"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginStart="64dp"
             android:layout_marginTop="230dp"
