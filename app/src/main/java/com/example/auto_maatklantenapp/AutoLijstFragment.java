@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,28 +39,12 @@ public class AutoLijstFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_auto_lijst, container, false);
 
         List<Car> cars = new ArrayList<>();
-        cars.add(new Car("test1"));
-        cars.add(new Car("test2"));
-        cars.add(new Car("test3"));
-        cars.add(new Car("test4"));
-        cars.add(new Car("test5"));
-        cars.add(new Car("test6"));
-        cars.add(new Car("test7"));
-        cars.add(new Car("test8"));
-        cars.add(new Car("test9"));
-        cars.add(new Car("test10"));
-        cars.add(new Car("test11"));
-        cars.add(new Car("test12"));
-        cars.add(new Car("test13"));
-        cars.add(new Car("test14"));
-        cars.add(new Car("test15"));
-        cars.add(new Car("test16"));
-        cars.add(new Car("test17"));
-        cars.add(new Car("test18"));
-        cars.add(new Car("test19"));
-        cars.add(new Car("test20"));
-        cars.add(new Car("test21"));
 
+        for (int i = 0; i < 20; i++) {
+            cars.add(new Car("Brand "+i, "Model "+i, "GASOLINE", "None",
+                    "G-241-GH", 1, 1990, "1990-11-02", 999,
+                    4, "STATIONWAGON", "", "", ""));
+        }
 
         recyclerView = view.findViewById(R.id.rvAutoLijst);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));

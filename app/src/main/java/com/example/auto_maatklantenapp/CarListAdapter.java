@@ -1,5 +1,6 @@
 package com.example.auto_maatklantenapp;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
-import java.util.Random;
 
 public class CarListAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
     private List<Car> cars;
@@ -32,7 +32,9 @@ public class CarListAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
-        holder.getView().setText(cars.get(position).getName());
+        holder.getCarModel().setText(cars.get(position).getModel());
+        holder.getCarInfo().setText(cars.get(position).getBrand() + " | " + cars.get(position).getFuel() + " | " + cars.get(position).getNrOfSeats());
+        holder.getPrice().setText(String.valueOf(cars.get(position).getPrice()));
     }
 
     @Override
