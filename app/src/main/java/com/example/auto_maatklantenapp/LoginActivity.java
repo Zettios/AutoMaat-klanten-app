@@ -16,7 +16,6 @@ public class LoginActivity extends AppCompatActivity {
     EditText emailField, passwordField;
     Button loginBtn;
     TextView createBtn;
-    int minLengthPassword = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -37,6 +36,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        createBtn.setOnClickListener(v -> {
+            Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            finish();
+        });
+
     }
 
     public boolean ValidateLoginData(EditText emailField, EditText passwordField, String email, String password){
@@ -46,10 +51,6 @@ public class LoginActivity extends AppCompatActivity {
         }
         if(TextUtils.isEmpty(password)){
             passwordField.setError("Password is Required.");
-            return false;
-        }
-        if (password.length() < minLengthPassword){
-            passwordField.setError(String.format("Password must be at least %s characters long", minLengthPassword));
             return false;
         }
         return true;
