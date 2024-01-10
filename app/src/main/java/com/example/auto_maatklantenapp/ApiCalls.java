@@ -16,10 +16,12 @@ import okhttp3.Response;
 
 public class ApiCalls {
 
-    String url = "https://measured-adder-concrete.ngrok-free.app/api/cars";
+    String baseurl = "https://measured-adder-concrete.ngrok-free.app";
 
     public void GetDataFromCars(ApiCallback callback){
         OkHttpClient client = new OkHttpClient();
+
+        String url = baseurl + "/api/cars";
 
 
         Request request = new Request.Builder()
