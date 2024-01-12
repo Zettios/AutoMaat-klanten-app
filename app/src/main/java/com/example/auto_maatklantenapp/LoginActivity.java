@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Button;
 
@@ -16,7 +17,7 @@ public class LoginActivity extends AppCompatActivity {
 
     EditText emailField, passwordField;
     Button loginBtn;
-    TextView createBtn;
+    TextView createBtn, passwordRecoveryBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -27,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordField = findViewById(R.id.editTextPassword);
         loginBtn = findViewById(R.id.loginBtn);
         createBtn = findViewById(R.id.textViewCreateAccount);
+        passwordRecoveryBtn = findViewById(R.id.relativeLayout).findViewById(R.id.textViewPasswordRecovery);
 
         loginBtn.setOnClickListener(v -> {
             String email = emailField.getText().toString().trim();
@@ -43,11 +45,19 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         });
 
+        passwordRecoveryBtn.setOnClickListener(v -> {
+            Intent i = new Intent(LoginActivity.this, PasswordRecoveryActivity.class);
+            startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            finish();
+        });
     }
 
     public boolean ValidateLoginData(EditText emailField, EditText passwordField, String email, String password){
         if(TextUtils.isEmpty(email)){
             emailField.setError("Email is Required.");
+            return false;
+        } else if (!email.contains("@")){
+            emailField.setError("Not a valid email");
             return false;
         }
         if(TextUtils.isEmpty(password)){
