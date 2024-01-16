@@ -47,31 +47,66 @@ public class AutoLijstFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_auto_lijst, container, false);
-
         ApiCalls api = new ApiCalls();
-        //List<Car> cars = new ArrayList<>();
 
+        ArrayList<String> merkArray = new ArrayList<>();
+        ArrayList<String> modelArray = new ArrayList<>();
+        ArrayList<String> brandstofArray = new ArrayList<>();
+        ArrayList<String> bodyArray = new ArrayList<>();
+        int[] maxSeats = { 0 };
+        int maxPrice = 0;
 
         api.GetDataFromCars(new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<Car> cars = new ArrayList<>();
-                        try {
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject carData = jsonArray.getJSONObject(i);
-                                cars.add(new Car(carData.getString("brand"), carData.getString("model"), carData.getString("fuel"),
-                                        carData.getString("options"), carData.getString("licensePlate"), carData.getInt("engineSize"),
-                                        carData.getInt("modelYear"), carData.getString("since"), carData.getInt("price"),
-                                        carData.getInt("nrOfSeats"), carData.getString("body"), carData.getString("inspections"),
-                                        carData.getString("repairs"), carData.getString("rentals")));
+                getActivity().runOnUiThread(() -> {
+                    List<Car> cars = new ArrayList<>();
+                    int tempMaxSeats = 0;
+                    int tempMaxPrice = 0;
+                    try {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject carData = jsonArray.getJSONObject(i);
+
+                            if (!merkArray.contains(carData.getString("brand"))) {
+                                merkArray.add(carData.getString("brand"));
                             }
-                            recyclerView.setAdapter(new CarListAdapter(cars));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+
+                            if (!modelArray.contains(carData.getString("model"))) {
+                                modelArray.add(carData.getString("model"));
+                            }
+
+                            if (!brandstofArray.contains(carData.getString("fuel"))) {
+                                brandstofArray.add(carData.getString("fuel"));
+                            }
+
+                            if (!bodyArray.contains(carData.getString("body"))) {
+                                bodyArray.add(carData.getString("body"));
+                            }
+
+
+                            if (tempMaxSeats < carData.getInt("nrOfSeats")) {
+                             //   maxSeats = carData.getInt("nrOfSeats");
+                            }
+
+                            cars.add(new Car(
+                                    carData.getString("brand"),
+                                    carData.getString("model"),
+                                    carData.getString("fuel"),
+                                    carData.getString("options"),
+                                    carData.getString("licensePlate"),
+                                    carData.getInt("engineSize"),
+                                    carData.getInt("modelYear"),
+                                    carData.getString("since"),
+                                    carData.getInt("price"),
+                                    carData.getInt("nrOfSeats"),
+                                    carData.getString("body"),
+                                    carData.getString("inspections"),
+                                    carData.getString("repairs"),
+                                    carData.getString("rentals")));
                         }
+                        recyclerView.setAdapter(new CarListAdapter(cars));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 });
             }
@@ -79,7 +114,6 @@ public class AutoLijstFragment extends Fragment {
             @Override
             public void onFailure(IOException e) {
                 e.printStackTrace();
-
             }
         });
 
@@ -94,23 +128,6 @@ public class AutoLijstFragment extends Fragment {
 
         ibOpenFilters = view.findViewById(R.id.ibOpenFilters);
         ibOpenFilters.setOnClickListener(v -> {
-            ArrayList<String> merkArray = new ArrayList<>();
-            merkArray.add("Volvo");
-            merkArray.add("Volkswagen");
-
-            ArrayList<String> modelArray = new ArrayList<>();
-            modelArray.add("Volvo XC60000000");
-            modelArray.add("Volkswagen Polo");
-
-            ArrayList<String> brandstofArray = new ArrayList<>();
-            brandstofArray.add("Elektrisch");
-            brandstofArray.add("Gas");
-
-            ArrayList<String> bodyArray = new ArrayList<>();
-            bodyArray.add("Small");
-            bodyArray.add("Medium");
-            bodyArray.add("Big");
-
             new CarFilterDialogFragment();
             CarFilterDialogFragment dFragment = CarFilterDialogFragment
                     .newInstance(merkArray, modelArray, brandstofArray, bodyArray,
