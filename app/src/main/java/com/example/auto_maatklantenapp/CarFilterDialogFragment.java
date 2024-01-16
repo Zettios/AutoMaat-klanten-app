@@ -15,8 +15,29 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CarFilterDialogFragment extends DialogFragment {
+
+    public static CarFilterDialogFragment newInstance(
+                                                ArrayList<String> merk, ArrayList<String> model,
+                                                ArrayList<String> brandstof, ArrayList<String> body,
+                                                int maxStoelen, int maxPrice) {
+        CarFilterDialogFragment fragment = new CarFilterDialogFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putStringArrayList("merk", merk);
+        bundle.putStringArrayList("model", model);
+        bundle.putStringArrayList("brandstof", brandstof);
+        bundle.putStringArrayList("body", body);
+        bundle.putInt("maxStoelen", maxStoelen);
+        bundle.putInt("maxPrice", maxPrice);
+
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -24,46 +45,53 @@ public class CarFilterDialogFragment extends DialogFragment {
         final View view = inflater.inflate(R.layout.dialog_fragment_car_filters, null);
         builder.setView(view);
 
-        Spinner merk = (Spinner) view.findViewById(R.id.spMerk);
-        Spinner model = (Spinner) view.findViewById(R.id.spModel);
-        Spinner brandstof = (Spinner) view.findViewById(R.id.spBrandstof);
-        Spinner body = (Spinner) view.findViewById(R.id.spBodyType);
+        Spinner merk = view.findViewById(R.id.spMerk);
+        Spinner model = view.findViewById(R.id.spModel);
+        Spinner brandstof = view.findViewById(R.id.spBrandstof);
+        Spinner body = view.findViewById(R.id.spBodyType);
 
-        Button cancel = (Button) view.findViewById(R.id.btnCancelFilters);
+        Button cancel = view.findViewById(R.id.btnCancelFilters);
+        Button apply = view.findViewById(R.id.btnApplyFilters);
 
         cancel.setOnClickListener(v -> dismiss());
+        apply.setOnClickListener(v -> {
+            Bundle result = new Bundle();
+            result.putString("bundleKey", "result");
+            getParentFragmentManager().setFragmentResult("requestKey", result);
+            dismiss();
+        });
 
-        List<String> merkArray = new ArrayList<>();
-        merkArray.add("Volvo");
-        merkArray.add("Volkswagen");
+        if (getArguments() != null) {
+            ArrayList<String> merkArrayList = getArguments().getStringArrayList("merk");
+            ArrayList<String> modelArrayList = getArguments().getStringArrayList("model");
+            ArrayList<String> brandstofArrayList = getArguments().getStringArrayList("brandstof");
+            ArrayList<String> bodyArrayList = getArguments().getStringArrayList("body");
 
-        List<String> modelArray = new ArrayList<>();
-        modelArray.add("Volvo XC60");
-        modelArray.add("Volkswagen Polo");
+            if (merkArrayList != null && modelArrayList != null && brandstofArrayList != null && bodyArrayList != null) {
+                ArrayAdapter<String> dataAdapterMerk = new ArrayAdapter<>(
+                        requireActivity(), android.R.layout.simple_spinner_item,
+                        merkArrayList);
+                ArrayAdapter<String> dataAdapterModel = new ArrayAdapter<>(
+                        requireActivity(), android.R.layout.simple_spinner_item,
+                        modelArrayList);
+                ArrayAdapter<String> dataAdapterBrandstof = new ArrayAdapter<>(
+                        requireActivity(), android.R.layout.simple_spinner_item,
+                        brandstofArrayList);
+                ArrayAdapter<String> dataAdapterBody = new ArrayAdapter<>(
+                        requireActivity(), android.R.layout.simple_spinner_item,
+                        bodyArrayList);
 
-        List<String> brandstofArray = new ArrayList<>();
-        brandstofArray.add("Elektrisch");
-        brandstofArray.add("Gas");
+                dataAdapterMerk.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                dataAdapterModel.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                dataAdapterBrandstof.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                dataAdapterBody.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        List<String> bodyArray = new ArrayList<>();
-        bodyArray.add("Small");
-        bodyArray.add("Medium");
-        bodyArray.add("Big");
-
-        ArrayAdapter<String> dataAdapterMerk = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, merkArray);
-        ArrayAdapter<String> dataAdapterModel = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, modelArray);
-        ArrayAdapter<String> dataAdapterBrandstof = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, brandstofArray);
-        ArrayAdapter<String> dataAdapterBody = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, bodyArray);
-
-        dataAdapterMerk.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dataAdapterModel.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dataAdapterBrandstof.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dataAdapterBody.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        merk.setAdapter(dataAdapterMerk);
-        model.setAdapter(dataAdapterModel);
-        brandstof.setAdapter(dataAdapterBrandstof);
-        body.setAdapter(dataAdapterBody);
+                merk.setAdapter(dataAdapterMerk);
+                model.setAdapter(dataAdapterModel);
+                brandstof.setAdapter(dataAdapterBrandstof);
+                body.setAdapter(dataAdapterBody);
+            }
+        }
 
         return builder.create();
     }
