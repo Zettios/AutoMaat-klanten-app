@@ -9,4 +9,12 @@
     <string name="car_reservation_nav_descr">Navigeer naar auto reserveringen</string>
     <string name="accident_report_nav_descr">Navigeer naar schade melding</string>
     <string name="support_nav_descr">Navigeer naar support</string>
+    <string name="zoek_filters">Zoek filters</string>
+    <string name="merk">Merk</string>
+    <string name="aantal_stoelen">Aantal stoelen</string>
+    <string name="body_type">Body type</string>
+    <string name="brandstof_type">Brandstof type</string>
+    <string name="model">Model</string>
+    <string name="prijsbereik">Prijsbereik</string>
+    <string name="pas_filters_toe">Pas toe</string>
 </resources>

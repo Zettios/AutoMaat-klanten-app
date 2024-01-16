@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="25dp">
+
+    <TextView
+            android:text="@string/zoek_filters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtFiltersTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:textSize="24sp"
+            app:layout_constraintHorizontal_bias="0.0" />
+
+    <TextView
+            android:text="@string/merk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtMerkSubTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtFiltersTitle"
+            android:layout_marginTop="16dp" />
+
+    <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_search_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtMerkSubTitle"
+            android:layout_marginTop="8dp"
+            android:id="@+id/frameLayout2">
+
+        <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:id="@+id/spMerk" />
+    </FrameLayout>
+
+    <TextView
+            android:text="@string/model"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtModelSubTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
+
+    <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_search_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.076"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtModelSubTitle"
+            android:layout_marginTop="8dp"
+            android:id="@+id/frameLayout3">
+
+        <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:id="@+id/spModel" />
+    </FrameLayout>
+
+    <TextView
+            android:text="@string/brandstof_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtBrandstofSubTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout3" />
+
+    <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/background_search_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtBrandstofSubTitle"
+            android:layout_marginTop="8dp"
+            android:id="@+id/frameLayout5">
+
+        <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:id="@+id/spBrandstof" />
+    </FrameLayout>
+
+    <TextView
+            android:text="@string/body_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtBodyTypeSubTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout5" />
+
+    <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/frameLayout4"
+            android:background="@drawable/background_search_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txtBodyTypeSubTitle"
+            android:layout_marginTop="8dp">
+
+        <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:id="@+id/spBodyType" />
+    </FrameLayout>
+
+    <TextView
+            android:text="@string/aantal_stoelen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtAantalStoelenSubTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout4" />
+
+    <EditText
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:id="@+id/etAantalStoelen"
+            android:background="@drawable/background_search_view"
+            app:layout_constraintTop_toBottomOf="@+id/txtAantalStoelenSubTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:inputType="number"
+            android:maxLength="2"
+            android:autofillHints="" />
+
+    <TextView
+            android:text="@string/prijsbereik"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtPrijsBereikSubTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/etAantalStoelen" />
+
+    <com.google.android.material.slider.RangeSlider
+            android:id="@+id/csPrijsBereik"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="0.0"
+            android:valueTo="100.0"
+            android:value="0"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/txtPrijsBereikSubTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+            android:text="Annuleren"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnCancelFilters"
+            app:layout_constraintTop_toBottomOf="@+id/csPrijsBereik"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="32dp"
+            android:backgroundTint="#8E8E8E"
+            android:layout_marginStart="8dp" />
+
+    <Button
+            android:text="@string/pas_filters_toe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnApplyFilters"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/csPrijsBereik"
+            android:layout_marginTop="32dp"
+            app:layout_constraintStart_toEndOf="@+id/btnCancelFilters"
+            app:layout_constraintHorizontal_bias="1.0"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/colorPrimary" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

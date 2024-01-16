@@ -5,13 +5,17 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +28,7 @@ import java.util.List;
 public class AutoLijstFragment extends Fragment {
 
     private RecyclerView recyclerView;
+    private ImageButton ibOpenFilters;
 
     public AutoLijstFragment() {
     }
@@ -78,8 +83,40 @@ public class AutoLijstFragment extends Fragment {
             }
         });
 
+        getChildFragmentManager().setFragmentResultListener("requestKey", this,
+                (requestKey, bundle) -> {
+            String result = bundle.getString("bundleKey");
+            Log.v("FragmentCommunicationTest", result);
+        });
+
         recyclerView = view.findViewById(R.id.rvAutoLijst);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        ibOpenFilters = view.findViewById(R.id.ibOpenFilters);
+        ibOpenFilters.setOnClickListener(v -> {
+            ArrayList<String> merkArray = new ArrayList<>();
+            merkArray.add("Volvo");
+            merkArray.add("Volkswagen");
+
+            ArrayList<String> modelArray = new ArrayList<>();
+            modelArray.add("Volvo XC60000000");
+            modelArray.add("Volkswagen Polo");
+
+            ArrayList<String> brandstofArray = new ArrayList<>();
+            brandstofArray.add("Elektrisch");
+            brandstofArray.add("Gas");
+
+            ArrayList<String> bodyArray = new ArrayList<>();
+            bodyArray.add("Small");
+            bodyArray.add("Medium");
+            bodyArray.add("Big");
+
+            new CarFilterDialogFragment();
+            CarFilterDialogFragment dFragment = CarFilterDialogFragment
+                    .newInstance(merkArray, modelArray, brandstofArray, bodyArray,
+                            6, 120);
+            dFragment.show(getChildFragmentManager(), "CarFilterDialogFragment");
+        });
 
         return view;
     }

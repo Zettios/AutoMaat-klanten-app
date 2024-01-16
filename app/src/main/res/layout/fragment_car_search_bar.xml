@@ -8,17 +8,22 @@
 
 
     <EditText
-        android:id="@+id/etCarSearch"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:inputType="text"
-        android:text="Name" />
+            android:id="@+id/etCarSearch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text"
+            android:background="@null"
+            android:layout_weight="1"
+            android:paddingStart="5dp"
+            android:hint="Search"
+            android:textColorHint="#80000000" />
 
     <ImageButton
-        android:id="@+id/ibSearch"
-        android:layout_width="50dp"
-        android:layout_height="match_parent"
-        android:background="?android:selectableItemBackground"
-        android:src="@drawable/magnifying_glass_solid" />
+            android:id="@+id/ibSearch"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:background="?android:selectableItemBackground"
+            android:src="@drawable/magnifying_glass_solid"
+            android:layout_weight="0"
+            android:contentDescription="Search for car name" />
 </LinearLayout>
