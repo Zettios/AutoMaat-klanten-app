@@ -3,14 +3,8 @@ package com.example.auto_maatklantenapp;
 import androidx.annotation.NonNull;
 
 import android.util.Log;
-import android.widget.TextView;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -24,7 +18,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.util.Log;
 
 public class MainActivity extends AppCompatActivity implements OnNavSelectionListener {
 

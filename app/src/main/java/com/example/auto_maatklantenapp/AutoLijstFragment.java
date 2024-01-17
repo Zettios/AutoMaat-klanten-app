@@ -76,7 +76,7 @@ public class AutoLijstFragment extends Fragment {
                 e.printStackTrace();
 
             }
-        });
+        }, "/api/cars");
 
         recyclerView = view.findViewById(R.id.rvAutoLijst);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));

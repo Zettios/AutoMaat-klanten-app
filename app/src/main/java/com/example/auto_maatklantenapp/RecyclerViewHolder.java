@@ -30,4 +30,5 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
     public TextView getPrice() {
         return price;
     }
+
 }
