@@ -116,10 +116,21 @@ public class AutoLijstFragment extends Fragment {
             }
         });
 
-        getChildFragmentManager().setFragmentResultListener("requestKey", this,
+        getChildFragmentManager().setFragmentResultListener("filterData", this,
                 (requestKey, bundle) -> {
-            String result = bundle.getString("bundleKey");
-            Log.v("FragmentCommunicationTest", result);
+                    String filterMerk = bundle.getString("merk");
+                    String filterModel = bundle.getString("model");
+                    String filterBrandstof = bundle.getString("brandstof");
+                    String filterBody = bundle.getString("body");
+                    String filterAmountOfSeats = bundle.getString("amountOfSeats");
+                    String filterMaxPrice = bundle.getString("maxPrice");
+
+                    Log.d("AutoMaat debug", filterMerk);
+                    Log.d("AutoMaat debug", filterModel);
+                    Log.d("AutoMaat debug", filterBrandstof);
+                    Log.d("AutoMaat debug", filterBody);
+                    Log.d("AutoMaat debug", filterAmountOfSeats);
+                    Log.d("AutoMaat debug", filterMaxPrice);
         });
 
         recyclerView = view.findViewById(R.id.rvAutoLijst);

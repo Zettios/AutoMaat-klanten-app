@@ -3,7 +3,6 @@
     <string name="splash_screen_logo">App splash screen with the text auto-maat</string>
     <string name="splash_screen_blue_header_descr">header</string>
     <string name="splash_screen_blue_footer_descr">footer</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="car_list_nav_descr">Navigeer naar auto lijst</string>
     <string name="car_reservation_nav_descr">Navigeer naar auto reserveringen</string>
@@ -11,10 +10,18 @@
     <string name="support_nav_descr">Navigeer naar support</string>
     <string name="zoek_filters">Zoek filters</string>
     <string name="merk">Merk</string>
-    <string name="aantal_stoelen">Aantal stoelen</string>
+    <string name="aantal_stoelen">Max aantal stoelen</string>
     <string name="body_type">Body type</string>
     <string name="brandstof_type">Brandstof type</string>
     <string name="model">Model</string>
     <string name="prijsbereik">Max prijs</string>
     <string name="pas_filters_toe">Pas toe</string>
+
+
+    <!-- Car list item -->
+    <string name="car_brand_model_placeholder">Brand + Model</string>
+    <string name="car_info_placeholder">Fuel type | Model year | License plate</string>
+    <string name="car_options_placeholder">Car options</string>
+    <string name="car_price_placeholder">999,99,- dd</string>
+
 </resources>

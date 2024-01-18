@@ -1,6 +1,5 @@
 package com.example.auto_maatklantenapp;
 
-import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class CarListAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
+public class CarListAdapter extends RecyclerView.Adapter<CarListRecyclerViewHolder> {
     private List<Car> cars;
 
     public CarListAdapter(List<Car> cars) {
@@ -19,27 +18,32 @@ public class CarListAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     @Override
     public int getItemViewType(final int position) {
-        return R.layout.list_view_item;
+        return R.layout.car_list_item;
     }
 
     @NonNull
     @Override
-    public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
+    public CarListRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false);
-        return new RecyclerViewHolder(view);
+        return new CarListRecyclerViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerViewHolder holder, int position) {
-        holder.getCarModel().setText(cars.get(position).getModel());
-        holder.getCarInfo().setText(cars.get(position).getBrand() + " | " + cars.get(position).getFuel() + " | " + cars.get(position).getNrOfSeats());
-        holder.getPrice().setText(String.valueOf(cars.get(position).getPrice()));
+    public void onBindViewHolder(@NonNull CarListRecyclerViewHolder holder, int position) {
+        String carBrandModel = cars.get(position).getBrand() + " " + cars.get(position).getModel();
+        String carInfo = cars.get(position).getFuel() + " | " + cars.get(position).getModelYear() +
+                " | " + cars.get(position).getLicensePlate();
+        String carOptions = cars.get(position).getOptions();
+        String carPrice = String.valueOf(cars.get(position).getPrice()) + " d.d.";
+
+        holder.getCarModel().setText(carBrandModel);
+        holder.getCarInfo().setText(carInfo);
+        holder.getCarOptions().setText(carOptions);
+        holder.getPrice().setText(carPrice);
     }
 
     @Override
     public int getItemCount() {
-
         return cars.size();
     }
 }
