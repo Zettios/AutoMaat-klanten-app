@@ -9,14 +9,15 @@
     <string name="accident_report_nav_descr">Navigeer naar schade melding</string>
     <string name="support_nav_descr">Navigeer naar support</string>
     <string name="zoek_filters">Zoek filters</string>
-    <string name="merk">Merk</string>
-    <string name="aantal_stoelen">Max aantal stoelen</string>
-    <string name="body_type">Body type</string>
-    <string name="brandstof_type">Brandstof type</string>
-    <string name="model">Model</string>
-    <string name="prijsbereik">Max prijs</string>
-    <string name="pas_filters_toe">Pas toe</string>
 
+    <!-- Filters -->
+    <string name="merk">Merk</string>
+    <string name="car_model">Model</string>
+    <string name="fuel_type">Brandstof type</string>
+    <string name="body_type">Body type</string>
+    <string name="max_amount_of_seats">Max aantal stoelen</string>
+    <string name="max_price">Max prijs</string>
+    <string name="pas_filters_toe">Pas toe</string>
 
     <!-- Car list item -->
     <string name="car_brand_model_placeholder">Brand + Model</string>

@@ -25,8 +25,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AutoLijstFragment extends Fragment {
 
+    CarListAdapter carListAdapter;
+
     private RecyclerView recyclerView;
     private ImageButton ibOpenFilters;
+    private List<Car> cars;
+    private List<Car> allCars;
+    private List<Car> filteredCars;
 
     public AutoLijstFragment() {
     }
@@ -47,6 +52,8 @@ public class AutoLijstFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_auto_lijst, container, false);
         ApiCalls api = new ApiCalls();
 
+        filteredCars = new ArrayList<>();
+
         ArrayList<String> merkArray = new ArrayList<>();
         ArrayList<String> modelArray = new ArrayList<>();
         ArrayList<String> brandstofArray = new ArrayList<>();
@@ -58,7 +65,8 @@ public class AutoLijstFragment extends Fragment {
             @Override
             public void onSuccess(JSONArray jsonArray) {
                 getActivity().runOnUiThread(() -> {
-                    List<Car> cars = new ArrayList<>();
+                    cars = new ArrayList<>();
+                    allCars = new ArrayList<>();
                     try {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject carData = jsonArray.getJSONObject(i);
@@ -102,8 +110,26 @@ public class AutoLijstFragment extends Fragment {
                                     carData.getString("inspections"),
                                     carData.getString("repairs"),
                                     carData.getString("rentals")));
+
+                            allCars.add(new Car(
+                                    carData.getString("brand"),
+                                    carData.getString("model"),
+                                    carData.getString("fuel"),
+                                    carData.getString("options"),
+                                    carData.getString("licensePlate"),
+                                    carData.getInt("engineSize"),
+                                    carData.getInt("modelYear"),
+                                    carData.getString("since"),
+                                    carData.getInt("price"),
+                                    carData.getInt("nrOfSeats"),
+                                    carData.getString("body"),
+                                    carData.getString("inspections"),
+                                    carData.getString("repairs"),
+                                    carData.getString("rentals")));
                         }
-                        recyclerView.setAdapter(new CarListAdapter(cars));
+
+                        carListAdapter = new CarListAdapter(cars);
+                        recyclerView.setAdapter(carListAdapter);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -125,12 +151,22 @@ public class AutoLijstFragment extends Fragment {
                     String filterAmountOfSeats = bundle.getString("amountOfSeats");
                     String filterMaxPrice = bundle.getString("maxPrice");
 
-                    Log.d("AutoMaat debug", filterMerk);
-                    Log.d("AutoMaat debug", filterModel);
-                    Log.d("AutoMaat debug", filterBrandstof);
-                    Log.d("AutoMaat debug", filterBody);
-                    Log.d("AutoMaat debug", filterAmountOfSeats);
-                    Log.d("AutoMaat debug", filterMaxPrice);
+                    if (allCars != null) {
+                        for (Car car : allCars) {
+                            if (car.getBrand().equals(filterMerk) &&
+                                    car.getModel().equals(filterModel) &&
+                                    car.getFuel().equals(filterBrandstof) &&
+                                    car.getBody().equals(filterBody) &&
+                                    car.getNrOfSeats() <= Integer.parseInt(filterAmountOfSeats) &&
+                                    car.getPrice() <= Integer.parseInt(filterMaxPrice)) {
+                                this.filteredCars.add(car);
+                            }
+                        }
+                    }
+
+                    cars.clear();
+                    cars.addAll(this.filteredCars);
+                    carListAdapter.notifyDataSetChanged();
         });
 
         recyclerView = view.findViewById(R.id.rvAutoLijst);

@@ -43,7 +43,7 @@
     </FrameLayout>
 
     <TextView
-            android:text="@string/model"
+            android:text="@string/car_model"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtModelSubTitle"
@@ -69,7 +69,7 @@
     </FrameLayout>
 
     <TextView
-            android:text="@string/brandstof_type"
+            android:text="@string/fuel_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtBrandstofSubTitle"
@@ -119,7 +119,7 @@
     </FrameLayout>
 
     <TextView
-            android:text="@string/aantal_stoelen"
+            android:text="@string/max_amount_of_seats"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtAantalStoelenSubTitle"
@@ -141,7 +141,7 @@
             android:autofillHints="" />
 
     <TextView
-            android:text="@string/prijsbereik"
+            android:text="@string/max_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtPrijsBereikSubTitle"
