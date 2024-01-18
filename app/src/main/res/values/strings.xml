@@ -15,6 +15,6 @@
     <string name="body_type">Body type</string>
     <string name="brandstof_type">Brandstof type</string>
     <string name="model">Model</string>
-    <string name="prijsbereik">Prijsbereik</string>
+    <string name="prijsbereik">Max prijs</string>
     <string name="pas_filters_toe">Pas toe</string>
 </resources>

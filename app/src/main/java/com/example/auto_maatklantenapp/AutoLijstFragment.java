@@ -5,8 +5,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,6 +21,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AutoLijstFragment extends Fragment {
 
@@ -53,16 +51,14 @@ public class AutoLijstFragment extends Fragment {
         ArrayList<String> modelArray = new ArrayList<>();
         ArrayList<String> brandstofArray = new ArrayList<>();
         ArrayList<String> bodyArray = new ArrayList<>();
-        int[] maxSeats = { 0 };
-        int maxPrice = 0;
+        AtomicInteger maxSeats = new AtomicInteger();
+        AtomicInteger maxPrice = new AtomicInteger();
 
         api.GetDataFromCars(new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
                 getActivity().runOnUiThread(() -> {
                     List<Car> cars = new ArrayList<>();
-                    int tempMaxSeats = 0;
-                    int tempMaxPrice = 0;
                     try {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject carData = jsonArray.getJSONObject(i);
@@ -83,9 +79,12 @@ public class AutoLijstFragment extends Fragment {
                                 bodyArray.add(carData.getString("body"));
                             }
 
+                            if (maxSeats.get() < carData.getInt("nrOfSeats")) {
+                                maxSeats.set(carData.getInt("nrOfSeats"));
+                            }
 
-                            if (tempMaxSeats < carData.getInt("nrOfSeats")) {
-                             //   maxSeats = carData.getInt("nrOfSeats");
+                            if (maxPrice.get() < carData.getInt("price")) {
+                                maxPrice.set(carData.getInt("price"));
                             }
 
                             cars.add(new Car(
@@ -131,7 +130,7 @@ public class AutoLijstFragment extends Fragment {
             new CarFilterDialogFragment();
             CarFilterDialogFragment dFragment = CarFilterDialogFragment
                     .newInstance(merkArray, modelArray, brandstofArray, bodyArray,
-                            6, 120);
+                            maxSeats.get(), maxPrice.get());
             dFragment.show(getChildFragmentManager(), "CarFilterDialogFragment");
         });
 
