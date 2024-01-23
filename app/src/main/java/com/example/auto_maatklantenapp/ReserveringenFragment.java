@@ -82,27 +82,27 @@ public class ReserveringenFragment extends Fragment {
 
         ApiCalls api = new ApiCalls();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    api.Authenticate(new ApiCallback() {
-                        @Override
-                        public void onSuccess(JSONArray jsonArray) {
-
-                        }
-
-                        @Override
-                        public void onFailure(IOException e) {
-
-                        }
-                    });
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
-        });
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    api.Authenticate(new ApiCallback() {
+//                        @Override
+//                        public void onSuccess(JSONArray jsonArray) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onFailure(IOException e) {
+//
+//                        }
+//                    });
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
+//
+//            }
+//        });
 
 
         api.GetAllRentals(new ApiCallback() {

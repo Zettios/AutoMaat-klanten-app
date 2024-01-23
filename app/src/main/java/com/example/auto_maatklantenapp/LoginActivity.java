@@ -4,11 +4,14 @@ import static com.google.android.material.internal.ContextUtils.getActivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Button;
 import androidx.fragment.app.Fragment;
@@ -19,27 +22,31 @@ import java.io.IOException;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText emailField, passwordField;
+    EditText usernameField, passwordField;
     Button loginBtn;
     TextView createBtn, passwordRecoveryBtn;
+    CheckBox loginPersistanceBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        emailField = findViewById(R.id.editTextEmail);
+        usernameField = findViewById(R.id.editTextUsername);
         passwordField = findViewById(R.id.editTextPassword);
         loginBtn = findViewById(R.id.loginBtn);
         createBtn = findViewById(R.id.textViewCreateAccount);
-        passwordRecoveryBtn = findViewById(R.id.relativeLayout).findViewById(R.id.textViewPasswordRecovery);
+        RelativeLayout relativeLayout = findViewById(R.id.relativeLayout);
+        passwordRecoveryBtn = relativeLayout.findViewById(R.id.textViewPasswordRecovery);
+        loginPersistanceBox = relativeLayout.findViewById(R.id.checkBox);
 
         loginBtn.setOnClickListener(v -> {
-            String email = emailField.getText().toString().trim();
+            String username = usernameField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();
+            String persistence = String.valueOf(loginPersistanceBox.isChecked());
 
-            if(ValidateLoginData(emailField, passwordField, email, password)){
-                loginWithEmailAndPassword(email, password);
+            if(ValidateLoginData(usernameField, passwordField, username, password)){
+                loginWithEmailAndPassword(username, password, persistence);
             }
         });
 
@@ -56,12 +63,9 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public boolean ValidateLoginData(EditText emailField, EditText passwordField, String email, String password){
-        if(TextUtils.isEmpty(email)){
-            emailField.setError("Email is Required.");
-            return false;
-        } else if (!email.contains("@")){
-            emailField.setError("Not a valid email");
+    public boolean ValidateLoginData(EditText usernameField, EditText passwordField, String username, String password){
+        if(TextUtils.isEmpty(username)){
+            usernameField.setError("Username is Required.");
             return false;
         }
         if(TextUtils.isEmpty(password)){
@@ -71,24 +75,31 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    private void loginWithEmailAndPassword(String email, String password){
+    private void loginWithEmailAndPassword(String username, String password, String persistence){
         //TODO: Implement Login Functionality
         ApiCalls api = new ApiCalls();
-
-        api.GetDataFromUsers(new ApiCallback() {
+        Activity curActivity = this;
+        new Thread(new Runnable() {
             @Override
-            public void onSuccess(JSONArray jsonArray) {
-            }
+            public void run() {
+                try {
+                    api.Authenticate(new ApiCallback() {
+                        @Override
+                        public void onSuccess(JSONArray jsonArray) {
+                            //Change Scene
+                            Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(i, ActivityOptions.makeSceneTransitionAnimation(curActivity).toBundle());
+                            finish();
+                        }
 
-            @Override
-            public void onFailure(IOException e) {
-
+                        @Override
+                        public void onFailure(IOException e) {
+                        }
+                    },username, password, persistence);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
-
-        //Change Scene
-        Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-        finish();
     }
 }

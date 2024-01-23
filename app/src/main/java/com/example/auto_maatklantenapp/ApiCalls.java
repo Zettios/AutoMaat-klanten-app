@@ -19,34 +19,6 @@ public class ApiCalls {
 
     String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
 
-    public void GetDataFromUsers(ApiCallback callback){
-        OkHttpClient client = new OkHttpClient();
-        String url = baseurl + "/api/users";
-        Request request = new Request.Builder().url(url).build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onFailure(e);
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if(response.isSuccessful()){
-                    assert response.body() != null;
-                    String myResponse = response.body().toString();
-                    JSONArray array;
-                    try{
-                        array = new JSONArray(myResponse);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                    callback.onSuccess(array);
-                }
-            }
-        });
-    }
-
     public void GetDataFromCars(ApiCallback callback, String path){
         OkHttpClient client = new OkHttpClient();
 
@@ -80,14 +52,43 @@ public class ApiCalls {
         });
     }
 
-    public void Authenticate(ApiCallback callback) throws IOException{
+    public void GetDataFromUsers(ApiCallback callback){
+        OkHttpClient client = new OkHttpClient();
+        String url = baseurl + "/api/users";
+        Request request = new Request.Builder().url(url).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if(response.isSuccessful()){
+                    assert response.body() != null;
+                    String myResponse = response.body().toString();
+                    JSONArray array;
+                    try{
+                        array = new JSONArray(myResponse);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                    callback.onSuccess(array);
+                }
+            }
+        });
+    }
+
+    public void Authenticate(ApiCallback callback, String username, String password, String persistence) throws IOException{
         OkHttpClient client = new OkHttpClient();
         String path = "/api/authenticate";
         String url = baseurl + path;
 
         RequestBody formBody = new FormBody.Builder()
-                .add("username", "admin")
-                .add("password", "admin")
+                .add("username", username)
+                .add("password", password)
+                .add("rememberMe", persistence)
                 .build();
 
         Request request = new Request.Builder()
