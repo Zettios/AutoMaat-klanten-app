@@ -140,7 +140,7 @@ public class AutoLijstFragment extends Fragment {
             public void onFailure(IOException e) {
                 e.printStackTrace();
             }
-        });
+        }, "/api/cars");
 
         getChildFragmentManager().setFragmentResultListener("filterData", this,
                 (requestKey, bundle) -> {

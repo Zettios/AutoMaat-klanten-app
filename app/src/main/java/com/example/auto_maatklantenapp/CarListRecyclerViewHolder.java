@@ -36,4 +36,5 @@ public class CarListRecyclerViewHolder extends RecyclerView.ViewHolder {
     public TextView getPrice() {
         return price;
     }
+
 }

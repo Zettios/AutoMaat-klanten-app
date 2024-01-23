@@ -3,10 +3,25 @@ package com.example.auto_maatklantenapp;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.auto_maatklantenapp.rentals.Rental;
+import com.example.auto_maatklantenapp.rentals.RentalListAdapter;
+import com.example.auto_maatklantenapp.rentals.RentalState;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +36,9 @@ public class ReserveringenFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
+
+    private RecyclerView recyclerView;
+
     private String mParam1;
     private String mParam2;
 
@@ -56,9 +74,76 @@ public class ReserveringenFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_reserveringen, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_reserveringen, container, false);
+
+        recyclerView = view.findViewById(R.id.rvRentalLijst);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        ApiCalls api = new ApiCalls();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    api.Authenticate(new ApiCallback() {
+                        @Override
+                        public void onSuccess(JSONArray jsonArray) {
+
+                        }
+
+                        @Override
+                        public void onFailure(IOException e) {
+
+                        }
+                    });
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        });
+
+
+        api.GetAllRentals(new ApiCallback() {
+            @Override
+            public void onSuccess(JSONArray jsonArray) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<Rental> rentals = new ArrayList<>();
+                        try {
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject rentalData = jsonArray.getJSONObject(i);
+                                String fromDateStr = rentalData.getString("fromDate");
+                                String toDateStr = rentalData.getString("toDate");
+
+                                LocalDate fromDate = LocalDate.parse(fromDateStr);
+                                LocalDate toDate = LocalDate.parse(toDateStr);
+
+                                RentalState state = RentalState.valueOf(rentalData.getString("state"));
+                                rentals.add(new Rental(rentalData.getString("code"), rentalData.getDouble("longitude"),
+                                        rentalData.getDouble("latitude"), fromDate,
+                                        toDate, state,
+                                        null, null
+                                        ));
+                            }
+                            recyclerView.setAdapter(new RentalListAdapter(rentals));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(IOException e) {
+                e.printStackTrace();
+
+            }
+        }, "/api/rentals");
+
+
+        return view;
     }
 }
