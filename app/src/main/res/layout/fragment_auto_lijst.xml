@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/clAutoLijstContainer"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginStart="10dp"
-    android:layout_marginEnd="10dp"
-    tools:context=".AutoLijstFragment">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/clAutoLijstContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        tools:context=".AutoLijstFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
     <LinearLayout
             android:id="@+id/llCarSearch"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="75dp"
             android:orientation="horizontal"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
@@ -25,30 +25,34 @@
 
         <!-- TODO: Make custom search view -->
 
-        <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fragmentContainerView"
-                android:name="com.example.auto_maatklantenapp.CarSearchBarFragment"
+        <android.widget.Button
+                android:id="@+id/ibRefresh"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_margin="1dp"
-                android:layout_weight="95" />
+                android:layout_weight="50"
+                android:textColor="@color/white"
+                android:text="@string/refresh"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/color_grey_button" />
 
-        <ImageButton
+        <android.widget.Button
                 android:id="@+id/ibOpenFilters"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="5"
-                android:background="?android:selectableItemBackground"
-                android:src="?android:attr/actionModeFindDrawable" />
+                android:layout_weight="50"
+                android:textColor="@color/white"
+                android:text="@string/filters"
+                android:layout_marginLeft="5dp"
+                android:background="@drawable/color_primary_button" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvAutoLijst"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/llCarSearch" />
+            android:id="@+id/rvAutoLijst"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llCarSearch" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

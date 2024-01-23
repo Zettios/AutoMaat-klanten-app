@@ -4,7 +4,8 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="25dp">
+        android:padding="25dp"
+        android:background="@color/white">
 
     <TextView
             android:text="@string/zoek_filters"
@@ -160,20 +161,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtPrijsBereikSubTitle"
             android:maxLength="4"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp" />
 
-    <Button
+    <android.widget.Button
             android:text="Annuleren"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btnCancelFilters"
             app:layout_constraintStart_toStartOf="parent"
-            android:backgroundTint="#8E8E8E"
+            android:background="@drawable/color_grey_button"
+            android:textColor="@color/white"
             android:layout_marginStart="8dp"
             android:layout_marginTop="32dp"
             app:layout_constraintTop_toBottomOf="@+id/etMaxPrice" />
 
-    <Button
+    <android.widget.Button
             android:text="@string/pas_filters_toe"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -182,7 +184,8 @@
             app:layout_constraintStart_toEndOf="@+id/btnCancelFilters"
             app:layout_constraintHorizontal_bias="1.0"
             android:layout_marginEnd="8dp"
-            android:backgroundTint="@color/colorPrimary"
+            android:background="@drawable/color_primary_button"
+            android:textColor="@color/white"
             android:layout_marginTop="32dp"
             app:layout_constraintTop_toBottomOf="@+id/etMaxPrice" />
 
