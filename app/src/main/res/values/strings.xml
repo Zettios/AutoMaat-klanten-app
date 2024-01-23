@@ -24,5 +24,7 @@
     <string name="car_info_placeholder">Fuel type | Model year | License plate</string>
     <string name="car_options_placeholder">Car options</string>
     <string name="car_price_placeholder">999,99,- dd</string>
+    <string name="filters">Filters</string>
+    <string name="refresh">Refresh</string>
 
 </resources>

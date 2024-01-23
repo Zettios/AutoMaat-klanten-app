@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 
 import org.json.JSONArray;
@@ -28,10 +29,18 @@ public class AutoLijstFragment extends Fragment {
     CarListAdapter carListAdapter;
 
     private RecyclerView recyclerView;
-    private ImageButton ibOpenFilters;
+    private Button ibRefresh;
+    private Button ibOpenFilters;
     private List<Car> cars;
     private List<Car> allCars;
     private List<Car> filteredCars;
+
+    ArrayList<String> merkArray;
+    ArrayList<String> modelArray;
+    ArrayList<String> brandstofArray;
+    ArrayList<String> bodyArray;
+    AtomicInteger maxSeats;
+    AtomicInteger maxPrice;
 
     public AutoLijstFragment() {
     }
@@ -54,13 +63,45 @@ public class AutoLijstFragment extends Fragment {
 
         filteredCars = new ArrayList<>();
 
-        ArrayList<String> merkArray = new ArrayList<>();
-        ArrayList<String> modelArray = new ArrayList<>();
-        ArrayList<String> brandstofArray = new ArrayList<>();
-        ArrayList<String> bodyArray = new ArrayList<>();
-        AtomicInteger maxSeats = new AtomicInteger();
-        AtomicInteger maxPrice = new AtomicInteger();
+        merkArray = new ArrayList<>();
+        modelArray = new ArrayList<>();
+        brandstofArray = new ArrayList<>();
+        bodyArray = new ArrayList<>();
+        maxSeats = new AtomicInteger();
+        maxPrice = new AtomicInteger();
 
+        getCars(api);
+        handleFilterData();
+
+        recyclerView = view.findViewById(R.id.rvAutoLijst);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+
+        ibRefresh = view.findViewById(R.id.ibRefresh);
+        ibOpenFilters = view.findViewById(R.id.ibOpenFilters);
+
+        ibRefresh.setOnClickListener(v -> {
+            cars.clear();
+            cars.addAll(this.allCars);
+            carListAdapter.notifyDataSetChanged();
+        });
+
+        ibOpenFilters.setOnClickListener(v -> {
+            new CarFilterDialogFragment();
+            CarFilterDialogFragment dFragment = CarFilterDialogFragment
+                    .newInstance(merkArray, modelArray, brandstofArray, bodyArray,
+                            maxSeats.get(), maxPrice.get());
+            dFragment.show(getChildFragmentManager(), "CarFilterDialogFragment");
+        });
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    public void getCars(ApiCalls api) {
         api.GetDataFromCars(new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
@@ -140,8 +181,11 @@ public class AutoLijstFragment extends Fragment {
             public void onFailure(IOException e) {
                 e.printStackTrace();
             }
-        }, "/api/cars");
+        } , "/api/cars");
+    }
 
+
+    public void handleFilterData() {
         getChildFragmentManager().setFragmentResultListener("filterData", this,
                 (requestKey, bundle) -> {
                     String filterMerk = bundle.getString("merk");
@@ -150,6 +194,8 @@ public class AutoLijstFragment extends Fragment {
                     String filterBody = bundle.getString("body");
                     String filterAmountOfSeats = bundle.getString("amountOfSeats");
                     String filterMaxPrice = bundle.getString("maxPrice");
+
+                    this.filteredCars.clear();
 
                     if (allCars != null) {
                         for (Car car : allCars) {
@@ -167,25 +213,6 @@ public class AutoLijstFragment extends Fragment {
                     cars.clear();
                     cars.addAll(this.filteredCars);
                     carListAdapter.notifyDataSetChanged();
-        });
-
-        recyclerView = view.findViewById(R.id.rvAutoLijst);
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-
-        ibOpenFilters = view.findViewById(R.id.ibOpenFilters);
-        ibOpenFilters.setOnClickListener(v -> {
-            new CarFilterDialogFragment();
-            CarFilterDialogFragment dFragment = CarFilterDialogFragment
-                    .newInstance(merkArray, modelArray, brandstofArray, bodyArray,
-                            maxSeats.get(), maxPrice.get());
-            dFragment.show(getChildFragmentManager(), "CarFilterDialogFragment");
-        });
-
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+                });
     }
 }
