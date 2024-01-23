@@ -3,14 +3,14 @@ package com.example.auto_maatklantenapp;
 import androidx.annotation.NonNull;
 
 import android.util.Log;
-import android.widget.TextView;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -18,7 +18,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.util.Log;
 
 public class MainActivity extends AppCompatActivity implements OnNavSelectionListener {
 
@@ -27,6 +26,31 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
+
+    public void GetDataFromCars(){
+        OkHttpClient client = new OkHttpClient();
+
+        String url = "https://measured-adder-concrete.ngrok-free.app/api/cars";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()){
+                    String myResponse = response.body().string();
+                }
+
+            }
+        });
     }
 
     @Override

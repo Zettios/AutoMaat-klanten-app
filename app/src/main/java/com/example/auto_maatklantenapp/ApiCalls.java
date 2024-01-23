@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -16,7 +15,7 @@ import okhttp3.Response;
 
 public class ApiCalls {
 
-    String baseurl = "https://measured-adder-concrete.ngrok-free.app";
+    String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
 
     public void GetDataFromUsers(ApiCallback callback){
         OkHttpClient client = new OkHttpClient();

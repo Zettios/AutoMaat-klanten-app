@@ -2,22 +2,23 @@ package com.example.auto_maatklantenapp;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 
 import androidx.fragment.app.DialogFragment;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class CarFilterDialogFragment extends DialogFragment {
+
+    int maximumSeats = 4;
+    int maximumPrice = 100;
 
     public static CarFilterDialogFragment newInstance(
                                                 ArrayList<String> merk, ArrayList<String> model,
@@ -49,51 +50,67 @@ public class CarFilterDialogFragment extends DialogFragment {
         Spinner model = view.findViewById(R.id.spModel);
         Spinner brandstof = view.findViewById(R.id.spBrandstof);
         Spinner body = view.findViewById(R.id.spBodyType);
+        EditText amountOfSeats = view.findViewById(R.id.etAantalStoelen);
+        EditText maxPrice = view.findViewById(R.id.etMaxPrice);
 
         Button cancel = view.findViewById(R.id.btnCancelFilters);
         Button apply = view.findViewById(R.id.btnApplyFilters);
 
+        amountOfSeats.setText(String.valueOf(maximumSeats));
+        maxPrice.setText(String.valueOf(maximumPrice));
+
         cancel.setOnClickListener(v -> dismiss());
         apply.setOnClickListener(v -> {
             Bundle result = new Bundle();
-            result.putString("bundleKey", "result");
-            getParentFragmentManager().setFragmentResult("requestKey", result);
+            result.putString("merk", merk.getSelectedItem().toString());
+            result.putString("model", model.getSelectedItem().toString());
+            result.putString("brandstof", brandstof.getSelectedItem().toString());
+            result.putString("body", body.getSelectedItem().toString());
+            result.putString("amountOfSeats", amountOfSeats.getText().toString());
+            result.putString("maxPrice", maxPrice.getText().toString());
+            getParentFragmentManager().setFragmentResult("filterData", result);
             dismiss();
         });
 
         if (getArguments() != null) {
-            ArrayList<String> merkArrayList = getArguments().getStringArrayList("merk");
-            ArrayList<String> modelArrayList = getArguments().getStringArrayList("model");
-            ArrayList<String> brandstofArrayList = getArguments().getStringArrayList("brandstof");
-            ArrayList<String> bodyArrayList = getArguments().getStringArrayList("body");
+            maximumPrice = getArguments().getInt("maxPrice");
+            maximumSeats = getArguments().getInt("maxStoelen");
+            maxPrice.setText(String.valueOf(maximumPrice));
+            amountOfSeats.setText(String.valueOf(maximumSeats));
 
-            if (merkArrayList != null && modelArrayList != null && brandstofArrayList != null && bodyArrayList != null) {
-                ArrayAdapter<String> dataAdapterMerk = new ArrayAdapter<>(
-                        requireActivity(), android.R.layout.simple_spinner_item,
-                        merkArrayList);
-                ArrayAdapter<String> dataAdapterModel = new ArrayAdapter<>(
-                        requireActivity(), android.R.layout.simple_spinner_item,
-                        modelArrayList);
-                ArrayAdapter<String> dataAdapterBrandstof = new ArrayAdapter<>(
-                        requireActivity(), android.R.layout.simple_spinner_item,
-                        brandstofArrayList);
-                ArrayAdapter<String> dataAdapterBody = new ArrayAdapter<>(
-                        requireActivity(), android.R.layout.simple_spinner_item,
-                        bodyArrayList);
-
-                dataAdapterMerk.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                dataAdapterModel.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                dataAdapterBrandstof.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                dataAdapterBody.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-                merk.setAdapter(dataAdapterMerk);
-                model.setAdapter(dataAdapterModel);
-                brandstof.setAdapter(dataAdapterBrandstof);
-                body.setAdapter(dataAdapterBody);
-            }
+            populateSpinners(merk, model, brandstof, body);
         }
 
         return builder.create();
+    }
+
+    public void populateSpinners(Spinner merk, Spinner model, Spinner brandstof, Spinner body){
+        ArrayList<String> merkArrayList = getArguments().getStringArrayList("merk");
+        ArrayList<String> modelArrayList = getArguments().getStringArrayList("model");
+        ArrayList<String> brandstofArrayList = getArguments().getStringArrayList("brandstof");
+        ArrayList<String> bodyArrayList = getArguments().getStringArrayList("body");
+
+        if (merkArrayList != null && modelArrayList != null &&
+                brandstofArrayList != null && bodyArrayList != null) {
+            ArrayAdapter<String> dataAdapterMerk = new ArrayAdapter<>(
+                    requireActivity(), android.R.layout.simple_spinner_item, merkArrayList);
+            ArrayAdapter<String> dataAdapterModel = new ArrayAdapter<>(
+                    requireActivity(), android.R.layout.simple_spinner_item, modelArrayList);
+            ArrayAdapter<String> dataAdapterBrandstof = new ArrayAdapter<>(
+                    requireActivity(), android.R.layout.simple_spinner_item, brandstofArrayList);
+            ArrayAdapter<String> dataAdapterBody = new ArrayAdapter<>(
+                    requireActivity(), android.R.layout.simple_spinner_item, bodyArrayList);
+
+            dataAdapterMerk.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            dataAdapterModel.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            dataAdapterBrandstof.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            dataAdapterBody.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            merk.setAdapter(dataAdapterMerk);
+            model.setAdapter(dataAdapterModel);
+            brandstof.setAdapter(dataAdapterBrandstof);
+            body.setAdapter(dataAdapterBody);
+        }
     }
 }
 

@@ -6,16 +6,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class RecyclerViewHolder extends RecyclerView.ViewHolder {
+public class CarListRecyclerViewHolder extends RecyclerView.ViewHolder {
 
-    private TextView carModel;
-    private TextView carInfo;
-    private TextView price;
+    private final TextView carModel;
+    private final TextView carInfo;
+    private final TextView carOptions;
+    private final TextView price;
 
-    public RecyclerViewHolder(@NonNull View itemView) {
+    public CarListRecyclerViewHolder(@NonNull View itemView) {
         super(itemView);
         carModel = itemView.findViewById(R.id.txtCarModel);
         carInfo = itemView.findViewById(R.id.txtCarInfo);
+        carOptions = itemView.findViewById(R.id.txtCarOptions);
         price = itemView.findViewById(R.id.txtPrice);
     }
 
@@ -25,6 +27,10 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
     public TextView getCarInfo() {
         return carInfo;
+    }
+
+    public TextView getCarOptions() {
+        return carOptions;
     }
 
     public TextView getPrice() {
