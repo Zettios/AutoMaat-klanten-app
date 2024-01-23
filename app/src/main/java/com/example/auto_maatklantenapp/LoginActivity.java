@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Button;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import org.json.JSONArray;
 
 import java.io.IOException;
@@ -45,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
             String password = passwordField.getText().toString().trim();
             String persistence = String.valueOf(loginPersistanceBox.isChecked());
 
-            if(ValidateLoginData(usernameField, passwordField, username, password)){
+            if(validateLoginData(usernameField, passwordField, username, password)){
                 loginWithEmailAndPassword(username, password, persistence);
             }
         });
@@ -63,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    public boolean ValidateLoginData(EditText usernameField, EditText passwordField, String username, String password){
+    public boolean validateLoginData(EditText usernameField, EditText passwordField, String username, String password){
         if(TextUtils.isEmpty(username)){
             usernameField.setError("Username is Required.");
             return false;
@@ -76,9 +78,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginWithEmailAndPassword(String username, String password, String persistence){
-        //TODO: Implement Login Functionality
         ApiCalls api = new ApiCalls();
-        Activity curActivity = this;
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -87,9 +87,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(JSONArray jsonArray) {
                             //Change Scene
-                            Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(i, ActivityOptions.makeSceneTransitionAnimation(curActivity).toBundle());
-                            finish();
+                            swapScene();
                         }
 
                         @Override
@@ -101,5 +99,11 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void swapScene(){
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+        finish();
     }
 }
