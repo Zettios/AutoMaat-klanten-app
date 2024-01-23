@@ -1,17 +1,21 @@
 package com.example.auto_maatklantenapp;
 
+import static com.google.android.material.internal.ContextUtils.getActivity;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
-import android.view.Window;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Button;
+import androidx.fragment.app.Fragment;
+
+import org.json.JSONArray;
+
+import java.io.IOException;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -69,6 +73,20 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loginWithEmailAndPassword(String email, String password){
         //TODO: Implement Login Functionality
+        ApiCalls api = new ApiCalls();
+
+        api.GetDataFromUsers(new ApiCallback() {
+            @Override
+            public void onSuccess(JSONArray jsonArray) {
+            }
+
+            @Override
+            public void onFailure(IOException e) {
+
+            }
+        });
+
+        //Change Scene
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         finish();

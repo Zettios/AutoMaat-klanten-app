@@ -18,6 +18,34 @@ public class ApiCalls {
 
     String baseurl = "https://measured-adder-concrete.ngrok-free.app";
 
+    public void GetDataFromUsers(ApiCallback callback){
+        OkHttpClient client = new OkHttpClient();
+        String url = baseurl + "/api/users";
+        Request request = new Request.Builder().url(url).build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if(response.isSuccessful()){
+                    assert response.body() != null;
+                    String myResponse = response.body().toString();
+                    JSONArray array;
+                    try{
+                        array = new JSONArray(myResponse);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                    callback.onSuccess(array);
+                }
+            }
+        });
+    }
+
     public void GetDataFromCars(ApiCallback callback){
         OkHttpClient client = new OkHttpClient();
 
