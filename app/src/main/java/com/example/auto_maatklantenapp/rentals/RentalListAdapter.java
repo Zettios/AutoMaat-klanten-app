@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.auto_maatklantenapp.Car;
 import com.example.auto_maatklantenapp.R;
-import com.example.auto_maatklantenapp.RecyclerViewHolder;
 
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class RentalListAdapter extends RecyclerView.Adapter<RentalViewHolder>{
 
     @Override
     public int getItemViewType(final int position) {
-        return R.layout.list_view_item;
+        return R.layout.car_list_item;
     }
 
     @NonNull
