@@ -112,31 +112,9 @@ public class AutoLijstFragment extends Fragment {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject carData = jsonArray.getJSONObject(i);
 
-                            if (!merkArray.contains(carData.getString("brand"))) {
-                                merkArray.add(carData.getString("brand"));
-                            }
+                            populateFilterDataArrays(carData);
 
-                            if (!modelArray.contains(carData.getString("model"))) {
-                                modelArray.add(carData.getString("model"));
-                            }
-
-                            if (!brandstofArray.contains(carData.getString("fuel"))) {
-                                brandstofArray.add(carData.getString("fuel"));
-                            }
-
-                            if (!bodyArray.contains(carData.getString("body"))) {
-                                bodyArray.add(carData.getString("body"));
-                            }
-
-                            if (maxSeats.get() < carData.getInt("nrOfSeats")) {
-                                maxSeats.set(carData.getInt("nrOfSeats"));
-                            }
-
-                            if (maxPrice.get() < carData.getInt("price")) {
-                                maxPrice.set(carData.getInt("price"));
-                            }
-
-                            cars.add(new Car(
+                            Car carItem = new Car(
                                     carData.getString("brand"),
                                     carData.getString("model"),
                                     carData.getString("fuel"),
@@ -150,23 +128,10 @@ public class AutoLijstFragment extends Fragment {
                                     carData.getString("body"),
                                     carData.getString("inspections"),
                                     carData.getString("repairs"),
-                                    carData.getString("rentals")));
+                                    carData.getString("rentals"));
 
-                            allCars.add(new Car(
-                                    carData.getString("brand"),
-                                    carData.getString("model"),
-                                    carData.getString("fuel"),
-                                    carData.getString("options"),
-                                    carData.getString("licensePlate"),
-                                    carData.getInt("engineSize"),
-                                    carData.getInt("modelYear"),
-                                    carData.getString("since"),
-                                    carData.getInt("price"),
-                                    carData.getInt("nrOfSeats"),
-                                    carData.getString("body"),
-                                    carData.getString("inspections"),
-                                    carData.getString("repairs"),
-                                    carData.getString("rentals")));
+                            cars.add(carItem);
+                            allCars.add(carItem);
                         }
 
                         carListAdapter = new CarListAdapter(cars);
@@ -184,6 +149,31 @@ public class AutoLijstFragment extends Fragment {
         } , "/api/cars");
     }
 
+    public void populateFilterDataArrays(JSONObject carData) throws JSONException {
+        if (!merkArray.contains(carData.getString("brand"))) {
+            merkArray.add(carData.getString("brand"));
+        }
+
+        if (!modelArray.contains(carData.getString("model"))) {
+            modelArray.add(carData.getString("model"));
+        }
+
+        if (!brandstofArray.contains(carData.getString("fuel"))) {
+            brandstofArray.add(carData.getString("fuel"));
+        }
+
+        if (!bodyArray.contains(carData.getString("body"))) {
+            bodyArray.add(carData.getString("body"));
+        }
+
+        if (maxSeats.get() < carData.getInt("nrOfSeats")) {
+            maxSeats.set(carData.getInt("nrOfSeats"));
+        }
+
+        if (maxPrice.get() < carData.getInt("price")) {
+            maxPrice.set(carData.getInt("price"));
+        }
+    }
 
     public void handleFilterData() {
         getChildFragmentManager().setFragmentResultListener("filterData", this,
@@ -213,6 +203,6 @@ public class AutoLijstFragment extends Fragment {
                     cars.clear();
                     cars.addAll(this.filteredCars);
                     carListAdapter.notifyDataSetChanged();
-                });
+        });
     }
 }
