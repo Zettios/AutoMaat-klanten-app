@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,8 @@ public class ReserveringenFragment extends Fragment {
     // TODO: Rename and change types of parameters
 
     private RecyclerView recyclerView;
+
+    RentalListAdapter rentalListAdapter;
 
     private String mParam1;
     private String mParam2;
@@ -81,33 +84,36 @@ public class ReserveringenFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
         ApiCalls api = new ApiCalls();
+        Log.w("myApp", "view created");
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    api.Authenticate(new ApiCallback() {
-                        @Override
-                        public void onSuccess(JSONArray jsonArray) {
-
-                        }
-
-                        @Override
-                        public void onFailure(IOException e) {
-
-                        }
-                    });
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+        try {
+            Log.w("myApp", "inside try");
+            api.Authenticate(new ApiCallback() {
+                @Override
+                public void onSuccess(JSONArray jsonArray) {
+                    Log.w("myApp", "success");
+                    fetchRentals();
                 }
 
-            }
-        });
+                @Override
+                public void onFailure(IOException e) {
+                    Log.w("myApp", "failed");
+                }
+            });
+        } catch (IOException e) {
+            Log.w("myApp", "error");
+            throw new RuntimeException(e);
+        }
+        return view;
+    }
 
-
+    private void fetchRentals(){
+        Log.w("myApp", "fetchrentals called");
+        ApiCalls api = new ApiCalls();
         api.GetAllRentals(new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
+                Log.w("myApp", "onsucces");
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -126,9 +132,11 @@ public class ReserveringenFragment extends Fragment {
                                         rentalData.getDouble("latitude"), fromDate,
                                         toDate, state,
                                         null, null
-                                        ));
+                                ));
                             }
-                            recyclerView.setAdapter(new RentalListAdapter(rentals));
+                            Log.w("myApp", rentals.toString());
+                            rentalListAdapter = new RentalListAdapter(rentals);
+                            recyclerView.setAdapter(rentalListAdapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -143,7 +151,5 @@ public class ReserveringenFragment extends Fragment {
             }
         }, "/api/rentals");
 
-
-        return view;
     }
 }
