@@ -8,5 +8,6 @@ import java.io.IOException;
 public interface ApiCallback {
     void onSuccess(JSONArray jsonArray);
     void onFailure(IOException e);
+
 }
 

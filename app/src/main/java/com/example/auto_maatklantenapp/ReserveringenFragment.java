@@ -91,8 +91,7 @@ public class ReserveringenFragment extends Fragment {
             api.Authenticate(new ApiCallback() {
                 @Override
                 public void onSuccess(JSONArray jsonArray) {
-                    Log.w("myApp", "success");
-                    fetchRentals();
+                    Log.w("myApp", "success, Now fetching rentals");
                 }
 
                 @Override
@@ -104,10 +103,17 @@ public class ReserveringenFragment extends Fragment {
             Log.w("myApp", "error");
             throw new RuntimeException(e);
         }
+        String authToken;
+        try {
+            authToken = api.getAuthToken();
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        fetchRentals(authToken);
         return view;
     }
 
-    private void fetchRentals(){
+    private void fetchRentals(String authToken){
         Log.w("myApp", "fetchrentals called");
         ApiCalls api = new ApiCalls();
         api.GetAllRentals(new ApiCallback() {
@@ -146,10 +152,11 @@ public class ReserveringenFragment extends Fragment {
 
             @Override
             public void onFailure(IOException e) {
+                Log.w("myApp", "onfailure");
                 e.printStackTrace();
 
             }
-        }, "/api/rentals");
+        }, authToken, "/api/rentals");
 
     }
 }

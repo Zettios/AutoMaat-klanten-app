@@ -12,7 +12,6 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -21,7 +20,9 @@ import okhttp3.Response;
 
 public class ApiCalls {
 
-    String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
+    JSONObject authToken;
+
+    String baseurl = "https://measured-adder-concrete.ngrok-free.app";
 
     public void GetDataFromUsers(ApiCallback callback){
         OkHttpClient client = new OkHttpClient();
@@ -123,9 +124,10 @@ public class ApiCalls {
                     String myResponse = response.body().string();
                     Log.w("myApp", "response succesfull");
                     try {
-                        JSONObject jsonObject = new JSONObject(myResponse);
-
+                        authToken = new JSONObject(myResponse);
                         Log.w("myApp", "MYRESPONSE: " +myResponse);
+                        Log.w("myApp", "AUTHTOKEN IN AUTHENTICATE: " +authToken);
+                        callback.onSuccess(new JSONArray());
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
@@ -140,14 +142,27 @@ public class ApiCalls {
 
     }
 
-    public void GetAllRentals(ApiCallback callback, String path){
+    public String getAuthToken() throws JSONException {
+        if (authToken != null) {
+            try {
+                return authToken.getString("id_token");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;  // Return a default value or handle accordingly
+    }
+
+    public void GetAllRentals(ApiCallback callback, String path, String authToken){
         OkHttpClient client = new OkHttpClient();
 
         String url = baseurl + path;
 
 
+        Log.w("myApp", "authentication TOKEN: " + authToken);
         Request request = new Request.Builder()
                 .url(url)
+                .header("Authorization", "Bearer " + authToken)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -158,6 +173,7 @@ public class ApiCalls {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                Log.w("myApp", "MYRESPONSE: " +response);
                 if (response.isSuccessful()) {
                     String myResponse = response.body().string();
                     JSONArray jsonArray = null;
