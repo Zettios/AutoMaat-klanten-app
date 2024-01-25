@@ -6,6 +6,7 @@ import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -41,9 +42,9 @@ public class LoginActivity extends AppCompatActivity {
             String password = passwordField.getText().toString().trim();
             String persistence = String.valueOf(loginPersistanceBox.isChecked());
             swapScene();
-            if(validateLoginData(usernameField, passwordField, username, password)){
-                loginWithEmailAndPassword(username, password, persistence);
-            }
+//            if(validateLoginData(usernameField, passwordField, username, password)) {
+//                loginWithEmailAndPassword(username, password, persistence);
+//            }
         });
 
         createBtn.setOnClickListener(v -> {
@@ -73,8 +74,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loginWithEmailAndPassword(String username, String password, String persistence){
         ApiCalls api = new ApiCalls();
+
         new Thread(() -> {
             try {
+                Log.d("AutoMaatApp", "Start thread");
                 api.Authenticate(new ApiCallback() {
                     @Override
                     public void onSuccess(JSONArray jsonArray) {
@@ -84,9 +87,11 @@ public class LoginActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(IOException e) {
+                        Log.d("AutoMaatApp", "Callback failure");
                     }
                 });
             } catch (IOException e) {
+                Log.d("AutoMaatApp", "Thread error");
                 throw new RuntimeException(e);
             }
         });

@@ -4,7 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.example.auto_maatklantenapp.accident.AccidentReport;
+import com.example.auto_maatklantenapp.accident.AccidentRapport;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,12 +85,9 @@ public class ApiCalls {
         });
     }
 
-    public void Authenticate(ApiCallback callback) throws IOException{
-        Log.w("myApp", "inside authenticate");
+    public void Authenticate(ApiCallback callback) throws IOException {
         OkHttpClient client = new OkHttpClient();
-        String path = "/api/authenticate";
-        String url = baseurl + path;
-
+        String url = baseurl + "/api/authenticate";
         JSONObject jsonBody = new JSONObject();
         try {
             jsonBody.put("username", "admin");
@@ -100,38 +97,33 @@ public class ApiCalls {
             e.printStackTrace();
         }
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsonBody.toString());
+        RequestBody requestBody = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
 
         Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
                 .build();
 
-        Log.w("myApp", "starting call");
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.w("myApp", "failure");
                 callback.onFailure(e);
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                Log.w("myApp", "DIT IS DE RESPONSE: " + response);
-                Log.w("myApp", "onresponse");
-                if (response.isSuccessful()) {
-                    String myResponse = response.body().string();
-                    Log.w("myApp", "response succesfull");
-                    try {
-                        authToken = new JSONObject(myResponse);
-                        Log.w("myApp", "MYRESPONSE: " +myResponse);
-                        Log.w("myApp", "AUTHTOKEN IN AUTHENTICATE: " +authToken);
-                        callback.onSuccess(new JSONArray());
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
+                if (response.isSuccessful() ) {
+                    if (response.body() != null) {
+                        String responseData = response.body().string();
+                        try {
+                            authToken = new JSONObject(responseData);
+                            JSONArray jsonArray = new JSONArray();
+                            jsonArray.put(authToken);
+                            callback.onSuccess(jsonArray);
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
-                } else {
-                    Log.w("myApp", "authentication failed");
                 }
             }
         });
@@ -148,7 +140,7 @@ public class ApiCalls {
         return null;  // Return a default value or handle accordingly
     }
 
-    public void GetAllRentals(ApiCallback callback, String path, String authToken){
+    public void GetAllRentals(String path, String authToken, ApiCallback callback){
         OkHttpClient client = new OkHttpClient();
 
         String url = baseurl + path;
@@ -183,7 +175,7 @@ public class ApiCalls {
         });
     }
 
-    public void sendAccidentReport(AccidentReport accidentReport, ApiCallback apiCallback) throws JSONException {
+    public void sendAccidentReport(AccidentRapport accidentReport, String authToken, ApiCallback apiCallback) throws JSONException {
         OkHttpClient client = new OkHttpClient();
 
         String url = baseurl + "/api/inspections";
@@ -195,16 +187,14 @@ public class ApiCalls {
         jsonObject.put("photo", accidentReport.getPhoto());
         jsonObject.put("photoContentType", accidentReport.getPhotoContentType());
         jsonObject.put("completed", accidentReport.getCompleted());
-        jsonObject.put("photos", accidentReport.getPhoto());
-        jsonObject.put("repairs", accidentReport.getRepairs());
-        jsonObject.put("car", accidentReport.getCars());
-        jsonObject.put("employee", accidentReport.getEmployee());
-        jsonObject.put("rental", accidentReport.getRental());
+
+        Log.d("AutoMaatApp", jsonObject.toString());
 
         RequestBody formBody = RequestBody.create(jsonObject.toString(), JSON);
 
         Request request = new Request.Builder()
                 .url(url)
+                .header("Authorization", "Bearer " + authToken)
                 .post(formBody)
                 .build();
 
@@ -219,16 +209,20 @@ public class ApiCalls {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 Log.d("AutoMaatApp", "Success!");
                 Log.d("AutoMaatApp", response.toString());
-                if (response.isSuccessful()) {
-                    String myResponse = response.body().string();
-                    JSONArray jsonArray;
-                    try {
-                        jsonArray = new JSONArray(myResponse);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                    apiCallback.onSuccess(jsonArray);
-                }
+                Log.d("AutoMaatApp", String.valueOf(response.body()));
+                Log.d("AutoMaatApp", response.body().string());
+                Log.d("AutoMaatApp", String.valueOf(response.isSuccessful()));
+//                if (response.isSuccessful()) {
+//                    String myResponse = response.body().string();
+//                    JSONArray jsonArray;
+//                    try {
+//                        jsonArray = new JSONArray(myResponse);
+//                    } catch (JSONException e) {
+//                        throw new RuntimeException(e);
+//                    }
+//
+//                }
+                apiCallback.onSuccess(new JSONArray());
             }
         });
     }

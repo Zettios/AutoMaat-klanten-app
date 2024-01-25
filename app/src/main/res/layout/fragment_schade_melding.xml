@@ -11,16 +11,25 @@
         android:background="@color/white">
 
     <TextView
+            android:text="Schade melding"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/idAccidentRapportTitle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"
+            android:textStyle="bold"
+            android:textSize="20sp" />
+
+    <TextView
             android:text="Selecteer reservering"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/txtAccidentReservationTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="16dp"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            app:layout_constraintTop_toBottomOf="@+id/idAccidentRapportTitle" />
 
     <Spinner
             android:layout_width="match_parent"
@@ -30,18 +39,39 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtAccidentReservationTitle" />
 
+    <TextView
+            android:text="Kilometerstand"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtOdoMeterTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spnrReservedCars"
+            android:layout_marginTop="8dp" />
+
+    <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:ems="10"
+            android:id="@+id/etOdoMeterInput"
+            app:layout_constraintTop_toBottomOf="@+id/txtOdoMeterTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:backgroundTint="@color/colorPrimary"
+            android:textCursorDrawable="@null" />
+
     <ImageView
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:id="@+id/ivAccidentPicture"
-            android:src="@drawable/ic_grey"
+            android:src="@drawable/background_search_view"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintTop_toBottomOf="@+id/spnrReservedCars"
             app:layout_constraintBottom_toTopOf="@+id/btnTakeFoto"
             android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp" />
+            app:layout_constraintTop_toBottomOf="@+id/etOdoMeterInput" />
 
     <android.widget.Button
             android:layout_width="match_parent"
@@ -52,7 +82,8 @@
             android:text="Neem foto"
             android:background="@drawable/color_primary_button"
             app:layout_constraintBottom_toTopOf="@+id/btnReportAccident"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/white" />
 
     <android.widget.Button
             android:layout_width="match_parent"
@@ -63,6 +94,7 @@
             android:background="@drawable/color_primary_button"
             android:id="@+id/btnReportAccident"
             android:text="Verstuur"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
