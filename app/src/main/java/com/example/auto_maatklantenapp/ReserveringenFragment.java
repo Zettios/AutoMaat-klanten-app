@@ -92,6 +92,14 @@ public class ReserveringenFragment extends Fragment {
                 @Override
                 public void onSuccess(JSONArray jsonArray) {
                     Log.w("myApp", "success, Now fetching rentals");
+                    String authToken;
+                    try {
+                        authToken = api.getAuthToken();
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                    Log.w("myApp", "AUTHTOKEN IN ONCREATEVIEW: " + authToken);
+                    fetchRentals(authToken);
                 }
 
                 @Override
@@ -103,13 +111,6 @@ public class ReserveringenFragment extends Fragment {
             Log.w("myApp", "error");
             throw new RuntimeException(e);
         }
-        String authToken;
-        try {
-            authToken = api.getAuthToken();
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-        fetchRentals(authToken);
         return view;
     }
 
