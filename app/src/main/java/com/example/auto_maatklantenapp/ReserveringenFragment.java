@@ -157,7 +157,7 @@ public class ReserveringenFragment extends Fragment {
                 e.printStackTrace();
 
             }
-        }, authToken, "/api/rentals");
+        }, "/api/rentals", authToken);
 
     }
 }
