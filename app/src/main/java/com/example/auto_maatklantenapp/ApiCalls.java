@@ -14,7 +14,6 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -23,37 +22,9 @@ import okhttp3.Response;
 
 public class ApiCalls {
 
+    JSONObject authToken;
     String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-    public void GetDataFromCars(String path, ApiCallback callback){
-        OkHttpClient client = new OkHttpClient();
-        String url = baseurl + path;
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onFailure(e);
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    String myResponse = response.body().string();
-                    JSONArray jsonArray;
-                    try {
-                        jsonArray = new JSONArray(myResponse);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                    callback.onSuccess(jsonArray);
-                }
-            }
-        });
-    }
 
     public void GetDataFromUsers(ApiCallback callback) {
         OkHttpClient client = new OkHttpClient();
@@ -83,20 +54,13 @@ public class ApiCalls {
         });
     }
 
-    public void Authenticate(ApiCallback callback, String username, String password, String persistence) throws IOException{
+    public void GetDataFromCars(String path, ApiCallback callback){
         OkHttpClient client = new OkHttpClient();
-        String path = "/api/authenticate";
-        String url = baseurl + path;
 
-        RequestBody formBody = new FormBody.Builder()
-                .add("username", username)
-                .add("password", password)
-                .add("rememberMe", persistence)
-                .build();
+        String url = baseurl + path;
 
         Request request = new Request.Builder()
                 .url(url)
-                .post(formBody)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -121,14 +85,79 @@ public class ApiCalls {
         });
     }
 
-    public void GetAllRentals(ApiCallback callback, String path) {
+    public void Authenticate(ApiCallback callback) throws IOException{
+        Log.w("myApp", "inside authenticate");
+        OkHttpClient client = new OkHttpClient();
+        String path = "/api/authenticate";
+        String url = baseurl + path;
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("username", "admin");
+            jsonBody.put("password", "admin");
+            jsonBody.put("rememberMe", true);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsonBody.toString());
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+
+        Log.w("myApp", "starting call");
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.w("myApp", "failure");
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                Log.w("myApp", "DIT IS DE RESPONSE: " + response);
+                Log.w("myApp", "onresponse");
+                if (response.isSuccessful()) {
+                    String myResponse = response.body().string();
+                    Log.w("myApp", "response succesfull");
+                    try {
+                        authToken = new JSONObject(myResponse);
+                        Log.w("myApp", "MYRESPONSE: " +myResponse);
+                        Log.w("myApp", "AUTHTOKEN IN AUTHENTICATE: " +authToken);
+                        callback.onSuccess(new JSONArray());
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    Log.w("myApp", "authentication failed");
+                }
+            }
+        });
+    }
+
+    public String getAuthToken() throws JSONException {
+        if (authToken != null) {
+            try {
+                return authToken.getString("id_token");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;  // Return a default value or handle accordingly
+    }
+
+    public void GetAllRentals(ApiCallback callback, String path, String authToken){
         OkHttpClient client = new OkHttpClient();
 
         String url = baseurl + path;
 
 
+        Log.w("myApp", "authentication TOKEN: " + authToken);
         Request request = new Request.Builder()
                 .url(url)
+                .header("Authorization", "Bearer " + authToken)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -139,6 +168,7 @@ public class ApiCalls {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                Log.w("myApp", "MYRESPONSE: " +response);
                 if (response.isSuccessful()) {
                     String myResponse = response.body().string();
                     JSONArray jsonArray = null;
