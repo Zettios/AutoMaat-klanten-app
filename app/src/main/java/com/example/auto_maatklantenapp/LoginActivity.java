@@ -46,10 +46,10 @@ public class LoginActivity extends AppCompatActivity {
             String username = usernameField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();
             String persistence = String.valueOf(loginPersistanceBox.isChecked());
-
-            if(validateLoginData(usernameField, passwordField, username, password)){
-                loginWithEmailAndPassword(username, password, persistence);
-            }
+            swapScene();
+//            if(validateLoginData(usernameField, passwordField, username, password)){
+//                loginWithEmailAndPassword(username, password, persistence);
+//            }
         });
 
         createBtn.setOnClickListener(v -> {

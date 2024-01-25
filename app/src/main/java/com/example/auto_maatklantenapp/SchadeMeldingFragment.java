@@ -1,64 +1,154 @@
 package com.example.auto_maatklantenapp;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.content.ContentValues;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SchadeMeldingFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.auto_maatklantenapp.accident.AccidentReport;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class SchadeMeldingFragment extends Fragment {
+    ImageView accidentPicture;
+    Button takePicture;
+    Button submit;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    ActivityResultLauncher<Intent> startCamera;
+    Uri cam_uri;
+    String encodedImage;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public SchadeMeldingFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SchadeMeldingFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SchadeMeldingFragment newInstance(String param1, String param2) {
-        SchadeMeldingFragment fragment = new SchadeMeldingFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public static SchadeMeldingFragment newInstance() {
+        return new SchadeMeldingFragment();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_schade_melding, container, false);
+        View view = inflater.inflate(R.layout.fragment_schade_melding, container, false);
+
+        accidentPicture = view.findViewById(R.id.ivAccidentPicture);
+        takePicture = view.findViewById(R.id.btnTakeFoto);
+        submit = view.findViewById(R.id.btnReportAccident);
+        registerResult();
+
+        takePicture.setOnClickListener(v -> {
+//            Intent myIntent = new Intent(getActivity(), CameraActivity.class);
+//            getActivity().startActivity(myIntent);
+            takePicture();
+        });
+
+        submit.setOnClickListener(v -> {
+            try {
+                submitReport(cam_uri);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return view;
+    }
+
+    private void takePicture() {
+        //Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, "Accident Picture");
+        values.put(MediaStore.Images.Media.DESCRIPTION, "From Camera");
+        cam_uri = requireContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cam_uri);
+
+        startCamera.launch(cameraIntent);
+    }
+
+    private void registerResult() {
+        startCamera  = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    try {
+                        if (result.getResultCode() == RESULT_OK) {
+                            accidentPicture.setImageURI(cam_uri);
+
+                            final Uri imageUri = cam_uri;
+                            final InputStream imageStream = getActivity()
+                                    .getContentResolver()
+                                    .openInputStream(imageUri);
+                            final Bitmap selectedImage = BitmapFactory
+                                    .decodeStream(imageStream);
+                            encodedImage = encodeImage(selectedImage);
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(
+                                getActivity(),
+                                "No image selected",
+                                Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                    }
+                }
+        );
+    }
+
+    private String encodeImage(Bitmap bm)
+    {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG,50,baos);
+        byte[] b = baos.toByteArray();
+        String encImage = Base64.encodeToString(b, Base64.NO_WRAP);
+
+        return encImage;
+    }
+
+    private void submitReport(Uri uri) throws JSONException {
+        AccidentReport accidentReport = new AccidentReport();
+        accidentReport.setCode("");
+        accidentReport.setOdoMeter(17061);
+        accidentReport.setResult("This is a result");
+        accidentReport.setPhoto(encodedImage);
+        accidentReport.setCompleted("");
+
+        ApiCalls api = new ApiCalls();
+        api.sendAccidentReport(accidentReport, new ApiCallback() {
+            @Override
+            public void onSuccess(JSONArray jsonArray) {
+                Log.d("AutoMaatApp", "Success!");
+                Log.d("AutoMaatApp", jsonArray.toString());
+            }
+
+            @Override
+            public void onFailure(IOException e) {
+                Log.d("AutoMaatApp", "Failed :(");
+            }
+        });
     }
 }

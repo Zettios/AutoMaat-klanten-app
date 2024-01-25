@@ -16,14 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AutoLijstFragmentTest {
 
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Test
     public void populateFilterDataArrays() throws JSONException {
         AutoLijstFragment av = new AutoLijstFragment();
@@ -69,9 +61,5 @@ public class AutoLijstFragmentTest {
 
         assertEquals(10, av.maxSeats.get());
         assertEquals(105, av.maxPrice.get());
-    }
-
-    @Test
-    public void handleFilterData() {
     }
 }

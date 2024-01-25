@@ -1,4 +1,4 @@
-package com.example.auto_maatklantenapp;
+package com.example.auto_maatklantenapp.listeners;
 
 public interface OnNavSelectionListener {
     void OnNavSelection(int nav_id);

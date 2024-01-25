@@ -1,5 +1,6 @@
 package com.example.auto_maatklantenapp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -55,7 +56,6 @@ public class AutoLijstFragment extends Fragment {
         super.onAttach(context);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_auto_lijst, container, false);
@@ -102,7 +102,7 @@ public class AutoLijstFragment extends Fragment {
     }
 
     public void getCars(ApiCalls api) {
-        api.GetDataFromCars(new ApiCallback() {
+        api.GetDataFromCars("/api/cars", new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
                 getActivity().runOnUiThread(() -> {
@@ -111,9 +111,7 @@ public class AutoLijstFragment extends Fragment {
                     try {
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject carData = jsonArray.getJSONObject(i);
-
                             populateFilterDataArrays(carData);
-
                             Car carItem = new Car(
                                     carData.getString("brand"),
                                     carData.getString("model"),
@@ -129,11 +127,9 @@ public class AutoLijstFragment extends Fragment {
                                     carData.getString("inspections"),
                                     carData.getString("repairs"),
                                     carData.getString("rentals"));
-
                             cars.add(carItem);
                             allCars.add(carItem);
                         }
-
                         carListAdapter = new CarListAdapter(cars);
                         recyclerView.setAdapter(carListAdapter);
                     } catch (JSONException e) {
@@ -146,7 +142,7 @@ public class AutoLijstFragment extends Fragment {
             public void onFailure(IOException e) {
                 e.printStackTrace();
             }
-        } , "/api/cars");
+        });
     }
 
     public void populateFilterDataArrays(JSONObject carData) throws JSONException {
