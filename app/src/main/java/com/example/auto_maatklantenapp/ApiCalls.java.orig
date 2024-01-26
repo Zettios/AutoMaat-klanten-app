@@ -90,8 +90,12 @@ public class ApiCalls {
         });
     }
 
+<<<<<<< HEAD
     public void Authenticate(ApiCallback callback, String username, String password, boolean persistence) throws IOException{
         Log.w("myApp", "inside authenticate");
+=======
+    public void Authenticate(ApiCallback callback) throws IOException {
+>>>>>>> cfe8b9b1ec7e0f25166135922626d16b4617f618
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + "/api/authenticate";
         JSONObject jsonBody = new JSONObject();

@@ -53,29 +53,28 @@ public class ReserveringenFragment extends Fragment {
         ApiCalls api = new ApiCalls();
         Log.w("myApp", "view created");
 
-//        try {
-//            Log.w("myApp", "inside try");
-//            api.Authenticate(new ApiCallback() {
-//                @Override
-//                public void onSuccess(JSONArray jsonArray) {
-//                    Log.w("myApp", "success, Now fetching rentals");
-//                }
-//
-//                @Override
-//                public void onFailure(IOException e) {
-//                    Log.w("myApp", "failed");
-//                }
-//            });
-//        } catch (IOException e) {
-//            Log.w("myApp", "error");
-//            throw new RuntimeException(e);
-//        }
+        try {
+            Log.w("myApp", "inside try");
+            api.Authenticate(new ApiCallback() {
+                @Override
+                public void onSuccess(JSONArray jsonArray) {
+                }
+
+                @Override
+                public void onFailure(IOException e) {
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         String authToken;
         try {
             authToken = api.getAuthToken();
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
+
         fetchRentals(authToken);
         return view;
     }
@@ -83,40 +82,37 @@ public class ReserveringenFragment extends Fragment {
     private void fetchRentals(String authToken){
         Log.w("myApp", "fetchrentals called");
         ApiCalls api = new ApiCalls();
-        api.GetAllRentals(new ApiCallback() {
+        api.GetAllRentals(authToken, "/api/rentals", new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
                 Log.w("myApp", "onsucces");
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        List<Rental> rentals = new ArrayList<>();
-                        try {
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                JSONObject rentalData = jsonArray.getJSONObject(i);
-                                String fromDateStr = rentalData.getString("fromDate");
-                                String toDateStr = rentalData.getString("toDate");
+                getActivity().runOnUiThread(() -> {
+                    List<Rental> rentals = new ArrayList<>();
+                    try {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject rentalData = jsonArray.getJSONObject(i);
+                            String fromDateStr = rentalData.getString("fromDate");
+                            String toDateStr = rentalData.getString("toDate");
 
-                                LocalDate fromDate = null;
-                                LocalDate toDate = null;
-                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                    fromDate = LocalDate.parse(fromDateStr);
-                                    toDate = LocalDate.parse(toDateStr);
-                                }
-
-                                RentalState state = RentalState.valueOf(rentalData.getString("state"));
-                                rentals.add(new Rental(rentalData.getString("code"), rentalData.getDouble("longitude"),
-                                        rentalData.getDouble("latitude"), fromDate,
-                                        toDate, state,
-                                        null, null
-                                ));
+                            LocalDate fromDate = null;
+                            LocalDate toDate = null;
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                fromDate = LocalDate.parse(fromDateStr);
+                                toDate = LocalDate.parse(toDateStr);
                             }
-                            Log.w("myApp", rentals.toString());
-                            rentalListAdapter = new RentalListAdapter(rentals);
-                            recyclerView.setAdapter(rentalListAdapter);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+
+                            RentalState state = RentalState.valueOf(rentalData.getString("state"));
+                            rentals.add(new Rental(rentalData.getString("code"), rentalData.getDouble("longitude"),
+                                    rentalData.getDouble("latitude"), fromDate,
+                                    toDate, state,
+                                    null, null
+                            ));
                         }
+                        Log.w("myApp", rentals.toString());
+                        rentalListAdapter = new RentalListAdapter(rentals);
+                        recyclerView.setAdapter(rentalListAdapter);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 });
             }
@@ -127,7 +123,6 @@ public class ReserveringenFragment extends Fragment {
                 e.printStackTrace();
 
             }
-        }, authToken, "/api/rentals");
-
+        });
     }
 }

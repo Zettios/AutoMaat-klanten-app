@@ -1,6 +1,6 @@
 package com.example.auto_maatklantenapp.accident;
 
-public class AccidentReport {
+public class AccidentRapport {
 
     String code;
     int odoMeter;
