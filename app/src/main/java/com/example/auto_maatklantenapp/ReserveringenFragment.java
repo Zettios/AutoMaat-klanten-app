@@ -53,23 +53,23 @@ public class ReserveringenFragment extends Fragment {
         ApiCalls api = new ApiCalls();
         Log.w("myApp", "view created");
 
-        try {
-            Log.w("myApp", "inside try");
-            api.Authenticate(new ApiCallback() {
-                @Override
-                public void onSuccess(JSONArray jsonArray) {
-                    Log.w("myApp", "success, Now fetching rentals");
-                }
-
-                @Override
-                public void onFailure(IOException e) {
-                    Log.w("myApp", "failed");
-                }
-            });
-        } catch (IOException e) {
-            Log.w("myApp", "error");
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Log.w("myApp", "inside try");
+//            api.Authenticate(new ApiCallback() {
+//                @Override
+//                public void onSuccess(JSONArray jsonArray) {
+//                    Log.w("myApp", "success, Now fetching rentals");
+//                }
+//
+//                @Override
+//                public void onFailure(IOException e) {
+//                    Log.w("myApp", "failed");
+//                }
+//            });
+//        } catch (IOException e) {
+//            Log.w("myApp", "error");
+//            throw new RuntimeException(e);
+//        }
         String authToken;
         try {
             authToken = api.getAuthToken();

@@ -26,34 +26,6 @@ public class ApiCalls {
     String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    public void GetDataFromUsers(ApiCallback callback) {
-        OkHttpClient client = new OkHttpClient();
-        String url = baseurl + "/api/users";
-        Request request = new Request.Builder().url(url).build();
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onFailure(e);
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if(response.isSuccessful()){
-                    assert response.body() != null;
-                    String myResponse = response.body().toString();
-                    JSONArray array;
-                    try{
-                        array = new JSONArray(myResponse);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                    callback.onSuccess(array);
-                }
-            }
-        });
-    }
-
     public void GetDataFromCars(String path, ApiCallback callback){
         OkHttpClient client = new OkHttpClient();
 
@@ -85,7 +57,40 @@ public class ApiCalls {
         });
     }
 
-    public void Authenticate(ApiCallback callback) throws IOException{
+    public void registerNewAccount(ApiCallback callback, JSONObject jsonBody){
+        Log.w("myApp", "inside Register");
+        OkHttpClient client = new OkHttpClient();
+        String path = "/api/AM/register";
+        String url = baseurl + path;
+
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsonBody.toString());
+
+        Request request = new Request.Builder().url(url).post(requestBody).build();
+
+        Log.w("myApp", "Starting call");
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.w("myApp", "Registration Failed");
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                Log.w("myApp", "DIT IS DE RESPONSE: " + response);
+                Log.w("myApp", "onResponse");
+                if(response.isSuccessful()) {
+                    String myResponse = response.body().toString();
+                    Log.w("myApp", "response successful");
+                }
+                else {
+                    Log.w("myApp", "Registration Failed");
+                }
+            }
+        });
+    }
+
+    public void Authenticate(ApiCallback callback, String username, String password, boolean persistence) throws IOException{
         Log.w("myApp", "inside authenticate");
         OkHttpClient client = new OkHttpClient();
         String path = "/api/authenticate";
@@ -93,9 +98,9 @@ public class ApiCalls {
 
         JSONObject jsonBody = new JSONObject();
         try {
-            jsonBody.put("username", "admin");
-            jsonBody.put("password", "admin");
-            jsonBody.put("rememberMe", true);
+            jsonBody.put("username", username);
+            jsonBody.put("password", password);
+            jsonBody.put("rememberMe", persistence);
         } catch (JSONException e) {
             e.printStackTrace();
         }
