@@ -135,6 +135,28 @@ public class ApiCalls {
         });
     }
 
+    public void resetPasswordInit(ApiCallback callback, String email){
+        Log.w("myApp", "inside resetPasswordInit");
+        OkHttpClient client = new OkHttpClient();
+        String url = baseurl +"/api/account/reset-password/init";
+        JSONObject jsonBody = new JSONObject();
+        RequestBody requestBody = RequestBody.create(email, MediaType.parse("application/json"));
+        Request request = new Request.Builder().url(url).post(requestBody).build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Log.w("myApp", "my response: " + response);
+                }
+            }
+        });
+    }
+
     public String getAuthToken() throws JSONException {
         if (authToken != null) {
             try {
