@@ -28,6 +28,8 @@
     <string name="refresh">Refresh</string>
 
     <!-- Schade melding -->
-
+    <string name="take_picture">Neem foto</string>
+    <string name="submit_text">Verstuur</string>
+    <string name="processing_text">Verwerken…</string>
 
 </resources>

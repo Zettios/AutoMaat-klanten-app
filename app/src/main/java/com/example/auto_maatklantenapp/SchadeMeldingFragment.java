@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 public class SchadeMeldingFragment extends Fragment {
 
@@ -48,9 +49,8 @@ public class SchadeMeldingFragment extends Fragment {
     ActivityResultLauncher<Intent> startCamera;
     ActivityResultLauncher<String[]> cameraPermissionResultLauncher;
     Uri cam_uri;
-    String encodedImage;
+    String encodedImage = "";
     private Handler submitResponseMessageHandler;
-
 
     public static SchadeMeldingFragment newInstance() {
         return new SchadeMeldingFragment();
@@ -98,6 +98,31 @@ public class SchadeMeldingFragment extends Fragment {
         return view;
     }
 
+    private void resetForm() {
+        odoMeter.setText("");
+        encodedImage = "";
+        accidentPicture.setImageURI(null);
+        accidentPicture.setBackgroundResource(R.drawable.accident_empty_image);
+    }
+
+    private void enableSubmitButton() {
+        submit.setBackgroundResource(R.drawable.color_primary_button);
+        submit.setEnabled(true);
+    }
+
+    private void disableSubmitButton() {
+        submit.setBackgroundResource(R.drawable.color_grey_button);
+        submit.setEnabled(false);
+    }
+
+    private void showProcessingDataFeedback() {
+        submit.setText(R.string.processing_text);
+    }
+
+    private void endProcessingDataFeedback() {
+        submit.setText(R.string.submit_text);
+    }
+
     private void getAuthToken() {
         try {
             api.Authenticate(new ApiCallback() {
@@ -139,8 +164,7 @@ public class SchadeMeldingFragment extends Fragment {
                         if (result.getResultCode() == RESULT_OK) {
                             accidentPicture.setImageURI(cam_uri);
 
-                            submit.setBackgroundResource(R.drawable.color_primary_button);
-                            submit.setEnabled(true);
+                            enableSubmitButton();
 
                             final Uri imageUri = cam_uri;
                             final InputStream imageStream = getActivity()
@@ -176,7 +200,7 @@ public class SchadeMeldingFragment extends Fragment {
                                 "Permission request denied",
                                 Toast.LENGTH_SHORT).show();
                     } else {
-                        submit.setEnabled(true);
+                        enableSubmitButton();
                     }
                 });
     }
@@ -184,20 +208,30 @@ public class SchadeMeldingFragment extends Fragment {
     private void submitReport() throws JSONException {
         api = new ApiCalls();
         if (validateData()) {
+            disableSubmitButton();
+            showProcessingDataFeedback();
             api.sendAccidentReport(createAccidentRapport(), authToken, new ApiCallback() {
                 @Override
                 public void onSuccess(JSONArray jsonArray) {
-                    try {
-                        String title = jsonArray.getJSONObject(0).getString("title");
-                        String message = jsonArray.getJSONObject(0).getString("message");
-                        submitResponseMessageHandler.post(() -> onSubmitResponseDialog(title, message));
-                    } catch (JSONException e)  {
-                        e.printStackTrace();
-                    }
+                    submitResponseMessageHandler.post(() -> {
+                        try {
+                            String title = jsonArray.getJSONObject(0).getString("title");
+                            String message = jsonArray.getJSONObject(0).getString("message");
+                            onSubmitResponseDialog(title, message);
+                            resetForm();
+                            endProcessingDataFeedback();
+                        } catch (JSONException e)  {
+                            e.printStackTrace();
+                        }
+                    });
                 }
 
                 @Override
                 public void onFailure(IOException e) {
+                    submitResponseMessageHandler.post(() -> {
+                                enableSubmitButton();
+                                endProcessingDataFeedback();
+                    });
                     e.printStackTrace();
                 }
             });
@@ -207,6 +241,10 @@ public class SchadeMeldingFragment extends Fragment {
     private boolean validateData() {
         if (odoMeter.getText().toString().trim().matches("")) {
             odoMeter.setError("Dit veld mag niet leeg zijn.");
+            return false;
+        }
+
+        if (Objects.equals(encodedImage, "")) {
             return false;
         }
 

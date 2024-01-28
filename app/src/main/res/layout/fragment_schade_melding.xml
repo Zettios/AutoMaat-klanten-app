@@ -79,7 +79,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:id="@+id/btnTakeFoto"
-            android:text="Neem foto"
+            android:text="@string/take_picture"
             android:background="@drawable/color_primary_button"
             app:layout_constraintBottom_toTopOf="@+id/btnReportAccident"
             android:layout_marginBottom="16dp"
@@ -94,7 +94,7 @@
             android:background="@drawable/color_grey_button"
             android:enabled="false"
             android:id="@+id/btnReportAccident"
-            android:text="Verstuur"
+            android:text="@string/submit_text"
             android:layout_marginBottom="16dp"
             android:textColor="@color/white" />
 
