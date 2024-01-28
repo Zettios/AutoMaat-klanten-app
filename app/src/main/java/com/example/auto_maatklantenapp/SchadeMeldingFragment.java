@@ -2,6 +2,7 @@ package com.example.auto_maatklantenapp;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -13,8 +14,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +49,7 @@ public class SchadeMeldingFragment extends Fragment {
     ActivityResultLauncher<String[]> cameraPermissionResultLauncher;
     Uri cam_uri;
     String encodedImage;
+    private Handler submitResponseMessageHandler;
 
 
     public static SchadeMeldingFragment newInstance() {
@@ -65,13 +68,14 @@ public class SchadeMeldingFragment extends Fragment {
 
         api = new ApiCalls();
         cameraFunctions = new CameraFunctions();
+        submitResponseMessageHandler = new Handler(Looper.getMainLooper());
 
         odoMeter = view.findViewById(R.id.etOdoMeterInput);
         accidentPicture = view.findViewById(R.id.ivAccidentPicture);
         takePicture = view.findViewById(R.id.btnTakeFoto);
         submit = view.findViewById(R.id.btnReportAccident);
 
-        registerResult();
+        registerCameraResult();
         initializeCameraPermissionActivityResult();
         getAuthToken();
 
@@ -91,10 +95,6 @@ public class SchadeMeldingFragment extends Fragment {
             }
         });
 
-        if (!cameraFunctions.allPermissionsGranted(getContext())) {
-            submit.setEnabled(false);
-        }
-
         return view;
     }
 
@@ -113,7 +113,7 @@ public class SchadeMeldingFragment extends Fragment {
                 @Override
                 public void onFailure(IOException e) {
                 }
-            });
+            }, "admin", "admin", false);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -131,13 +131,16 @@ public class SchadeMeldingFragment extends Fragment {
         startCamera.launch(cameraIntent);
     }
 
-    private void registerResult() {
+    private void registerCameraResult() {
         startCamera  = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     try {
                         if (result.getResultCode() == RESULT_OK) {
                             accidentPicture.setImageURI(cam_uri);
+
+                            submit.setBackgroundResource(R.drawable.color_primary_button);
+                            submit.setEnabled(true);
 
                             final Uri imageUri = cam_uri;
                             final InputStream imageStream = getActivity()
@@ -162,8 +165,6 @@ public class SchadeMeldingFragment extends Fragment {
                     // Handle Permission granted/rejected
                     boolean permissionGranted = true;
                     for (Map.Entry<String, Boolean> entry : permissions.entrySet()) {
-                        Log.v("TAGWAGGE", String.valueOf(entry));
-                        Log.v("TAGWAGGE", Arrays.toString(cameraFunctions.getRequiredPermissions()));
                         if (Arrays.asList(cameraFunctions.getRequiredPermissions()).contains(entry.getKey()) && !entry.getValue()) {
                             permissionGranted = false;
                         }
@@ -181,18 +182,35 @@ public class SchadeMeldingFragment extends Fragment {
     }
 
     private void submitReport() throws JSONException {
-       api = new ApiCalls();
-        api.sendAccidentReport(createAccidentRapport(), authToken, new ApiCallback() {
-            @Override
-            public void onSuccess(JSONArray jsonArray) {
-                Log.d("AutoMaatApp", "Success :D");
-            }
+        api = new ApiCalls();
+        if (validateData()) {
+            api.sendAccidentReport(createAccidentRapport(), authToken, new ApiCallback() {
+                @Override
+                public void onSuccess(JSONArray jsonArray) {
+                    try {
+                        String title = jsonArray.getJSONObject(0).getString("title");
+                        String message = jsonArray.getJSONObject(0).getString("message");
+                        submitResponseMessageHandler.post(() -> onSubmitResponseDialog(title, message));
+                    } catch (JSONException e)  {
+                        e.printStackTrace();
+                    }
+                }
 
-            @Override
-            public void onFailure(IOException e) {
-                Log.d("AutoMaatApp", "Failure :(");
-            }
-        });
+                @Override
+                public void onFailure(IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
+
+    private boolean validateData() {
+        if (odoMeter.getText().toString().trim().matches("")) {
+            odoMeter.setError("Dit veld mag niet leeg zijn.");
+            return false;
+        }
+
+        return true;
     }
 
     private AccidentRapport createAccidentRapport() {
@@ -203,5 +221,16 @@ public class SchadeMeldingFragment extends Fragment {
         accidentRapport.setPhoto(encodedImage);
         accidentRapport.setCompleted("");
         return accidentRapport;
+    }
+
+    private void onSubmitResponseDialog(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), R.style.MyDialogTheme);
+
+        builder.setTitle(title).setMessage(message);
+        builder.setPositiveButton("Ok", (dialog, id) -> dialog.cancel());
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(dialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary, null));
     }
 }

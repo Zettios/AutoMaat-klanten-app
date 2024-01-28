@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.CheckBox;
@@ -23,6 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     Button loginBtn;
     TextView createBtn, passwordRecoveryBtn;
     CheckBox loginPersistanceBox;
+    private Handler loginHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -37,13 +40,16 @@ public class LoginActivity extends AppCompatActivity {
         passwordRecoveryBtn = relativeLayout.findViewById(R.id.textViewPasswordRecovery);
         loginPersistanceBox = relativeLayout.findViewById(R.id.checkBox);
 
+        loginHandler = new Handler(Looper.getMainLooper());
+
         loginBtn.setOnClickListener(v -> {
             String username = usernameField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();
             String persistence = String.valueOf(loginPersistanceBox.isChecked());
-//            if(validateLoginData(usernameField, passwordField, username, password)) {
-//                loginWithEmailAndPassword(username, password, persistence);
-//            }
+            if(validateLoginData(usernameField, passwordField, username, password)) {
+                Log.d("AutoMaatApp", "valid info");
+                loginWithEmailAndPassword(username, password, persistence);
+            }
         });
 
         createBtn.setOnClickListener(v -> {
@@ -73,32 +79,28 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loginWithEmailAndPassword(String username, String password, String persistence){
         ApiCalls api = new ApiCalls();
+        try {
+            Log.d("AutoMaatApp", "Start thread");
+            api.Authenticate(new ApiCallback() {
+                @Override
+                public void onSuccess(JSONArray jsonArray) {
+                    Log.d("AutoMaatApp", jsonArray.toString());
+                    loginHandler.post(() -> swapScene());
+                }
 
-        new Thread(() -> {
-            try {
-                Log.d("AutoMaatApp", "Start thread");
-                api.Authenticate(new ApiCallback() {
-                    @Override
-                    public void onSuccess(JSONArray jsonArray) {
-                        //Change Scene
-                        swapScene();
-                    }
-
-                    @Override
-                    public void onFailure(IOException e) {
-                        Log.d("AutoMaatApp", "Callback failure");
-                    }
-                }, username, password, Boolean.parseBoolean(persistence));
-            } catch (IOException e) {
-                Log.d("AutoMaatApp", "Thread error");
-                throw new RuntimeException(e);
-            }
-        });
+                @Override
+                public void onFailure(IOException e) {
+                    e.printStackTrace();
+                }
+            }, username, password, Boolean.parseBoolean(persistence));
+        } catch (IOException e) {
+            Log.d("AutoMaatApp", "Thread error");
+            throw new RuntimeException(e);
+        }
     }
 
     public void swapScene(){
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-        finish();
+        startActivity(i);
     }
 }

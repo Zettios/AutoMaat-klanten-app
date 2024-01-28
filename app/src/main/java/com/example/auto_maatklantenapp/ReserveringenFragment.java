@@ -63,7 +63,7 @@ public class ReserveringenFragment extends Fragment {
                 @Override
                 public void onFailure(IOException e) {
                 }
-            });
+            }, "admin", "admin", false);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

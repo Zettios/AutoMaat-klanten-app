@@ -40,14 +40,19 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
-    var cameraxVersion = "1.3.1";
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+
+
+    val cameraxVersion = "1.3.1";
     implementation("androidx.camera:camera-core:${cameraxVersion}")
     implementation("androidx.camera:camera-camera2:${cameraxVersion}")
     implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")
     implementation("androidx.camera:camera-view:${cameraxVersion}")
 
     testImplementation("junit:junit:4.13.2")
-    testImplementation("androidx.test:core:1.1.0")
+    testImplementation("androidx.test:core:1.5.0")
     testImplementation("org.mockito:mockito-core:5.9.0")
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

@@ -45,7 +45,7 @@ public class ApiCalls {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String myResponse = response.body().string();
-                    JSONArray jsonArray = null;
+                    JSONArray jsonArray;
                     try {
                         jsonArray = new JSONArray(myResponse);
                     } catch (JSONException e) {
@@ -90,8 +90,7 @@ public class ApiCalls {
         });
     }
 
-    public void Authenticate(ApiCallback callback, String username, String password, boolean persistence) throws IOException{
-        Log.w("myApp", "inside authenticate");
+    public void Authenticate(ApiCallback callback, String username, String password, boolean persistence) throws IOException {
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + "/api/authenticate";
         JSONObject jsonBody = new JSONObject();
@@ -208,18 +207,24 @@ public class ApiCalls {
 
         String url = baseurl + "/api/inspections";
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("code", accidentReport.getCode());
-        jsonObject.put("odometer", accidentReport.getOdoMeter());
-        jsonObject.put("result", accidentReport.getResult());
-        jsonObject.put("photo", accidentReport.getPhoto());
-        jsonObject.put("photoContentType", accidentReport.getPhotoContentType());
-        jsonObject.put("completed", accidentReport.getCompleted());
+        JSONObject accidentJsonObject = new JSONObject();
+        JSONObject carJsonObject = new JSONObject();
+        JSONObject rentalJsonObject = new JSONObject();
 
-        Log.d("AutoMaatApp", jsonObject.toString());
+        accidentJsonObject.put("code", accidentReport.getCode());
+        accidentJsonObject.put("odometer", accidentReport.getOdoMeter());
+        accidentJsonObject.put("result", accidentReport.getResult());
+        accidentJsonObject.put("photo", accidentReport.getPhoto());
+        accidentJsonObject.put("photoContentType", accidentReport.getPhotoContentType());
+        accidentJsonObject.put("completed", accidentReport.getCompleted());
 
-        RequestBody formBody = RequestBody.create(jsonObject.toString(), JSON);
+        carJsonObject.put("id", 1);
+        accidentJsonObject.put("car", carJsonObject);
 
+        rentalJsonObject.put("id", 1);
+        accidentJsonObject.put("rental", rentalJsonObject);
+
+        RequestBody formBody = RequestBody.create(accidentJsonObject.toString(), JSON);
         Request request = new Request.Builder()
                 .url(url)
                 .header("Authorization", "Bearer " + authToken)
@@ -229,28 +234,25 @@ public class ApiCalls {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.d("AutoMaatApp", "Failed :(");
                 apiCallback.onFailure(e);
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                Log.d("AutoMaatApp", "Success!");
-                Log.d("AutoMaatApp", response.toString());
-                Log.d("AutoMaatApp", String.valueOf(response.body()));
-                Log.d("AutoMaatApp", response.body().string());
-                Log.d("AutoMaatApp", String.valueOf(response.isSuccessful()));
-//                if (response.isSuccessful()) {
-//                    String myResponse = response.body().string();
-//                    JSONArray jsonArray;
-//                    try {
-//                        jsonArray = new JSONArray(myResponse);
-//                    } catch (JSONException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//
-//                }
-                apiCallback.onSuccess(new JSONArray());
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                JSONObject responseData = new JSONObject();
+                try {
+                    responseData.put("code", response.code());
+                    if (response.isSuccessful()) {
+                        responseData.put("title", "Success");
+                        responseData.put("message", "Uw incident is succesvol binnengekomen");
+                    } else {
+                        responseData.put("title", "Error");
+                        responseData.put("message", "Er is iets misgegaan. Probeer het opnieuw of neem contact met ons op.");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                apiCallback.onSuccess(new JSONArray().put(responseData));
             }
         });
     }

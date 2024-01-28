@@ -1,5 +1,7 @@
 package com.example.auto_maatklantenapp.accident;
 
+import com.example.auto_maatklantenapp.Car;
+
 public class AccidentRapport {
 
     String code;
@@ -10,7 +12,7 @@ public class AccidentRapport {
     String completed;
     String photos = null;
     String repairs = null;
-    String cars = null;
+    Car car = null;
     String employee = null;
     String rental = null;
 
@@ -71,8 +73,12 @@ public class AccidentRapport {
         return repairs;
     }
 
-    public String getCars() {
-        return cars;
+    public Car getCar() {
+        return car;
+    }
+
+    public void setCar(Car car) {
+        this.car = car;
     }
 
     public String getEmployee() {
