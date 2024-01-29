@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
 
     @Override
     public void OnNavSelection(int nav_id) {
-        Log.d("Nav test", "Send id: " + nav_id);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction;
         Fragment fragment;
