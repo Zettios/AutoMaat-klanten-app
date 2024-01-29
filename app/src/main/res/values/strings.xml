@@ -1,23 +1,28 @@
 <resources>
+    <!-- General app related -->
     <string name="app_name">Auto-Maat klanten app</string>
     <string name="splash_screen_logo">App splash screen with the text auto-maat</string>
+
+    <!-- Top nav -->
     <string name="splash_screen_blue_header_descr">header</string>
+
+    <!-- Footer nav -->
     <string name="splash_screen_blue_footer_descr">footer</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="car_list_nav_descr">Navigeer naar auto lijst</string>
     <string name="car_reservation_nav_descr">Navigeer naar auto reserveringen</string>
     <string name="accident_report_nav_descr">Navigeer naar schade melding</string>
     <string name="support_nav_descr">Navigeer naar support</string>
-    <string name="zoek_filters">Zoek filters</string>
+
 
     <!-- Filters -->
-    <string name="merk">Merk</string>
-    <string name="car_model">Model</string>
-    <string name="fuel_type">Brandstof type</string>
-    <string name="body_type">Body type</string>
-    <string name="max_amount_of_seats">Max aantal stoelen</string>
-    <string name="max_price">Max prijs</string>
-    <string name="pas_filters_toe">Pas toe</string>
+    <string name="search_filters_title">Zoek filters</string>
+    <string name="car_brand_title">Merk</string>
+    <string name="car_model_title">Model</string>
+    <string name="fuel_type_title">Brandstof type</string>
+    <string name="body_type_title">Body type</string>
+    <string name="max_amount_of_seats_title">Max aantal stoelen</string>
+    <string name="max_price_title">Max prijs</string>
+    <string name="apply_filters">Pas toe</string>
 
     <!-- Car list item -->
     <string name="car_brand_model_placeholder">Brand + Model</string>

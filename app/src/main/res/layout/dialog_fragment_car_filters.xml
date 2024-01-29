@@ -8,7 +8,7 @@
         android:background="@color/white">
 
     <TextView
-            android:text="@string/zoek_filters"
+            android:text="@string/search_filters_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtFiltersTitle"
@@ -19,7 +19,7 @@
             app:layout_constraintHorizontal_bias="0.0" />
 
     <TextView
-            android:text="@string/merk"
+            android:text="@string/car_brand_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtMerkSubTitle"
@@ -44,7 +44,7 @@
     </FrameLayout>
 
     <TextView
-            android:text="@string/car_model"
+            android:text="@string/car_model_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtModelSubTitle"
@@ -70,7 +70,7 @@
     </FrameLayout>
 
     <TextView
-            android:text="@string/fuel_type"
+            android:text="@string/fuel_type_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtBrandstofSubTitle"
@@ -95,7 +95,7 @@
     </FrameLayout>
 
     <TextView
-            android:text="@string/body_type"
+            android:text="@string/body_type_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtBodyTypeSubTitle"
@@ -120,7 +120,7 @@
     </FrameLayout>
 
     <TextView
-            android:text="@string/max_amount_of_seats"
+            android:text="@string/max_amount_of_seats_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtAantalStoelenSubTitle"
@@ -142,7 +142,7 @@
             android:autofillHints="" />
 
     <TextView
-            android:text="@string/max_price"
+            android:text="@string/max_price_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/txtPrijsBereikSubTitle"
@@ -176,7 +176,7 @@
             app:layout_constraintTop_toBottomOf="@+id/etMaxPrice" />
 
     <android.widget.Button
-            android:text="@string/pas_filters_toe"
+            android:text="@string/apply_filters"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/btnApplyFilters"

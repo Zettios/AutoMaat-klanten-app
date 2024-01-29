@@ -44,7 +44,6 @@
             android:name=".SettingsActivity"
             android:exported="false" />
 
-        <activity android:name=".CameraActivity"/>
     </application>
 
 </manifest>
