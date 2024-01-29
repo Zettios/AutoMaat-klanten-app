@@ -32,4 +32,7 @@
     <string name="submit_text">Verstuur</string>
     <string name="processing_text">Verwerken…</string>
 
+    <!-- Database name -->
+    <string name="database_name">automaat_db</string>
+
 </resources>

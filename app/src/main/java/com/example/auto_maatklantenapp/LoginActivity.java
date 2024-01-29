@@ -46,10 +46,11 @@ public class LoginActivity extends AppCompatActivity {
             String username = usernameField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();
             String persistence = String.valueOf(loginPersistanceBox.isChecked());
-            if(validateLoginData(usernameField, passwordField, username, password)) {
-                Log.d("AutoMaatApp", "valid info");
-                loginWithEmailAndPassword(username, password, persistence);
-            }
+            swapScene();
+//            if(validateLoginData(usernameField, passwordField, username, password)) {
+//                Log.d("AutoMaatApp", "valid info");
+//                loginWithEmailAndPassword(username, password, persistence);
+//            }
         });
 
         createBtn.setOnClickListener(v -> {
@@ -102,5 +103,6 @@ public class LoginActivity extends AppCompatActivity {
     public void swapScene(){
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(i);
+        finish();
     }
 }

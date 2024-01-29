@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.auto_maatklantenapp.classes.Car;
+
 import java.util.List;
 
 public class CarListAdapter extends RecyclerView.Adapter<CarListRecyclerViewHolder> {
@@ -34,7 +36,7 @@ public class CarListAdapter extends RecyclerView.Adapter<CarListRecyclerViewHold
         String carInfo = cars.get(position).getFuel() + " | " + cars.get(position).getModelYear() +
                 " | " + cars.get(position).getLicensePlate();
         String carOptions = cars.get(position).getOptions();
-        String carPrice = String.valueOf(cars.get(position).getPrice()) + " d.d.";
+        String carPrice = cars.get(position).getPrice() + " d.d.";
 
         holder.getCarModel().setText(carBrandModel);
         holder.getCarInfo().setText(carInfo);

@@ -1,6 +1,5 @@
 package com.example.auto_maatklantenapp;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -14,7 +13,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
+
+import com.example.auto_maatklantenapp.classes.Car;
+import com.example.auto_maatklantenapp.dao.CarDao;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,11 +28,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AutoLijstFragment extends Fragment {
 
+    CarDao carDao;
+
     CarListAdapter carListAdapter;
 
     private RecyclerView recyclerView;
-    private Button ibRefresh;
-    private Button ibOpenFilters;
     private List<Car> cars;
     private List<Car> allCars;
     private List<Car> filteredCars;
@@ -60,6 +61,7 @@ public class AutoLijstFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_auto_lijst, container, false);
         ApiCalls api = new ApiCalls();
+        carDao = ((MainActivity) getActivity()).db.carDao();
 
         filteredCars = new ArrayList<>();
 
@@ -76,8 +78,8 @@ public class AutoLijstFragment extends Fragment {
         recyclerView = view.findViewById(R.id.rvAutoLijst);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-        ibRefresh = view.findViewById(R.id.ibRefresh);
-        ibOpenFilters = view.findViewById(R.id.ibOpenFilters);
+        Button ibRefresh = view.findViewById(R.id.ibRefresh);
+        Button ibOpenFilters = view.findViewById(R.id.ibOpenFilters);
 
         ibRefresh.setOnClickListener(v -> {
             cars.clear();
@@ -105,7 +107,7 @@ public class AutoLijstFragment extends Fragment {
         api.GetDataFromCars("/api/cars", new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
-                getActivity().runOnUiThread(() -> {
+              //  getActivity().runOnUiThread(() -> {
                     cars = new ArrayList<>();
                     allCars = new ArrayList<>();
                     try {
@@ -113,6 +115,7 @@ public class AutoLijstFragment extends Fragment {
                             JSONObject carData = jsonArray.getJSONObject(i);
                             populateFilterDataArrays(carData);
                             Car carItem = new Car(
+                                    carData.getInt("id"),
                                     carData.getString("brand"),
                                     carData.getString("model"),
                                     carData.getString("fuel"),
@@ -124,18 +127,26 @@ public class AutoLijstFragment extends Fragment {
                                     carData.getInt("price"),
                                     carData.getInt("nrOfSeats"),
                                     carData.getString("body"),
-                                    carData.getString("inspections"),
-                                    carData.getString("repairs"),
-                                    carData.getString("rentals"));
+                                    (float) carData.getDouble("longitude"),
+                                    (float) carData.getDouble("latitude")
+                            );
                             cars.add(carItem);
                             allCars.add(carItem);
                         }
-                        carListAdapter = new CarListAdapter(cars);
-                        recyclerView.setAdapter(carListAdapter);
-                    } catch (JSONException e) {
+
+                        storeData(allCars);
+
+                        getActivity().runOnUiThread(() -> {
+                            carListAdapter = new CarListAdapter(cars);
+                            recyclerView.setAdapter(carListAdapter);
+                        });
+
+
+                    } catch (Exception e) {
+                        Log.e("AutoMaatApp", e.toString());
                         e.printStackTrace();
                     }
-                });
+            //   });
             }
 
             @Override
@@ -143,6 +154,11 @@ public class AutoLijstFragment extends Fragment {
                 e.printStackTrace();
             }
         });
+    }
+
+    public void storeData(List<Car> cars){
+        carDao.deleteAll();
+        carDao.insertAll(cars);
     }
 
     public void populateFilterDataArrays(JSONObject carData) throws JSONException {

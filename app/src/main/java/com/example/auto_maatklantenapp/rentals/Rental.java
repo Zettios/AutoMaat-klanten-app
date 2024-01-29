@@ -1,6 +1,6 @@
 package com.example.auto_maatklantenapp.rentals;
 
-import com.example.auto_maatklantenapp.Car;
+import com.example.auto_maatklantenapp.classes.Car;
 import com.example.auto_maatklantenapp.customer.Customer;
 
 import java.time.LocalDate;

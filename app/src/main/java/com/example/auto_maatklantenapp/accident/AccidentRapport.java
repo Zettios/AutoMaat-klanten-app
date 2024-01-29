@@ -1,6 +1,6 @@
 package com.example.auto_maatklantenapp.accident;
 
-import com.example.auto_maatklantenapp.Car;
+import com.example.auto_maatklantenapp.classes.Car;
 
 public class AccidentRapport {
 

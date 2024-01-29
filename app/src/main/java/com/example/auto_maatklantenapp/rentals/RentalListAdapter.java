@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.auto_maatklantenapp.Car;
 import com.example.auto_maatklantenapp.R;
 
 import java.util.List;

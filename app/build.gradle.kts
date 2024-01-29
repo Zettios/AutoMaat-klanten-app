@@ -41,11 +41,12 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     val room_version = "2.6.1"
+    implementation("androidx.room:room-common:$room_version")
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
+    annotationProcessor("android.arch.persistence.room:compiler:1.1.1")
 
-
-    val cameraxVersion = "1.3.1";
+    val cameraxVersion = "1.3.1"
     implementation("androidx.camera:camera-core:${cameraxVersion}")
     implementation("androidx.camera:camera-camera2:${cameraxVersion}")
     implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")
