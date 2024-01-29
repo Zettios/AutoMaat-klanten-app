@@ -38,9 +38,12 @@ public class LoginActivity extends AppCompatActivity {
             String email = emailField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();
 
-            if(ValidateLoginData(emailField, passwordField, email, password)){
-                loginWithEmailAndPassword(email, password);
-            }
+//            if(ValidateLoginData(emailField, passwordField, email, password)){
+//                loginWithEmailAndPassword(email, password);
+//            }
+            Intent i = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            finish();
         });
 
         createBtn.setOnClickListener(v -> {

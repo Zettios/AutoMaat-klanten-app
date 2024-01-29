@@ -9,8 +9,6 @@
     android:layout_marginEnd="10dp"
     tools:context=".AutoLijstFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <LinearLayout
             android:id="@+id/llCarSearch"
             android:layout_width="match_parent"

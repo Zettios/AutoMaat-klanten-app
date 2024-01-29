@@ -22,7 +22,7 @@ public class ApiCalls {
 
     JSONObject authToken;
 
-    String baseurl = "https://measured-adder-concrete.ngrok-free.app";
+    String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
 
     public void GetDataFromUsers(ApiCallback callback){
         OkHttpClient client = new OkHttpClient();
@@ -158,8 +158,6 @@ public class ApiCalls {
 
         String url = baseurl + path;
 
-
-        Log.w("myApp", "authentication TOKEN: " + authToken);
         Request request = new Request.Builder()
                 .url(url)
                 .header("Authorization", "Bearer " + authToken)
@@ -173,14 +171,11 @@ public class ApiCalls {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                Log.w("myApp", "MYRESPONSE in get all rentals: " +response);
                 if (response.isSuccessful()) {
-                    Log.w("myApp", "RESPONSE SUCCESFULL IN GET ALL RENTALS");
                     String myResponse = response.body().string();
                     JSONArray jsonArray = null;
                     try {
                         jsonArray = new JSONArray(myResponse);
-                        Log.w("myApp", "JSONARRAY IN GET ALL RENTALS: " + jsonArray);
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
