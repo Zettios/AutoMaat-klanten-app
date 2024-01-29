@@ -21,7 +21,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fcvFragmentContainer"
-        android:name="com.example.auto_maatklantenapp.AutoLijstFragment"
+        android:name="com.example.auto_maatklantenapp.CarListFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/white"

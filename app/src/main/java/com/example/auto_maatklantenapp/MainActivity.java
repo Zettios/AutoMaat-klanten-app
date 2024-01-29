@@ -1,7 +1,5 @@
 package com.example.auto_maatklantenapp;
 
-import android.util.Log;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -35,10 +33,9 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
         FragmentTransaction fragmentTransaction;
         Fragment fragment;
 
-
         switch (nav_id) {
             case 1:
-                fragment = new AutoLijstFragment();
+                fragment = new CarListFragment();
                 break;
             case 2:
                 fragment = new ReserveringenFragment();
@@ -50,10 +47,9 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
                 fragment = new SupportFragment();
                 break;
             default:
-                fragment = new AutoLijstFragment();
+                fragment = new CarListFragment();
                 break;
         }
-
 
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);

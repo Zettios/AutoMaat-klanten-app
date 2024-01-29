@@ -7,7 +7,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        tools:context=".AutoLijstFragment">
+        tools:context=".CarListFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
