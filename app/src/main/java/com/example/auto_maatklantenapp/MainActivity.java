@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
                 fragment = new ReserveringenFragment();
                 break;
             case 3:
-                fragment = SchadeMeldingFragment.newInstance();
+                fragment = AccidentRapportFragment.newInstance();
                 break;
             case 4:
                 fragment = new SupportFragment();

@@ -36,7 +36,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 
-public class SchadeMeldingFragment extends Fragment {
+public class AccidentRapportFragment extends Fragment {
 
     EditText odoMeter;
     ImageView accidentPicture;
@@ -52,8 +52,8 @@ public class SchadeMeldingFragment extends Fragment {
     String encodedImage = "";
     private Handler submitResponseMessageHandler;
 
-    public static SchadeMeldingFragment newInstance() {
-        return new SchadeMeldingFragment();
+    public static AccidentRapportFragment newInstance() {
+        return new AccidentRapportFragment();
     }
 
     @Override
@@ -64,7 +64,7 @@ public class SchadeMeldingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_schade_melding, container, false);
+        View view = inflater.inflate(R.layout.fragment_accident_rapport, container, false);
 
         api = new ApiCalls();
         cameraFunctions = new CameraFunctions();

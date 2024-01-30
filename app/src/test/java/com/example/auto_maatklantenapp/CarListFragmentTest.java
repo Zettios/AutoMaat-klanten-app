@@ -22,20 +22,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(RobolectricTestRunner.class)
 public class CarListFragmentTest {
 
-    CarListFragment av;
+    CarListFragment carListFragment;
 
     @Before
     public void initMocks() {
-        av = new CarListFragment();
-        av.cars = new ArrayList<>();
-        av.allCars = new ArrayList<>();
-        av.filteredCars = new ArrayList<>();
-        av.merkArray = new ArrayList<>();
-        av.modelArray = new ArrayList<>();
-        av.brandstofArray = new ArrayList<>();
-        av.bodyArray = new ArrayList<>();
-        av.maxSeats = new AtomicInteger();
-        av.maxPrice = new AtomicInteger();
+        carListFragment = new CarListFragment();
+        carListFragment.cars = new ArrayList<>();
+        carListFragment.allCars = new ArrayList<>();
+        carListFragment.filteredCars = new ArrayList<>();
+        carListFragment.merkArray = new ArrayList<>();
+        carListFragment.modelArray = new ArrayList<>();
+        carListFragment.brandstofArray = new ArrayList<>();
+        carListFragment.bodyArray = new ArrayList<>();
+        carListFragment.maxSeats = new AtomicInteger();
+        carListFragment.maxPrice = new AtomicInteger();
     }
 
 
@@ -57,11 +57,11 @@ public class CarListFragmentTest {
         when(data.getJSONObject(1)).thenReturn(data2);
         when(data.getJSONObject(2)).thenReturn(data3);
 
-        av.formCarData(data);
+        carListFragment.formCarData(data);
 
-        assertEquals("Toyota", av.allCars.get(0).getBrand());
-        assertEquals("Honda", av.allCars.get(1).getBrand());
-        assertEquals("Ford", av.allCars.get(2).getBrand());
+        assertEquals("Toyota", carListFragment.allCars.get(0).getBrand());
+        assertEquals("Honda", carListFragment.allCars.get(1).getBrand());
+        assertEquals("Ford", carListFragment.allCars.get(2).getBrand());
     }
 
     @Test
@@ -82,23 +82,23 @@ public class CarListFragmentTest {
         when(car2.getNrOfSeats()).thenReturn(10);
         when(car2.getPrice()).thenReturn(105);
 
-        av.populateFilterDataArrays(car1);
-        av.populateFilterDataArrays(car2);
+        carListFragment.populateFilterDataArrays(car1);
+        carListFragment.populateFilterDataArrays(car2);
 
-        assertEquals("Toyota", av.merkArray.get(0));
-        assertEquals("BMW", av.merkArray.get(1));
+        assertEquals("Toyota", carListFragment.merkArray.get(0));
+        assertEquals("BMW", carListFragment.merkArray.get(1));
 
-        assertEquals("Camry", av.modelArray.get(0));
-        assertEquals("3 Series", av.modelArray.get(1));
+        assertEquals("Camry", carListFragment.modelArray.get(0));
+        assertEquals("3 Series", carListFragment.modelArray.get(1));
 
-        assertEquals("GASOLINE", av.brandstofArray.get(0));
-        assertEquals("HYBRID", av.brandstofArray.get(1));
+        assertEquals("GASOLINE", carListFragment.brandstofArray.get(0));
+        assertEquals("HYBRID", carListFragment.brandstofArray.get(1));
 
-        assertEquals("SEDAN", av.bodyArray.get(0));
-        assertEquals("SUV", av.bodyArray.get(1));
+        assertEquals("SEDAN", carListFragment.bodyArray.get(0));
+        assertEquals("SUV", carListFragment.bodyArray.get(1));
 
-        assertEquals(10, av.maxSeats.get());
-        assertEquals(105, av.maxPrice.get());
+        assertEquals(10, carListFragment.maxSeats.get());
+        assertEquals(105, carListFragment.maxPrice.get());
     }
 
     @Test
