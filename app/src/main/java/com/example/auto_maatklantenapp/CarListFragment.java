@@ -34,10 +34,10 @@ public class CarListFragment extends Fragment {
     InternetChecker internetChecker;
     CarListAdapter carListAdapter;
 
-    private RecyclerView recyclerView;
-    private List<Car> cars;
-    private List<Car> allCars;
-    private List<Car> filteredCars;
+    RecyclerView recyclerView;
+    List<Car> cars;
+    List<Car> allCars;
+    List<Car> filteredCars;
 
     ArrayList<String> merkArray;
     ArrayList<String> modelArray;
@@ -180,7 +180,7 @@ public class CarListFragment extends Fragment {
         });
     }
 
-    private void formCarData(JSONArray jsonArray) throws JSONException {
+    public void formCarData(JSONArray jsonArray) throws JSONException {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject carData = jsonArray.getJSONObject(i);
             Car carItem = new Car(
@@ -263,7 +263,7 @@ public class CarListFragment extends Fragment {
         });
     }
 
-    private void handleFilterData(Bundle bundle) {
+    public void handleFilterData(Bundle bundle) {
         String filterMerk = bundle.getString("merk");
         String filterModel = bundle.getString("model");
         String filterBrandstof = bundle.getString("brandstof");
