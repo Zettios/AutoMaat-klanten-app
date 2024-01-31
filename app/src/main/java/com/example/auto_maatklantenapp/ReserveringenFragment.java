@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.auto_maatklantenapp.classes.InternetChecker;
 import com.example.auto_maatklantenapp.rentals.Rental;
 import com.example.auto_maatklantenapp.rentals.RentalListAdapter;
 import com.example.auto_maatklantenapp.rentals.RentalState;
@@ -26,6 +27,7 @@ import java.util.List;
 
 public class ReserveringenFragment extends Fragment {
 
+    InternetChecker internetChecker;
     private RecyclerView recyclerView;
     RentalListAdapter rentalListAdapter;
 
@@ -48,32 +50,47 @@ public class ReserveringenFragment extends Fragment {
 
         ApiCalls api = new ApiCalls();
 
+        internetChecker = new InternetChecker();
+
         recyclerView = view.findViewById(R.id.rvRentalLijst);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-        try {
-            api.LoginUser(new ApiCallback() {
-                @Override
-                public void onSuccess(JSONArray jsonArray) {
-                    String authToken;
-                    try {
-                        authToken = api.getAuthToken();
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
+        if (internetChecker.isOnline(getActivity())) {
+            try {
+                api.LoginUser(new ApiCallback() {
+                    @Override
+                    public void onSuccess(JSONArray jsonArray) {
+                        String authToken;
+                        try {
+                            authToken = api.getAuthToken();
+                        } catch (JSONException e) {
+                            throw new RuntimeException(e);
+                        }
+                        fetchRentals(authToken);
                     }
-                    fetchRentals(authToken);
-                }
 
-                @Override
-                public void onFailure(IOException e) {
-                    e.printStackTrace();
-                }
-            }, "admin", "admin", false);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+                    @Override
+                    public void onFailure(IOException e) {
+                        e.printStackTrace();
+                    }
+                }, "admin", "admin", false);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+        } else {
+            Log.w("Connection", "NO CONNECTION");
+            //new Thread(this::getOfflinereserveringen).start();
+
+            NoConnectionFragment dFragment = NoConnectionFragment.newInstance();
+            dFragment.show(getActivity().getSupportFragmentManager(), "NoConnectionFragment");
         }
+
+
         return view;
     }
+
+
 
     private void fetchRentals(String authToken){
         ApiCalls api = new ApiCalls();

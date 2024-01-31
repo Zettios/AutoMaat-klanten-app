@@ -15,6 +15,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Button;
 
+import com.example.auto_maatklantenapp.classes.InternetChecker;
+
 import org.json.JSONArray;
 
 import java.io.IOException;
@@ -29,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 

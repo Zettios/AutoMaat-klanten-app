@@ -23,7 +23,7 @@ import okhttp3.Response;
 public class ApiCalls {
 
     JSONObject authToken;
-    String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
+    String baseurl = "https://measured-adder-concrete.ngrok-free.app";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private static final String LOGIN_USER_URL = "/api/authenticate";

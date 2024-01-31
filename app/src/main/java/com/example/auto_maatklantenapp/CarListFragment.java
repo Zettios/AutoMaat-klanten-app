@@ -65,10 +65,16 @@ public class CarListFragment extends Fragment {
         ApiCalls api = new ApiCalls();
         defineVariables(getActivity(), view);
 
+        internetChecker = new InternetChecker();
+
         if (internetChecker.isOnline(getActivity())) {
             getCars(api);
         } else {
+            Log.w("Connection", "NO CONNECTION");
             new Thread(this::getOfflineCars).start();
+
+            NoConnectionFragment dFragment = NoConnectionFragment.newInstance();
+            dFragment.show(getActivity().getSupportFragmentManager(), "NoConnectionFragment");
         }
 
         setFilterDataListener();
