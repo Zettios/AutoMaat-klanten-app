@@ -3,6 +3,7 @@ package com.example.auto_maatklantenapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,7 +47,6 @@ public class LoginActivity extends AppCompatActivity {
             String username = usernameField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();
             String persistence = String.valueOf(loginPersistanceBox.isChecked());
-            //swapScene();
             if(validateLoginData(usernameField, passwordField, username, password)) {
                 Log.d("AutoMaatApp", "valid info");
                 loginWithEmailAndPassword(username, password, persistence);
@@ -55,14 +55,12 @@ public class LoginActivity extends AppCompatActivity {
 
         createBtn.setOnClickListener(v -> {
             Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-            finish();
+            startActivity(i);
         });
 
         passwordRecoveryBtn.setOnClickListener(v -> {
             Intent i = new Intent(LoginActivity.this, PasswordRecoveryActivity.class);
-            startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-            finish();
+            startActivity(i);
         });
     }
 

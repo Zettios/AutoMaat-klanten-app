@@ -3,6 +3,7 @@ package com.example.auto_maatklantenapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -61,7 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         loginBtn.setOnClickListener(v -> {
             Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
-            startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            startActivity(i);
             finish();
         });
     }
@@ -104,23 +105,56 @@ public class RegisterActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("myApp", jsonBody.toString());
 
-        api.registerNewAccount(new ApiCallback() {
+        api.registerNewAccount(jsonBody, new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
-                swapScene();
+                Log.d("AutoMaatApp", jsonArray.toString());
+                RegisterActivity.this.runOnUiThread(() -> {
+                    try {
+                        if (jsonArray.get(0).equals(1)) {
+                            onResponseDialog("Success",
+                                    (String) jsonArray.get(1),
+                                    (Integer) jsonArray.get(0));
+                        } else {
+                            onResponseDialog("Melding",
+                                    (String) jsonArray.get(1),
+                                    (Integer) jsonArray.get(0));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
             }
 
             @Override
             public void onFailure(IOException e) {
+                Log.e("AutoMaatApp", e.toString());
             }
-        }, jsonBody);
+        });
     }
+
+
+    private void onResponseDialog(String title, String message, int responseState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this, R.style.MyDialogTheme);
+
+        builder.setTitle(title).setMessage(message);
+        if (responseState == 1) {
+            builder.setPositiveButton("Ok", (dialog, id) -> swapScene());
+        } else {
+            builder.setPositiveButton("Ok", (dialog, id) -> dialog.cancel());
+        }
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(dialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary, null));
+    }
+
 
     public void swapScene(){
         Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
-        startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+        startActivity(i);
         finish();
     }
 }

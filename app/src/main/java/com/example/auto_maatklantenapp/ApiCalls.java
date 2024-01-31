@@ -25,10 +25,11 @@ public class ApiCalls {
     JSONObject authToken;
     String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
 
     private static final String LOGIN_USER_URL = "/api/authenticate";
     private static final String REGISTER_USER_URL = "/api/AM/register";
-    private static final String RESET_USER_PASSWORD_URL =  "/api/account/reset-password/init";
+    private static final String RESET_USER_PASSWORD_INIT_URL =  "/api/account/reset-password/init";
     private static final String USERS_ENDPOINT_URL = "/api/users";
     private static final String CARS_ENDPOINT_URL = "/api/cars";
     private static final String RENTALS_ENDPOINT_URL = "/api/rentals";
@@ -89,7 +90,8 @@ public class ApiCalls {
         return null;
     }
 
-    public void registerNewAccount(ApiCallback callback, JSONObject jsonBody) {
+    public void registerNewAccount(JSONObject jsonBody, ApiCallback callback) {
+        Log.d("AutoMaatApp", jsonBody.toString());
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + REGISTER_USER_URL;
         RequestBody requestBody = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
@@ -105,22 +107,26 @@ public class ApiCalls {
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                JSONArray responseData = new JSONArray();
                 if(response.isSuccessful()) {
-                    String myResponse = response.body().toString();
-                }
-                else {
-                    //TODO: Handle failed registration
-                    Log.w("AutoMaatApp", "Registration Failed");
+                    responseData.put(1);
+                    responseData.put("Account aangemaakt, log alstublieft in.");
+                    callback.onSuccess(responseData);
+                } else {
+                    responseData.put(-1);
+                    responseData.put("Gebruiker bestaat al.");
+                    callback.onSuccess(responseData);
                 }
             }
         });
     }
 
-    public void resetPasswordInit(ApiCallback callback, String email) {
+    public void resetPasswordInit(String email, ApiCallback callback) {
+        Log.d("AutoMaatApp", email);
         OkHttpClient client = new OkHttpClient();
-        String url = baseurl + RESET_USER_PASSWORD_URL;
-        RequestBody requestBody = RequestBody.create(email, MediaType.parse("application/json"));
+        String url = baseurl + RESET_USER_PASSWORD_INIT_URL;
+        RequestBody requestBody = RequestBody.create(email, MEDIA_TYPE_MARKDOWN);
         Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
@@ -134,10 +140,7 @@ public class ApiCalls {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (response.isSuccessful()) {
-                    //TODO: Handle succesful password reset
-                    Log.d("AutoMaatApp", "my response: " + response);
-                }
+                callback.onSuccess(new JSONArray());
             }
         });
     }
