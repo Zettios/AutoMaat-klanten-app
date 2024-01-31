@@ -11,8 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
+import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
 import com.example.auto_maatklantenapp.rentals.Rental;
-import com.example.auto_maatklantenapp.rentals.RentalListAdapter;
+import com.example.auto_maatklantenapp.custom_adapters.RentalListAdapter;
 import com.example.auto_maatklantenapp.rentals.RentalState;
 
 import org.json.JSONArray;

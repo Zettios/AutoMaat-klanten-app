@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import android.graphics.Bitmap;
 
+import com.example.auto_maatklantenapp.helper_classes.CameraFunctions;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

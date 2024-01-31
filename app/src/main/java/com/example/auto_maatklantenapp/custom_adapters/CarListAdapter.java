@@ -1,4 +1,4 @@
-package com.example.auto_maatklantenapp;
+package com.example.auto_maatklantenapp.custom_adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.auto_maatklantenapp.R;
 import com.example.auto_maatklantenapp.classes.Car;
+import com.example.auto_maatklantenapp.view_holders.CarListRecyclerViewHolder;
 
 import java.util.List;
 

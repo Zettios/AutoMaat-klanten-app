@@ -16,7 +16,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.auto_maatklantenapp.classes.Car;
-import com.example.auto_maatklantenapp.classes.InternetChecker;
+import com.example.auto_maatklantenapp.custom_adapters.CarListAdapter;
+import com.example.auto_maatklantenapp.custom_dialogs.CarFilterDialogFragment;
+import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
+import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
+import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
 import com.example.auto_maatklantenapp.dao.CarDao;
 
 import org.json.JSONArray;

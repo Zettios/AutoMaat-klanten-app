@@ -1,10 +1,12 @@
-package com.example.auto_maatklantenapp;
+package com.example.auto_maatklantenapp.view_holders;
 
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.auto_maatklantenapp.R;
 
 public class CarListRecyclerViewHolder extends RecyclerView.ViewHolder {
 

@@ -10,17 +10,27 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
+import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
+import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
+
 import org.json.JSONArray;
 
 import java.io.IOException;
 
 public class PasswordRecoveryActivity extends AppCompatActivity {
+
     private Button recoverBtn, returnBtn;
     private EditText emailField;
+
+    InternetChecker internetChecker;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_recovery);
+
+        internetChecker = new InternetChecker();
 
         emailField = findViewById(R.id.etPasswordForRecovery);
         returnBtn = findViewById(R.id.btnCancelPasswordRecovery);
@@ -33,10 +43,17 @@ public class PasswordRecoveryActivity extends AppCompatActivity {
         });
 
         recoverBtn.setOnClickListener(v -> {
-            String email = emailField.getText().toString().trim();
-            if(isValidEmailAddress(emailField, email)){
-                SendRecoveryEmail(email);
+            if (internetChecker.isOnline(PasswordRecoveryActivity.this)) {
+                String email = emailField.getText().toString().trim();
+                if(isValidEmailAddress(emailField, email)){
+                    SendRecoveryEmail(email);
+                }
+            } else {
+                internetChecker.networkErrorDialog(PasswordRecoveryActivity.this,
+                        "U moet verbonden zijn met het internet om uw wachtwoord opnieuw in te stellen.");
             }
+
+
         });
     }
 

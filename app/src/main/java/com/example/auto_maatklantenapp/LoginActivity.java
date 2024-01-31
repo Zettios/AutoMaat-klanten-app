@@ -2,8 +2,6 @@ package com.example.auto_maatklantenapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ActivityOptions;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +14,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Button;
 
+import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
+import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
+import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
+
 import org.json.JSONArray;
 
 import java.io.IOException;
@@ -26,12 +28,16 @@ public class LoginActivity extends AppCompatActivity {
     Button loginBtn;
     TextView createBtn, passwordRecoveryBtn;
     CheckBox loginPersistanceBox;
-    private Handler loginHandler;
+
+    Handler loginHandler;
+    InternetChecker internetChecker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        internetChecker = new InternetChecker();
 
         usernameField = findViewById(R.id.editTextUsername);
         passwordField = findViewById(R.id.editTextPassword);
@@ -44,12 +50,17 @@ public class LoginActivity extends AppCompatActivity {
         loginHandler = new Handler(Looper.getMainLooper());
 
         loginBtn.setOnClickListener(v -> {
-            String username = usernameField.getText().toString().trim();
-            String password = passwordField.getText().toString().trim();
-            String persistence = String.valueOf(loginPersistanceBox.isChecked());
-            if(validateLoginData(usernameField, passwordField, username, password)) {
-                Log.d("AutoMaatApp", "valid info");
-                loginWithEmailAndPassword(username, password, persistence);
+            if (internetChecker.isOnline(LoginActivity.this)) {
+                String username = usernameField.getText().toString().trim();
+                String password = passwordField.getText().toString().trim();
+                String persistence = String.valueOf(loginPersistanceBox.isChecked());
+                if(validateLoginData(usernameField, passwordField, username, password)) {
+                    Log.d("AutoMaatApp", "valid info");
+                    loginWithEmailAndPassword(username, password, persistence);
+                }
+            } else {
+                internetChecker.networkErrorDialog(LoginActivity.this,
+                        "U moet verbonden zijn met het internet om in te loggen.");
             }
         });
 

@@ -26,6 +26,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.auto_maatklantenapp.accident.AccidentRapport;
+import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
+import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
+import com.example.auto_maatklantenapp.helper_classes.CameraFunctions;
 
 import org.json.JSONArray;
 import org.json.JSONException;

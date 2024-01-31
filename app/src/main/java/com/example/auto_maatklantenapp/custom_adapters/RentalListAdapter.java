@@ -1,4 +1,4 @@
-package com.example.auto_maatklantenapp.rentals;
+package com.example.auto_maatklantenapp.custom_adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.auto_maatklantenapp.R;
+import com.example.auto_maatklantenapp.rentals.Rental;
+import com.example.auto_maatklantenapp.view_holders.RentalViewHolder;
 
 import java.util.List;
 

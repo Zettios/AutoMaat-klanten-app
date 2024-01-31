@@ -1,9 +1,8 @@
-package com.example.auto_maatklantenapp;
+package com.example.auto_maatklantenapp.custom_dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -12,6 +11,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import androidx.fragment.app.DialogFragment;
+
+import com.example.auto_maatklantenapp.R;
 
 import java.util.ArrayList;
 
