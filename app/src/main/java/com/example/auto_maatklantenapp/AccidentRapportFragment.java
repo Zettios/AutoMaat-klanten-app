@@ -32,6 +32,7 @@ import com.example.auto_maatklantenapp.dao.CustomerDao;
 import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
 import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
 import com.example.auto_maatklantenapp.helper_classes.CameraFunctions;
+import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,6 +72,15 @@ public class AccidentRapportFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        InternetChecker internetChecker = new InternetChecker();
+
+        if (!(internetChecker.isOnline(getActivity()))) {
+            Log.w("Connection", "CONNECTION");
+
+            NoConnectionFragment dFragment = NoConnectionFragment.newInstance();
+            dFragment.show(getActivity().getSupportFragmentManager(), "NoConnectionFragment");
+        }
         View view = inflater.inflate(R.layout.fragment_accident_rapport, container, false);
         customerDao = ((MainActivity) getActivity()).db.customerDao();
 
