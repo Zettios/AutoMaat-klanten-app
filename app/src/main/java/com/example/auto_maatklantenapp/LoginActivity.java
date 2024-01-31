@@ -15,7 +15,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Button;
 
-import com.example.auto_maatklantenapp.classes.InternetChecker;
 import com.example.auto_maatklantenapp.classes.Customer;
 import com.example.auto_maatklantenapp.dao.CustomerDao;
 import com.example.auto_maatklantenapp.database.AutoMaatDatabase;
