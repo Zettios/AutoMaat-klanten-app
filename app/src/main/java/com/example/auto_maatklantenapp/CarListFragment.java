@@ -119,7 +119,7 @@ public class CarListFragment extends Fragment {
     }
 
     public void getCars(ApiCalls api) {
-        api.GetDataFromCars("/api/cars", new ApiCallback() {
+        api.GetAllCars(new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
                 cars = new ArrayList<>();
@@ -146,7 +146,7 @@ public class CarListFragment extends Fragment {
     }
 
     public void refreshCars(ApiCalls api) {
-        api.GetDataFromCars("/api/cars", new ApiCallback() {
+        api.GetAllCars(new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
                 cars.clear();

@@ -46,11 +46,11 @@ public class LoginActivity extends AppCompatActivity {
             String username = usernameField.getText().toString().trim();
             String password = passwordField.getText().toString().trim();
             String persistence = String.valueOf(loginPersistanceBox.isChecked());
-            swapScene();
-//            if(validateLoginData(usernameField, passwordField, username, password)) {
-//                Log.d("AutoMaatApp", "valid info");
-//                loginWithEmailAndPassword(username, password, persistence);
-//            }
+            //swapScene();
+            if(validateLoginData(usernameField, passwordField, username, password)) {
+                Log.d("AutoMaatApp", "valid info");
+                loginWithEmailAndPassword(username, password, persistence);
+            }
         });
 
         createBtn.setOnClickListener(v -> {
@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity {
         ApiCalls api = new ApiCalls();
         try {
             Log.d("AutoMaatApp", "Start thread");
-            api.Authenticate(new ApiCallback() {
+            api.LoginUser(new ApiCallback() {
                 @Override
                 public void onSuccess(JSONArray jsonArray) {
                     Log.d("AutoMaatApp", jsonArray.toString());

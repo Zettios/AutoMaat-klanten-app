@@ -21,25 +21,24 @@ public class RentalListAdapter extends RecyclerView.Adapter<RentalViewHolder>{
 
     @Override
     public int getItemViewType(final int position) {
-        return R.layout.car_list_item;
+        return R.layout.reservation_list_item;
     }
 
     @NonNull
     @Override
     public RentalViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         View view = LayoutInflater.from(parent.getContext()).inflate(viewType, parent, false);
         return new RentalViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RentalViewHolder holder, int position) {
-        holder.getRental().setText(rentals.get(position).code);
+        holder.getRentalCode().setText(rentals.get(position).getCode());
+        holder.getRentalPeriod().setText(rentals.get(position).getCode());
     }
 
     @Override
     public int getItemCount() {
-
         return rentals.size();
     }
 }

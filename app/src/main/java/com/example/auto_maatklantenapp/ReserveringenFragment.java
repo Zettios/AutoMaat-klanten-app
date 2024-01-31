@@ -27,7 +27,6 @@ import java.util.List;
 public class ReserveringenFragment extends Fragment {
 
     private RecyclerView recyclerView;
-
     RentalListAdapter rentalListAdapter;
 
     public ReserveringenFragment() {
@@ -47,45 +46,40 @@ public class ReserveringenFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_reserveringen, container, false);
 
+        ApiCalls api = new ApiCalls();
+
         recyclerView = view.findViewById(R.id.rvRentalLijst);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-        ApiCalls api = new ApiCalls();
-        Log.w("myApp", "view created");
-
         try {
-            Log.w("myApp", "inside try");
-            api.Authenticate(new ApiCallback() {
+            api.LoginUser(new ApiCallback() {
                 @Override
                 public void onSuccess(JSONArray jsonArray) {
+                    String authToken;
+                    try {
+                        authToken = api.getAuthToken();
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                    fetchRentals(authToken);
                 }
 
                 @Override
                 public void onFailure(IOException e) {
+                    e.printStackTrace();
                 }
             }, "admin", "admin", false);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        String authToken;
-        try {
-            authToken = api.getAuthToken();
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-
-        fetchRentals(authToken);
         return view;
     }
 
     private void fetchRentals(String authToken){
-        Log.w("myApp", "fetchrentals called");
         ApiCalls api = new ApiCalls();
-        api.GetAllRentals(authToken, "/api/rentals", new ApiCallback() {
+        api.GetAllRentals(authToken, new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
-                Log.w("myApp", "onsucces");
                 getActivity().runOnUiThread(() -> {
                     List<Rental> rentals = new ArrayList<>();
                     try {
@@ -101,6 +95,7 @@ public class ReserveringenFragment extends Fragment {
                                 toDate = LocalDate.parse(toDateStr);
                             }
 
+
                             RentalState state = RentalState.valueOf(rentalData.getString("state"));
                             rentals.add(new Rental(rentalData.getString("code"), rentalData.getDouble("longitude"),
                                     rentalData.getDouble("latitude"), fromDate,
@@ -108,7 +103,6 @@ public class ReserveringenFragment extends Fragment {
                                     null, null
                             ));
                         }
-                        Log.w("myApp", rentals.toString());
                         rentalListAdapter = new RentalListAdapter(rentals);
                         recyclerView.setAdapter(rentalListAdapter);
                     } catch (JSONException e) {

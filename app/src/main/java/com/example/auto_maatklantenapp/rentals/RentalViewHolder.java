@@ -10,26 +10,21 @@ import com.example.auto_maatklantenapp.R;
 
 public class RentalViewHolder extends RecyclerView.ViewHolder {
 
-    private TextView rental;
+    private TextView rentalCode;
+    private TextView rentalPeriod;
 
-    public TextView getRental() {
-        return rental;
+    public TextView getRentalCode() {
+        return rentalCode;
     }
 
-    public TextView getRentalInfo() {
-        return rentalInfo;
+    public TextView getRentalPeriod() {
+        return rentalPeriod;
     }
 
-    public TextView getPrice() {
-        return price;
-    }
 
-    private TextView rentalInfo;
-    private TextView price;
     public RentalViewHolder(@NonNull View itemView) {
         super(itemView);
-        rental = itemView.findViewById(R.id.txtCarModel);
-        rentalInfo = itemView.findViewById(R.id.txtCarInfo);
-        price = itemView.findViewById(R.id.txtPrice);
+        rentalCode = itemView.findViewById(R.id.txtReservationCode);
+        rentalPeriod = itemView.findViewById(R.id.txtReservationDate);
     }
 }

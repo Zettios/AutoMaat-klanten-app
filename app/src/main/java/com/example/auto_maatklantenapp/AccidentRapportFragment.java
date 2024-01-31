@@ -125,7 +125,7 @@ public class AccidentRapportFragment extends Fragment {
 
     private void getAuthToken() {
         try {
-            api.Authenticate(new ApiCallback() {
+            api.LoginUser(new ApiCallback() {
                 @Override
                 public void onSuccess(JSONArray jsonArray) {
                     try {
@@ -255,7 +255,7 @@ public class AccidentRapportFragment extends Fragment {
         AccidentRapport accidentRapport = new AccidentRapport();
         accidentRapport.setCode("This is a code");
         accidentRapport.setOdoMeter(Integer.parseInt(odoMeter.getText().toString()));
-        accidentRapport.setResult("This is a result");
+        accidentRapport.setResult("");
         accidentRapport.setPhoto(encodedImage);
         accidentRapport.setCompleted("");
         return accidentRapport;
