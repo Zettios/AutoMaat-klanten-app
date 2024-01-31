@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +27,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.auto_maatklantenapp.accident.AccidentRapport;
+import com.example.auto_maatklantenapp.classes.Customer;
+import com.example.auto_maatklantenapp.dao.CustomerDao;
 import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
 import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
 import com.example.auto_maatklantenapp.helper_classes.CameraFunctions;
@@ -40,20 +43,21 @@ import java.util.Map;
 import java.util.Objects;
 
 public class AccidentRapportFragment extends Fragment {
+    CustomerDao customerDao;
+    Customer customer;
 
     EditText odoMeter;
     ImageView accidentPicture;
     Button takePicture;
     Button submit;
 
-    ApiCalls api;
     CameraFunctions cameraFunctions;
     String authToken;
     ActivityResultLauncher<Intent> startCamera;
     ActivityResultLauncher<String[]> cameraPermissionResultLauncher;
     Uri cam_uri;
     String encodedImage = "";
-    private Handler submitResponseMessageHandler;
+    Handler submitResponseMessageHandler;
 
     public static AccidentRapportFragment newInstance() {
         return new AccidentRapportFragment();
@@ -68,8 +72,8 @@ public class AccidentRapportFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_accident_rapport, container, false);
+        customerDao = ((MainActivity) getActivity()).db.customerDao();
 
-        api = new ApiCalls();
         cameraFunctions = new CameraFunctions();
         submitResponseMessageHandler = new Handler(Looper.getMainLooper());
 
@@ -80,7 +84,6 @@ public class AccidentRapportFragment extends Fragment {
 
         registerCameraResult();
         initializeCameraPermissionActivityResult();
-        getAuthToken();
 
         takePicture.setOnClickListener(v -> {
             if (cameraFunctions.allPermissionsGranted(getContext())) {
@@ -126,27 +129,6 @@ public class AccidentRapportFragment extends Fragment {
         submit.setText(R.string.submit_text);
     }
 
-    private void getAuthToken() {
-        try {
-            api.LoginUser(new ApiCallback() {
-                @Override
-                public void onSuccess(JSONArray jsonArray) {
-                    try {
-                        authToken = jsonArray.getJSONObject(0).getString("id_token");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                @Override
-                public void onFailure(IOException e) {
-                }
-            }, "admin", "admin", false);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void takePicture() {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, "Accident Picture");
@@ -166,9 +148,7 @@ public class AccidentRapportFragment extends Fragment {
                     try {
                         if (result.getResultCode() == RESULT_OK) {
                             accidentPicture.setImageURI(cam_uri);
-
                             enableSubmitButton();
-
                             final Uri imageUri = cam_uri;
                             final InputStream imageStream = getActivity()
                                     .getContentResolver()
@@ -209,35 +189,41 @@ public class AccidentRapportFragment extends Fragment {
     }
 
     private void submitReport() throws JSONException {
-        api = new ApiCalls();
+        ApiCalls api = new ApiCalls();
         if (validateData()) {
             disableSubmitButton();
             showProcessingDataFeedback();
-            api.sendAccidentReport(createAccidentRapport(), authToken, new ApiCallback() {
-                @Override
-                public void onSuccess(JSONArray jsonArray) {
-                    submitResponseMessageHandler.post(() -> {
-                        try {
-                            String title = jsonArray.getJSONObject(0).getString("title");
-                            String message = jsonArray.getJSONObject(0).getString("message");
-                            onSubmitResponseDialog(title, message);
-                            resetForm();
-                            endProcessingDataFeedback();
-                        } catch (JSONException e)  {
-                            e.printStackTrace();
-                        }
-                    });
-                }
 
-                @Override
-                public void onFailure(IOException e) {
-                    submitResponseMessageHandler.post(() -> {
-                                enableSubmitButton();
+            new Thread(() -> {
+                customer = customerDao.getCustomer(1);
+                Log.d("AutoMaatApp", customer.authToken);
+                api.sendAccidentReport(createAccidentRapport(), customer.authToken, new ApiCallback() {
+                    @Override
+                    public void onSuccess(JSONArray jsonArray) {
+                        Log.d("AutoMaatApp", "success");
+                        submitResponseMessageHandler.post(() -> {
+                            try {
+                                String title = jsonArray.getJSONObject(0).getString("title");
+                                String message = jsonArray.getJSONObject(0).getString("message");
+                                onSubmitResponseDialog(title, message);
+                                resetForm();
                                 endProcessingDataFeedback();
-                    });
-                    e.printStackTrace();
-                }
-            });
+                            } catch (JSONException e)  {
+                                e.printStackTrace();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(IOException e) {
+                        submitResponseMessageHandler.post(() -> {
+                            enableSubmitButton();
+                            endProcessingDataFeedback();
+                        });
+                        e.printStackTrace();
+                    }
+                });
+            }).start();
         }
     }
 

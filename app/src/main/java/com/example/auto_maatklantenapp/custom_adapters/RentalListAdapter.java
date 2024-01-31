@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.auto_maatklantenapp.R;
-import com.example.auto_maatklantenapp.rentals.Rental;
+import com.example.auto_maatklantenapp.classes.Rental;
 import com.example.auto_maatklantenapp.view_holders.RentalViewHolder;
 
 import java.util.List;

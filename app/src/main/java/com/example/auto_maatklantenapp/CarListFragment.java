@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CarListFragment extends Fragment {
-
     CarDao carDao;
     InternetChecker internetChecker;
     CarListAdapter carListAdapter;
@@ -50,9 +49,9 @@ public class CarListFragment extends Fragment {
     AtomicInteger maxSeats;
     AtomicInteger maxPrice;
 
-    public CarListFragment() {
+    public static CarListFragment newInstance() {
+        return new CarListFragment();
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,4 +1,4 @@
-package com.example.auto_maatklantenapp.rentals;
+package com.example.auto_maatklantenapp.helper_classes;
 
 public enum RentalState {
     ACTIVE,
