@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.auto_maatklantenapp.helper_classes.NavSelection;
 import com.example.auto_maatklantenapp.listeners.OnNavSelectionListener;
 
 public class NavigationFragment extends Fragment {

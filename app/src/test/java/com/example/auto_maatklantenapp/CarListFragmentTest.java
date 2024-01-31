@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import android.os.Bundle;
 
 import com.example.auto_maatklantenapp.classes.Car;
+import com.example.auto_maatklantenapp.custom_adapters.CarListAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;

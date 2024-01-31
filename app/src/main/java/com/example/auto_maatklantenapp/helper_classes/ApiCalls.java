@@ -1,4 +1,4 @@
-package com.example.auto_maatklantenapp;
+package com.example.auto_maatklantenapp.helper_classes;
 
 import android.util.Log;
 
@@ -25,10 +25,11 @@ public class ApiCalls {
     JSONObject authToken;
     String baseurl = "https://measured-adder-concrete.ngrok-free.app";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
 
     private static final String LOGIN_USER_URL = "/api/authenticate";
     private static final String REGISTER_USER_URL = "/api/AM/register";
-    private static final String RESET_USER_PASSWORD_URL =  "/api/account/reset-password/init";
+    private static final String RESET_USER_PASSWORD_INIT_URL =  "/api/account/reset-password/init";
     private static final String USERS_ENDPOINT_URL = "/api/users";
     private static final String CARS_ENDPOINT_URL = "/api/cars";
     private static final String RENTALS_ENDPOINT_URL = "/api/rentals";
@@ -64,14 +65,21 @@ public class ApiCalls {
                 if (response.isSuccessful() ) {
                     if (response.body() != null) {
                         String responseData = response.body().string();
+                        JSONObject jsonObject;
+
+                        JSONArray jsonArray = new JSONArray();
+                        jsonArray.put(username);
+                        jsonArray.put(password);
+                        jsonArray.put(persistence);
+
                         try {
-                            authToken = new JSONObject(responseData);
-                            JSONArray jsonArray = new JSONArray();
-                            jsonArray.put(authToken);
-                            callback.onSuccess(jsonArray);
+                            jsonObject = new JSONObject(responseData);
+                            jsonArray.put(jsonObject.get("id_token"));
                         } catch (JSONException e) {
                             throw new RuntimeException(e);
                         }
+
+                        callback.onSuccess(jsonArray);
                     }
                 }
             }
@@ -89,7 +97,8 @@ public class ApiCalls {
         return null;
     }
 
-    public void registerNewAccount(ApiCallback callback, JSONObject jsonBody) {
+    public void registerNewAccount(JSONObject jsonBody, ApiCallback callback) {
+        Log.d("AutoMaatApp", jsonBody.toString());
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + REGISTER_USER_URL;
         RequestBody requestBody = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
@@ -105,22 +114,26 @@ public class ApiCalls {
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                JSONArray responseData = new JSONArray();
                 if(response.isSuccessful()) {
-                    String myResponse = response.body().toString();
-                }
-                else {
-                    //TODO: Handle failed registration
-                    Log.w("AutoMaatApp", "Registration Failed");
+                    responseData.put(1);
+                    responseData.put("Account aangemaakt, log alstublieft in.");
+                    callback.onSuccess(responseData);
+                } else {
+                    responseData.put(-1);
+                    responseData.put("Gebruiker bestaat al.");
+                    callback.onSuccess(responseData);
                 }
             }
         });
     }
 
-    public void resetPasswordInit(ApiCallback callback, String email) {
+    public void resetPasswordInit(String email, ApiCallback callback) {
+        Log.d("AutoMaatApp", email);
         OkHttpClient client = new OkHttpClient();
-        String url = baseurl + RESET_USER_PASSWORD_URL;
-        RequestBody requestBody = RequestBody.create(email, MediaType.parse("application/json"));
+        String url = baseurl + RESET_USER_PASSWORD_INIT_URL;
+        RequestBody requestBody = RequestBody.create(email, MEDIA_TYPE_MARKDOWN);
         Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
@@ -134,10 +147,7 @@ public class ApiCalls {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (response.isSuccessful()) {
-                    //TODO: Handle succesful password reset
-                    Log.d("AutoMaatApp", "my response: " + response);
-                }
+                callback.onSuccess(new JSONArray());
             }
         });
     }
@@ -230,7 +240,7 @@ public class ApiCalls {
         });
     }
 
-    public void sendAccidentReport(AccidentRapport accidentReport, String authToken, ApiCallback apiCallback) throws JSONException {
+    public void sendAccidentReport(AccidentRapport accidentReport, String authToken, ApiCallback apiCallback) {
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + ACCIDENT_RAPPORT_ENDPOINT_URL;
 
@@ -238,18 +248,22 @@ public class ApiCalls {
         JSONObject carJsonObject = new JSONObject();
         JSONObject rentalJsonObject = new JSONObject();
 
-        accidentJsonObject.put("code", accidentReport.getCode());
-        accidentJsonObject.put("odometer", accidentReport.getOdoMeter());
-        accidentJsonObject.put("result", accidentReport.getResult());
-        accidentJsonObject.put("photo", accidentReport.getPhoto());
-        accidentJsonObject.put("photoContentType", accidentReport.getPhotoContentType());
-        accidentJsonObject.put("completed", accidentReport.getCompleted());
+        try {
+            accidentJsonObject.put("code", accidentReport.getCode());
+            accidentJsonObject.put("odometer", accidentReport.getOdoMeter());
+            accidentJsonObject.put("result", accidentReport.getResult());
+            accidentJsonObject.put("photo", accidentReport.getPhoto());
+            accidentJsonObject.put("photoContentType", accidentReport.getPhotoContentType());
+            accidentJsonObject.put("completed", accidentReport.getCompleted());
 
-        carJsonObject.put("id", 1);
-        accidentJsonObject.put("car", carJsonObject);
+            carJsonObject.put("id", 1);
+            accidentJsonObject.put("car", carJsonObject);
 
-        rentalJsonObject.put("id", 1);
-        accidentJsonObject.put("rental", rentalJsonObject);
+            rentalJsonObject.put("id", 1);
+            accidentJsonObject.put("rental", rentalJsonObject);
+        } catch (Exception e) {
+            Log.e("AutoMaatApp", e.toString());
+        }
 
         RequestBody formBody = RequestBody.create(accidentJsonObject.toString(), JSON);
         Request request = new Request.Builder()
@@ -260,14 +274,10 @@ public class ApiCalls {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                apiCallback.onFailure(e);
-            }
-
-            @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
                 JSONObject responseData = new JSONObject();
                 try {
+                    Log.d("AutoMaatApp", response.body().toString());
                     responseData.put("code", response.code());
                     if (response.isSuccessful()) {
                         responseData.put("title", "Success");
@@ -277,9 +287,15 @@ public class ApiCalls {
                         responseData.put("message", "Er is iets misgegaan. Probeer het opnieuw of neem contact met ons op.");
                     }
                 } catch (JSONException e) {
+                    Log.d("AutoMaatApp", e.toString());
                     e.printStackTrace();
                 }
                 apiCallback.onSuccess(new JSONArray().put(responseData));
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                apiCallback.onFailure(e);
             }
         });
     }

@@ -35,19 +35,19 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
 
         switch (nav_id) {
             case 1:
-                fragment = new CarListFragment();
+                fragment = CarListFragment.newInstance();
                 break;
             case 2:
-                fragment = new ReserveringenFragment();
+                fragment = ReserveringenFragment.newInstance();
                 break;
             case 3:
                 fragment = AccidentRapportFragment.newInstance();
                 break;
             case 4:
-                fragment = new SupportFragment();
+                fragment = SupportFragment.newInstance();
                 break;
             default:
-                fragment = new CarListFragment();
+                fragment = CarListFragment.newInstance();
                 break;
         }
 

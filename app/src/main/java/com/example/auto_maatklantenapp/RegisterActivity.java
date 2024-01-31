@@ -2,7 +2,7 @@ package com.example.auto_maatklantenapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,18 +11,22 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.EditText;
 
+import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
+import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
+import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
     EditText[] registerFieldData;
     Button registerBtn;
     TextView loginBtn;
     int minPasswordLength = 6;
+    InternetChecker internetChecker;
 
     enum RegistrationData {
         FIRST_NAME(0), LAST_NAME(1), USER_NAME(2), EMAIL(3), PASSWORD(4), REP_PASSWORD(5);
@@ -42,6 +46,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        internetChecker = new InternetChecker();
+
         registerFieldData = new EditText[]{
                 findViewById(R.id.editTextFirstName),
                 findViewById(R.id.editTextLastName),
@@ -54,14 +60,19 @@ public class RegisterActivity extends AppCompatActivity {
         loginBtn = findViewById(R.id.loginBtn);
 
         registerBtn.setOnClickListener(v -> {
-            if(validateRegistrationData(registerFieldData)){
-                registerUsingData();
+            if (internetChecker.isOnline(RegisterActivity.this)) {
+                if(validateRegistrationData(registerFieldData)){
+                    registerUsingData();
+                }
+            } else {
+                internetChecker.networkErrorDialog(RegisterActivity.this,
+                        "U moet verbonden zijn met het internet om te registreren.");
             }
         });
 
         loginBtn.setOnClickListener(v -> {
             Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
-            startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            startActivity(i);
             finish();
         });
     }
@@ -104,23 +115,56 @@ public class RegisterActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.w("myApp", jsonBody.toString());
 
-        api.registerNewAccount(new ApiCallback() {
+        api.registerNewAccount(jsonBody, new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
-                swapScene();
+                Log.d("AutoMaatApp", jsonArray.toString());
+                RegisterActivity.this.runOnUiThread(() -> {
+                    try {
+                        if (jsonArray.get(0).equals(1)) {
+                            onResponseDialog("Success",
+                                    (String) jsonArray.get(1),
+                                    (Integer) jsonArray.get(0));
+                        } else {
+                            onResponseDialog("Melding",
+                                    (String) jsonArray.get(1),
+                                    (Integer) jsonArray.get(0));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
             }
 
             @Override
             public void onFailure(IOException e) {
+                Log.e("AutoMaatApp", e.toString());
             }
-        }, jsonBody);
+        });
     }
+
+
+    private void onResponseDialog(String title, String message, int responseState) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(RegisterActivity.this, R.style.MyDialogTheme);
+
+        builder.setTitle(title).setMessage(message);
+        if (responseState == 1) {
+            builder.setPositiveButton("Ok", (dialog, id) -> swapScene());
+        } else {
+            builder.setPositiveButton("Ok", (dialog, id) -> dialog.cancel());
+        }
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(dialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.colorPrimary, null));
+    }
+
 
     public void swapScene(){
         Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
-        startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+        startActivity(i);
         finish();
     }
 }

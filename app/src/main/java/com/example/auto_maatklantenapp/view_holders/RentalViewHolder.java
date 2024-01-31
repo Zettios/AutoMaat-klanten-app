@@ -1,4 +1,4 @@
-package com.example.auto_maatklantenapp.rentals;
+package com.example.auto_maatklantenapp.view_holders;
 
 import android.view.View;
 import android.widget.TextView;

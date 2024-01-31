@@ -1,4 +1,4 @@
-package com.example.auto_maatklantenapp;
+package com.example.auto_maatklantenapp.helper_classes;
 
 import org.json.JSONArray;
 
