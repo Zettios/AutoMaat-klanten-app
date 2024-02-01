@@ -2,6 +2,7 @@ package com.example.auto_maatklantenapp;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -17,7 +18,6 @@ import androidx.fragment.app.Fragment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +33,9 @@ import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
 import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
 import com.example.auto_maatklantenapp.helper_classes.CameraFunctions;
 import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
+import com.example.auto_maatklantenapp.listeners.OnExpiredTokenListener;
+import com.example.auto_maatklantenapp.listeners.OnInternetLossListener;
+import com.example.auto_maatklantenapp.listeners.OnOnlineListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,13 +50,16 @@ public class AccidentRapportFragment extends Fragment {
     CustomerDao customerDao;
     Customer customer;
 
+    OnExpiredTokenListener onExpiredTokenListener;
+    OnInternetLossListener onInternetLossListener;
+    OnOnlineListener onOnlineListener;
+
     EditText odoMeter;
     ImageView accidentPicture;
     Button takePicture;
     Button submit;
 
     CameraFunctions cameraFunctions;
-    String authToken;
     ActivityResultLauncher<Intent> startCamera;
     ActivityResultLauncher<String[]> cameraPermissionResultLauncher;
     Uri cam_uri;
@@ -72,26 +78,10 @@ public class AccidentRapportFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         InternetChecker internetChecker = new InternetChecker();
 
-        if (!(internetChecker.isOnline(getActivity()))) {
-            Log.w("Connection", "CONNECTION");
-
-            NoConnectionFragment dFragment = NoConnectionFragment.newInstance();
-            dFragment.show(getActivity().getSupportFragmentManager(), "NoConnectionFragment");
-        }
         View view = inflater.inflate(R.layout.fragment_accident_rapport, container, false);
-        customerDao = ((MainActivity) getActivity()).db.customerDao();
-
-        cameraFunctions = new CameraFunctions();
-        submitResponseMessageHandler = new Handler(Looper.getMainLooper());
-
-        odoMeter = view.findViewById(R.id.etOdoMeterInput);
-        accidentPicture = view.findViewById(R.id.ivAccidentPicture);
-        takePicture = view.findViewById(R.id.btnTakeFoto);
-        submit = view.findViewById(R.id.btnReportAccident);
-
+        defineVariables(getActivity(), view);
         registerCameraResult();
         initializeCameraPermissionActivityResult();
 
@@ -105,13 +95,36 @@ public class AccidentRapportFragment extends Fragment {
 
         submit.setOnClickListener(v -> {
             try {
-                submitReport();
+                if (internetChecker.isOnline(getActivity())) {
+                    onOnlineListener.ResetOfflineVariable();
+                    submitReport();
+                } else {
+                    onInternetLossListener.NotifyInternetLoss();
+                    internetChecker.networkErrorDialog(getActivity(),
+                            "U moet verbonden zijn met het internet om schade te kunnen melden.");
+                }
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
         });
 
         return view;
+    }
+
+    private void defineVariables(Activity activity, View view) {
+        customerDao = ((MainActivity) activity).db.customerDao();
+
+        onExpiredTokenListener = (OnExpiredTokenListener) getContext();
+        onInternetLossListener = (OnInternetLossListener) getContext();
+        onOnlineListener = (OnOnlineListener) getContext();
+
+        cameraFunctions = new CameraFunctions();
+        submitResponseMessageHandler = new Handler(Looper.getMainLooper());
+
+        odoMeter = view.findViewById(R.id.etOdoMeterInput);
+        accidentPicture = view.findViewById(R.id.ivAccidentPicture);
+        takePicture = view.findViewById(R.id.btnTakeFoto);
+        submit = view.findViewById(R.id.btnReportAccident);
     }
 
     private void resetForm() {
@@ -206,18 +219,22 @@ public class AccidentRapportFragment extends Fragment {
 
             new Thread(() -> {
                 customer = customerDao.getCustomer(1);
-                Log.d("AutoMaatApp", customer.authToken);
                 api.sendAccidentReport(createAccidentRapport(), customer.authToken, new ApiCallback() {
                     @Override
                     public void onSuccess(JSONArray jsonArray) {
-                        Log.d("AutoMaatApp", "success");
                         submitResponseMessageHandler.post(() -> {
                             try {
-                                String title = jsonArray.getJSONObject(0).getString("title");
-                                String message = jsonArray.getJSONObject(0).getString("message");
-                                onSubmitResponseDialog(title, message);
-                                resetForm();
-                                endProcessingDataFeedback();
+                                if (jsonArray.getJSONObject(0).getInt("code") == 401) {
+                                    Toast toast = Toast.makeText(getActivity(), "Log opnieuw in", Toast.LENGTH_SHORT);
+                                    toast.show();
+                                    onExpiredTokenListener.ReturnToLogin();
+                                } else {
+                                    String title = jsonArray.getJSONObject(0).getString("title");
+                                    String message = jsonArray.getJSONObject(0).getString("message");
+                                    onSubmitResponseDialog(title, message);
+                                    resetForm();
+                                    endProcessingDataFeedback();
+                                }
                             } catch (JSONException e)  {
                                 e.printStackTrace();
                             }

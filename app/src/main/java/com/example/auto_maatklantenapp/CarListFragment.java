@@ -22,6 +22,9 @@ import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
 import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
 import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
 import com.example.auto_maatklantenapp.dao.CarDao;
+import com.example.auto_maatklantenapp.listeners.OnExpiredTokenListener;
+import com.example.auto_maatklantenapp.listeners.OnInternetLossListener;
+import com.example.auto_maatklantenapp.listeners.OnOnlineListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +39,9 @@ public class CarListFragment extends Fragment {
     CarDao carDao;
     InternetChecker internetChecker;
     CarListAdapter carListAdapter;
+
+    OnInternetLossListener onInternetLossListener;
+    OnOnlineListener onOnlineListener;
 
     RecyclerView recyclerView;
     List<Car> cars;
@@ -68,16 +74,12 @@ public class CarListFragment extends Fragment {
         ApiCalls api = new ApiCalls();
         defineVariables(getActivity(), view);
 
-        internetChecker = new InternetChecker();
-
         if (internetChecker.isOnline(getActivity())) {
+            onOnlineListener.ResetOfflineVariable();
             getCars(api);
         } else {
-            Log.w("Connection", "NO CONNECTION");
+            onInternetLossListener.NotifyInternetLoss();
             new Thread(this::getOfflineCars).start();
-
-            NoConnectionFragment dFragment = NoConnectionFragment.newInstance();
-            dFragment.show(getActivity().getSupportFragmentManager(), "NoConnectionFragment");
         }
 
         setFilterDataListener();
@@ -89,6 +91,7 @@ public class CarListFragment extends Fragment {
             if (internetChecker.isOnline(getActivity())) {
                 refreshCars(api);
             } else {
+                onInternetLossListener.NotifyInternetLoss();
                 refreshOfflineCars();
             }
         });
@@ -112,10 +115,12 @@ public class CarListFragment extends Fragment {
     private void defineVariables(Activity activity, View view) {
         carDao = ((MainActivity) activity).db.carDao();
 
+        onInternetLossListener = (OnInternetLossListener) getContext();
+        onOnlineListener = (OnOnlineListener) getContext();
+
         internetChecker = new InternetChecker();
 
         filteredCars = new ArrayList<>();
-
         merkArray = new ArrayList<>();
         modelArray = new ArrayList<>();
         brandstofArray = new ArrayList<>();

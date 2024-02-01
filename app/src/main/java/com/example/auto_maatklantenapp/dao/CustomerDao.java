@@ -12,17 +12,11 @@ import java.util.List;
 
 @Dao
 public interface CustomerDao {
-    @Query("SELECT * FROM customer WHERE id IN (:customerId)")
-    List<Customer> loadAllByIds(int[] customerId);
-
     @Query("SELECT * FROM customer WHERE id = :customerId")
     Customer getCustomer(int customerId);
 
     @Insert(entity = Customer.class)
     void insertCustomer(Customer customers);
-
-    @Delete
-    void delete(Customer customer);
 
     @Query("DELETE FROM customer")
     void deleteAll();

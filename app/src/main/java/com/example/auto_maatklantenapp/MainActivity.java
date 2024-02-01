@@ -6,14 +6,23 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.room.Room;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.example.auto_maatklantenapp.database.AutoMaatDatabase;
+import com.example.auto_maatklantenapp.listeners.OnExpiredTokenListener;
+import com.example.auto_maatklantenapp.listeners.OnInternetLossListener;
 import com.example.auto_maatklantenapp.listeners.OnNavSelectionListener;
+import com.example.auto_maatklantenapp.listeners.OnOnlineListener;
 
-public class MainActivity extends AppCompatActivity implements OnNavSelectionListener {
+public class MainActivity extends AppCompatActivity implements OnNavSelectionListener,
+                                                                OnExpiredTokenListener,
+                                                                OnInternetLossListener,
+                                                                OnOnlineListener {
 
     AutoMaatDatabase db;
+    Boolean internetLossNotified = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,5 +65,28 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.replace(R.id.fcvFragmentContainer, fragment, "");
         fragmentTransaction.commit();
+    }
+
+    @Override
+    public void ReturnToLogin() {
+        Intent i = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
+    public void NotifyInternetLoss() {
+        if (!internetLossNotified) {
+            Toast toast = Toast.makeText(this, "U bent offline. Sommige functies zullen niet meer werken en gegevens kunnen oud zijn.", Toast.LENGTH_LONG);
+            toast.show();
+            internetLossNotified = true;
+        }
+    }
+
+    @Override
+    public void ResetOfflineVariable() {
+        if (internetLossNotified) {
+            internetLossNotified = false;
+        }
     }
 }

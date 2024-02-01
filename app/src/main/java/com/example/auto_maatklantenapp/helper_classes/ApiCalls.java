@@ -23,7 +23,8 @@ import okhttp3.Response;
 public class ApiCalls {
 
     JSONObject authToken;
-    String baseurl = "https://measured-adder-concrete.ngrok-free.app";
+    //String baseurl = "https://measured-adder-concrete.ngrok-free.app";
+    String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
 
@@ -98,7 +99,6 @@ public class ApiCalls {
     }
 
     public void registerNewAccount(JSONObject jsonBody, ApiCallback callback) {
-        Log.d("AutoMaatApp", jsonBody.toString());
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + REGISTER_USER_URL;
         RequestBody requestBody = RequestBody.create(jsonBody.toString(), MediaType.parse("application/json"));
@@ -130,7 +130,6 @@ public class ApiCalls {
     }
 
     public void resetPasswordInit(String email, ApiCallback callback) {
-        Log.d("AutoMaatApp", email);
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + RESET_USER_PASSWORD_INIT_URL;
         RequestBody requestBody = RequestBody.create(email, MEDIA_TYPE_MARKDOWN);
@@ -268,7 +267,7 @@ public class ApiCalls {
         RequestBody formBody = RequestBody.create(accidentJsonObject.toString(), JSON);
         Request request = new Request.Builder()
                 .url(url)
-                .header("Authorization", "Bearer " + authToken)
+                //.header("Authorization", "Bearer " + authToken)
                 .post(formBody)
                 .build();
 
@@ -277,11 +276,12 @@ public class ApiCalls {
             public void onResponse(@NonNull Call call, @NonNull Response response) {
                 JSONObject responseData = new JSONObject();
                 try {
-                    Log.d("AutoMaatApp", response.body().toString());
                     responseData.put("code", response.code());
                     if (response.isSuccessful()) {
                         responseData.put("title", "Success");
                         responseData.put("message", "Uw incident is succesvol binnengekomen");
+                    } else if (response.code() == 401) {
+
                     } else {
                         responseData.put("title", "Error");
                         responseData.put("message", "Er is iets misgegaan. Probeer het opnieuw of neem contact met ons op.");

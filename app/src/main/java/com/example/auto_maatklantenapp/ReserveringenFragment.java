@@ -1,12 +1,12 @@
 package com.example.auto_maatklantenapp;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +21,8 @@ import com.example.auto_maatklantenapp.classes.Rental;
 import com.example.auto_maatklantenapp.custom_adapters.RentalListAdapter;
 import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
 import com.example.auto_maatklantenapp.helper_classes.RentalState;
+import com.example.auto_maatklantenapp.listeners.OnInternetLossListener;
+import com.example.auto_maatklantenapp.listeners.OnOnlineListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +37,9 @@ public class ReserveringenFragment extends Fragment {
     CustomerDao customerDao;
     Customer customer;
     RentalDao rentalDao;
+
+    OnInternetLossListener onInternetLossListener;
+    OnOnlineListener onOnlineListener;
 
     InternetChecker internetChecker;
     RecyclerView recyclerView;
@@ -55,33 +60,34 @@ public class ReserveringenFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_reserveringen, container, false);
-        customerDao = ((MainActivity) getActivity()).db.customerDao();
-        rentalDao = ((MainActivity) getActivity()).db.rentalDao();
-
-        internetChecker = new InternetChecker();
-
-        recyclerView = view.findViewById(R.id.rvRentalLijst);
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        defineVariables(getActivity(), view);
 
         if (internetChecker.isOnline(getActivity())) {
+            onOnlineListener.ResetOfflineVariable();
             new Thread(() -> {
                 customer = customerDao.getCustomer(1);
                 fetchRentals(customer.authToken);
             }).start();
-
         } else {
-            Log.w("Connection", "NO CONNECTION");
+            onInternetLossListener.NotifyInternetLoss();
             //new Thread(this::getOfflinereserveringen).start();
-
-            NoConnectionFragment dFragment = NoConnectionFragment.newInstance();
-            dFragment.show(getActivity().getSupportFragmentManager(), "NoConnectionFragment");
         }
-
 
         return view;
     }
 
+    private void defineVariables(Activity activity, View view) {
+        customerDao = ((MainActivity) activity).db.customerDao();
+        rentalDao = ((MainActivity) activity).db.rentalDao();
 
+        internetChecker = new InternetChecker();
+
+        onInternetLossListener = (OnInternetLossListener) getContext();
+        onOnlineListener = (OnOnlineListener) getContext();
+
+        recyclerView = view.findViewById(R.id.rvRentalLijst);
+        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+    }
 
     private void fetchRentals(String authToken){
         ApiCalls api = new ApiCalls();
