@@ -29,6 +29,7 @@ public class ApiCalls {
     public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
 
     private static final String LOGIN_USER_URL = "/api/authenticate";
+    private static final String GET_USER_URL = "/api/AM/account";
     private static final String REGISTER_USER_URL = "/api/AM/register";
     private static final String RESET_USER_PASSWORD_INIT_URL =  "/api/account/reset-password/init";
     private static final String USERS_ENDPOINT_URL = "/api/users";
@@ -69,6 +70,7 @@ public class ApiCalls {
                         JSONObject jsonObject;
 
                         JSONArray jsonArray = new JSONArray();
+                        jsonArray.put(response.code());
                         jsonArray.put(username);
                         jsonArray.put(password);
                         jsonArray.put(persistence);
@@ -82,7 +84,53 @@ public class ApiCalls {
 
                         callback.onSuccess(jsonArray);
                     }
+                } else if (response.code() == 400 || response.code() == 401) {
+                    JSONArray failureResponse = new JSONArray();
+                    failureResponse.put(response.code());
+                    callback.onSuccess(failureResponse);
+                } else {
+                    IOException e = new IOException("Iets is totaal mis gegaan.");
+                    callback.onFailure(e);
                 }
+            }
+        });
+    }
+
+    public void GetUser(String authToken, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient();
+        String url = baseurl + GET_USER_URL;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .header("Authorization", "Bearer " + authToken)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful() ) {
+                    try {
+                        String responseData = response.body().string();
+                        JSONObject jsonObject;
+                        JSONArray jsonArray = new JSONArray();
+                            jsonObject = new JSONObject(responseData);
+                        jsonArray.put(jsonObject.get("id"));
+                        jsonArray.put(jsonObject.get("firstName"));
+                        jsonArray.put(jsonObject.get("lastName"));
+                        jsonArray.put(jsonObject.get("email"));
+
+                        callback.onSuccess(jsonArray);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    callback.onSuccess(new JSONArray());
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
             }
         });
     }
@@ -267,7 +315,7 @@ public class ApiCalls {
         RequestBody formBody = RequestBody.create(accidentJsonObject.toString(), JSON);
         Request request = new Request.Builder()
                 .url(url)
-                //.header("Authorization", "Bearer " + authToken)
+                .header("Authorization", "Bearer " + authToken)
                 .post(formBody)
                 .build();
 

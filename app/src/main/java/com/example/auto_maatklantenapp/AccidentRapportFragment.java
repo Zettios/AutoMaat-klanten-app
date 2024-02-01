@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -218,7 +219,7 @@ public class AccidentRapportFragment extends Fragment {
             showProcessingDataFeedback();
 
             new Thread(() -> {
-                customer = customerDao.getCustomer(1);
+                customer = customerDao.getFirstCustomer();
                 api.sendAccidentReport(createAccidentRapport(), customer.authToken, new ApiCallback() {
                     @Override
                     public void onSuccess(JSONArray jsonArray) {

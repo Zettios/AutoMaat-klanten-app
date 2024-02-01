@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#4D66E5"
-    tools:context=".TopNavigationFragment">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#4D66E5"
+        tools:context=".TopNavigationFragment"
+        android:id="@+id/linearLayout">
+
 
     <ImageView
             android:id="@+id/imageView"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
             app:srcCompat="@drawable/auto_maat_logo_compact"
             android:scaleX="0.75"
-            android:scaleY="0.75" />
-
-
-    <Space
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="4" />
+            android:scaleY="0.75"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageButton
             android:id="@+id/imageButton"
             android:background="?android:selectableItemBackground"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
-            android:src="@drawable/user_regular"
-            android:scaleX="0.7"
-            android:scaleY="0.75" />
-</LinearLayout>
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/user_regular_2xl"
+            android:scaleX="0.75"
+            android:scaleY="0.75"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

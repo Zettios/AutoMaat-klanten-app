@@ -65,7 +65,7 @@ public class ReserveringenFragment extends Fragment {
         if (internetChecker.isOnline(getActivity())) {
             onOnlineListener.ResetOfflineVariable();
             new Thread(() -> {
-                customer = customerDao.getCustomer(1);
+                customer = customerDao.getFirstCustomer();
                 fetchRentals(customer.authToken);
             }).start();
         } else {
@@ -94,7 +94,6 @@ public class ReserveringenFragment extends Fragment {
         api.GetAllRentals(authToken, new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
-                Log.d("AutoMaatApp", "Success");
                 getActivity().runOnUiThread(() -> {
                     List<Rental> rentals = new ArrayList<>();
                     try {

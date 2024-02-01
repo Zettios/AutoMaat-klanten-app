@@ -35,13 +35,13 @@ public class LoginActivity extends AppCompatActivity {
 
     Handler loginHandler;
     InternetChecker internetChecker;
+    Customer customer;
 
     AutoMaatDatabase db;
     CustomerDao customerDao;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
-
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         db = Room.databaseBuilder(
@@ -52,6 +52,9 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         internetChecker = new InternetChecker();
+        customerDao = db.customerDao();
+
+        checkForAutoLogin();
 
         usernameField = findViewById(R.id.editTextUsername);
         passwordField = findViewById(R.id.editTextPassword);
@@ -62,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         loginPersistanceBox = relativeLayout.findViewById(R.id.checkBox);
 
         loginHandler = new Handler(Looper.getMainLooper());
+
 
         loginBtn.setOnClickListener(v -> {
             if (internetChecker.isOnline(LoginActivity.this)) {
@@ -88,6 +92,26 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    public void checkForAutoLogin() {
+        try {
+            new Thread(() -> {
+                if (checkForUser()) {
+                    if (customer.getPersistence()) {
+                        loginHandler.post(this::swapScene);
+                    }
+                }
+            }).start();
+        } catch (Exception e) {
+            Log.d("AutoMaatApp", e.toString());
+            e.printStackTrace();
+        }
+    }
+
+    public boolean checkForUser() {
+        customer = customerDao.getFirstCustomer();
+        return customer != null;
+    }
+
     public boolean validateLoginData(EditText usernameField, EditText passwordField, String username, String password){
         if(TextUtils.isEmpty(username)){
             usernameField.setError("Username is Required.");
@@ -107,21 +131,33 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(JSONArray jsonArray) {
                     try {
-                        customerDao = db.customerDao();
-                        Customer customer = new Customer(
-                                1,
-                                (String) jsonArray.get(0),
-                                (String) jsonArray.get(1),
-                                (Boolean) jsonArray.get(2),
-                                (String) jsonArray.get(3));
+                        int responseCode = (int) jsonArray.get(0);
+                        if (responseCode == 200 || responseCode == 201 || responseCode == 202) {
+                            customer = new Customer();
+                            customer.setLogin((String) jsonArray.get(1));
+                            customer.setPassword((String) jsonArray.get(2));
+                            customer.setPersistence((Boolean) jsonArray.get(3));
+                            customer.setAuthToken((String) jsonArray.get(4));
 
-                        customerDao.deleteAll();
-                        customerDao.insertCustomer(customer);
+                            getUserData(api, (String) jsonArray.get(4));
+                        } else if (responseCode == 400 || responseCode == 401) {
+                            loginHandler.post(() ->
+                                    internetChecker
+                                    .networkErrorDialog(LoginActivity.this,
+                                            "Account error",
+                                            "Geen gebruiker gevonden. Controleer uw gebruikersnaam en wachtwoord."));
+                        } else {
+                            loginHandler.post(() ->
+                                    internetChecker
+                                    .networkErrorDialog(LoginActivity.this,
+                                            "Login error",
+                                            "Er is iets misgegaan bij het inloggen. Controleer uw internet of probeer het later opnieuw."));
+                        }
+
                     } catch (Exception e) {
                         Log.d("AutoMaatApp", e.toString());
                         e.printStackTrace();
                     }
-                    loginHandler.post(() -> swapScene());
                 }
 
                 @Override
@@ -133,6 +169,31 @@ public class LoginActivity extends AppCompatActivity {
             Log.d("AutoMaatApp", "Thread error");
             throw new RuntimeException(e);
         }
+    }
+
+    public void getUserData(ApiCalls apiCalls, String authToken){
+        apiCalls.GetUser(authToken, new ApiCallback() {
+            @Override
+            public void onSuccess(JSONArray jsonArray) {
+                try {
+                    customer.setId((int) jsonArray.get(0));
+                    customer.setFirstName((String) jsonArray.get(1));
+                    customer.setLastName((String) jsonArray.get(2));
+                    customer.setEmail((String) jsonArray.get(3));
+                    customerDao.deleteAll();
+                    customerDao.insertCustomer(customer);
+                    loginHandler.post(() -> swapScene());
+                } catch (Exception e) {
+                    Log.d("AutoMaatApp", e.toString());
+                }
+            }
+
+            @Override
+            public void onFailure(IOException e) {
+                Log.d("AutoMaatApp", e.toString());
+                e.printStackTrace();
+            }
+        });
     }
 
     public void swapScene(){

@@ -14,6 +14,18 @@ public class InternetChecker {
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
+    public void networkErrorDialog(Context context, String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.MyDialogTheme);
+
+        builder.setTitle(title).setMessage(message);
+        builder.setPositiveButton("Ok", (dialog, id) -> dialog.cancel());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(dialog.BUTTON_POSITIVE).setTextColor(context.getResources().getColor(R.color.colorPrimary, null));
+    }
+
     public void networkErrorDialog(Context context, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.MyDialogTheme);
 
