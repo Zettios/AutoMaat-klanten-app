@@ -4,7 +4,8 @@ public enum NavSelection {
     CAR_LIST(1),
     CAR_RESERVATION(2),
     ACCIDENT_REPORT(3),
-    SUPPORT(4);
+    SUPPORT(4),
+    LOGOUT(5);
 
     private final int numVal;
 

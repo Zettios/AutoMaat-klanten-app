@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <Button
+            android:text="Annuleer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/cancelBtn"
+            android:background="@drawable/gradient"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="304dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="55dp"
+            app:layout_constraintEnd_toStartOf="@+id/logoutBtn"
+            android:layout_marginEnd="10dp" />
+
+    <Button
+            android:text="Ja, Log Mij Uit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/logoutBtn"
+            android:textColor="#4d66e5"
+            android:background="@drawable/inverted_gradient"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="304dp"
+            app:layout_constraintStart_toEndOf="@+id/cancelBtn"
+            android:layout_marginEnd="55dp"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+            android:text="Log Out?"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView3"
+            android:layout_marginEnd="240dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:fontFamily="sans-serif"
+            tools:ignore="MissingConstraints"
+            android:textSize="30sp"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="55dp"
+            android:textColor="@color/colorPrimary"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintBottom_toTopOf="@+id/textView4"
+            android:layout_marginBottom="15dp" />
+
+    <TextView
+            android:text="Weet je zeker dat je wilt uitloggen?"
+            android:layout_width="wrap_content"
+            android:id="@+id/textView4"
+            android:textAlignment="viewStart"
+            android:gravity="center"
+            android:fontFamily="sans-serif"
+            tools:ignore="MissingConstraints"
+            app:layout_constraintBottom_toTopOf="@+id/cancelBtn"
+            android:layout_marginBottom="50dp"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="55dp"
+            android:textColor="#898989"
+            android:layout_marginEnd="140dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_height="wrap_content" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

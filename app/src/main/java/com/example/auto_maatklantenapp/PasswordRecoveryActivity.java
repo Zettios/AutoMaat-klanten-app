@@ -52,8 +52,6 @@ public class PasswordRecoveryActivity extends AppCompatActivity {
                 internetChecker.networkErrorDialog(PasswordRecoveryActivity.this,
                         "U moet verbonden zijn met het internet om uw wachtwoord opnieuw in te stellen.");
             }
-
-
         });
     }
 
