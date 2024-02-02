@@ -64,6 +64,9 @@ public class ReserveringenFragment extends Fragment {
 
         if (internetChecker.isOnline(getActivity())) {
             onOnlineListener.ResetOfflineVariable();
+
+
+
             new Thread(() -> {
                 customer = customerDao.getFirstCustomer();
                 fetchRentals(customer.authToken);
@@ -74,6 +77,30 @@ public class ReserveringenFragment extends Fragment {
         }
 
         return view;
+    }
+
+    private int getCustomerId() {
+        final int[] customerId = {0};
+
+        ApiCalls api = new ApiCalls();
+        api.GetDataFromUsers(new ApiCallback() {
+            @Override
+            public void onSuccess(JSONArray jsonArray) {
+                try {
+                    JSONObject user = jsonArray.getJSONObject(0);
+                    customerId[0] = user.getInt("id");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        return customerId[0];
     }
 
     private void defineVariables(Activity activity, View view) {
@@ -91,7 +118,9 @@ public class ReserveringenFragment extends Fragment {
 
     private void fetchRentals(String authToken){
         ApiCalls api = new ApiCalls();
-        api.GetAllRentals(authToken, new ApiCallback() {
+
+        int customerId = getCustomerId();
+        api.GetAllRentals(authToken, customerId, new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
                 getActivity().runOnUiThread(() -> {

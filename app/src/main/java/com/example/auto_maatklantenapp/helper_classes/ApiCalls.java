@@ -14,6 +14,7 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -23,8 +24,8 @@ import okhttp3.Response;
 public class ApiCalls {
 
     JSONObject authToken;
-    //String baseurl = "https://measured-adder-concrete.ngrok-free.app";
-    String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
+    String baseurl = "https://measured-adder-concrete.ngrok-free.app";
+    //String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
 
@@ -257,11 +258,16 @@ public class ApiCalls {
         });
     }
 
-    public void GetAllRentals(String authToken, ApiCallback callback) {
+    public void GetAllRentals(String authToken, int customerId, ApiCallback callback) {
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + RENTALS_ENDPOINT_URL;
+
+        HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+        urlBuilder.addQueryParameter("customerId.equals", "integer(" + customerId + ")");
+        String finalUrl = urlBuilder.build().toString();
+
         Request request = new Request.Builder()
-                .url(url)
+                .url(finalUrl)
                 .header("Authorization", "Bearer " + authToken)
                 .build();
 
