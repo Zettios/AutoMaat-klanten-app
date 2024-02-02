@@ -3,6 +3,8 @@ package com.example.auto_maatklantenapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,10 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import androidx.fragment.app.Fragment;
 
-import androidx.room.Room;
-
 import com.example.auto_maatklantenapp.dao.CustomerDao;
-import com.example.auto_maatklantenapp.database.AutoMaatDatabase;
 import com.example.auto_maatklantenapp.helper_classes.NavSelection;
 import com.example.auto_maatklantenapp.listeners.OnNavSelectionListener;
 
@@ -21,7 +20,7 @@ public class LogoutFragment extends Fragment {
     Button logoutBtn, cancelBtn;
     OnNavSelectionListener onNavSelectionListener;
     CustomerDao customerDao;
-    AutoMaatDatabase db;
+    Handler logoutHandler;
 
     public LogoutFragment() { super(R.layout.fragment_logout); }
 
@@ -38,35 +37,35 @@ public class LogoutFragment extends Fragment {
     private void defineVariables(Activity activity, View view) {
         logoutBtn = view.findViewById(R.id.logoutBtn);
         cancelBtn = view.findViewById(R.id.cancelBtn);
-        db = Room.databaseBuilder(
-                getActivity().getApplicationContext(),
-                AutoMaatDatabase.class,
-                "automaat_db")
-                .fallbackToDestructiveMigration().build();
-        customerDao = db.customerDao();
+        customerDao = ((MainActivity) activity).db.customerDao();
+        logoutHandler = new Handler(Looper.getMainLooper());
 
         cancelBtn.setOnClickListener(v -> {
             swapToMain();
         });
 
         logoutBtn.setOnClickListener(v -> {
-            logoutUser();
-            swapToLogin(activity);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    logoutUser();
+                    logoutHandler.post(() -> swapToLogin(activity));
+                }
+            }).start();
         });
     }
 
-    private void swapToMain(){
+    private void swapToMain() {
         onNavSelectionListener.OnNavSelection(NavSelection.CAR_LIST.getNumVal());
     }
 
-    private void swapToLogin(Activity activity){
+    private void swapToLogin(Activity activity) {
         Intent i = new Intent(activity, LoginActivity.class);
         startActivity(i);
         activity.finish();
     }
 
-    private void logoutUser(){
+    private void logoutUser() {
         customerDao.deleteAll();
-        Log.d("AutoMaatApp", "Logged user out.");
     }
 }

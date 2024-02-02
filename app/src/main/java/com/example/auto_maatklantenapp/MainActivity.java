@@ -55,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
             case 4:
                 fragment = SupportFragment.newInstance();
                 break;
+            case 5:
+                fragment = new LogoutFragment();
+                break;
             default:
                 fragment = CarListFragment.newInstance();
                 break;

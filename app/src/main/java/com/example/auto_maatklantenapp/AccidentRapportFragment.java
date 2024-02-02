@@ -223,23 +223,31 @@ public class AccidentRapportFragment extends Fragment {
                 api.sendAccidentReport(createAccidentRapport(), customer.authToken, new ApiCallback() {
                     @Override
                     public void onSuccess(JSONArray jsonArray) {
-                        submitResponseMessageHandler.post(() -> {
-                            try {
-                                if (jsonArray.getJSONObject(0).getInt("code") == 401) {
+                        try {
+                            if (jsonArray.getJSONObject(0).getInt("code") == 401) {
+                                customerDao.deleteAll();
+                                submitResponseMessageHandler.post(() -> {
                                     Toast toast = Toast.makeText(getActivity(), "Log opnieuw in", Toast.LENGTH_SHORT);
                                     toast.show();
                                     onExpiredTokenListener.ReturnToLogin();
-                                } else {
-                                    String title = jsonArray.getJSONObject(0).getString("title");
-                                    String message = jsonArray.getJSONObject(0).getString("message");
-                                    onSubmitResponseDialog(title, message);
-                                    resetForm();
-                                    endProcessingDataFeedback();
-                                }
-                            } catch (JSONException e)  {
-                                e.printStackTrace();
+                                });
+                            } else {
+                                submitResponseMessageHandler.post(() -> {
+                                    try {
+                                        String title = jsonArray.getJSONObject(0).getString("title");
+                                        String message = jsonArray.getJSONObject(0).getString("message");
+                                        onSubmitResponseDialog(title, message);
+                                        resetForm();
+                                        endProcessingDataFeedback();
+                                    } catch (Exception e) {
+                                        Log.d("AutoMaatApp", e.toString());
+                                        e.printStackTrace();
+                                    }
+                                });
                             }
-                        });
+                        } catch (JSONException e)  {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override

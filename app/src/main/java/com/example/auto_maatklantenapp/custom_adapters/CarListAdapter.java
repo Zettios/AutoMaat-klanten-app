@@ -1,23 +1,30 @@
 package com.example.auto_maatklantenapp.custom_adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.auto_maatklantenapp.R;
 import com.example.auto_maatklantenapp.classes.Car;
+import com.example.auto_maatklantenapp.custom_dialogs.CarFilterDialogFragment;
+import com.example.auto_maatklantenapp.custom_dialogs.CarReservationDialogFragment;
 import com.example.auto_maatklantenapp.view_holders.CarListRecyclerViewHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CarListAdapter extends RecyclerView.Adapter<CarListRecyclerViewHolder> {
     private List<Car> cars;
+    private FragmentManager fragmentManager;
 
-    public CarListAdapter(List<Car> cars) {
+    public CarListAdapter(List<Car> cars, FragmentManager fragmentManager) {
         this.cars = cars;
+        this.fragmentManager = fragmentManager;
     }
 
     @Override
@@ -44,6 +51,22 @@ public class CarListAdapter extends RecyclerView.Adapter<CarListRecyclerViewHold
         holder.getCarInfo().setText(carInfo);
         holder.getCarOptions().setText(carOptions);
         holder.getPrice().setText(carPrice);
+
+        holder.getFrameLayout().setOnClickListener(v -> {
+            new CarFilterDialogFragment();
+            CarReservationDialogFragment dFragment = new CarReservationDialogFragment(
+                    cars.get(position).getUid(),
+                    carBrandModel,
+                    cars.get(position).getFuel(),
+                    cars.get(position).getLicensePlate(),
+                    cars.get(position).getModelYear(),
+                    cars.get(position).getNrOfSeats(),
+                    cars.get(position).getBody(),
+                    carOptions,
+                    carPrice,
+                    fragmentManager);
+            dFragment.show(fragmentManager, "CarReservationDialogFragment");
+        });
     }
 
     @Override

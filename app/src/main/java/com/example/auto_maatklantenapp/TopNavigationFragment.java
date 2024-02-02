@@ -38,11 +38,11 @@ public class TopNavigationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_top_navigation, container, false);
-        defineVariables(getActivity(), view);
+        defineVariables(view);
         return view;
     }
 
-    private void defineVariables(FragmentActivity activity, View view) {
+    private void defineVariables(View view) {
         userBtn = view.findViewById(R.id.userBtn);
 
         //Should bring us to the logout fragment. Note: I'm programming blind :)

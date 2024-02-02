@@ -10,6 +10,12 @@ public class Customer {
     @ColumnInfo(name = "id")
     public int id;
 
+    @ColumnInfo(name = "systemId")
+    public int systemId;
+
+    @ColumnInfo(name = "nr")
+    public int nr;
+
     @ColumnInfo(name = "login")
     public String login;
 
@@ -33,8 +39,10 @@ public class Customer {
 
     public Customer() {};
 
-    public Customer(int id, String login, String password, String firstName, String lastName, String email, Boolean persistence,  String authToken){
+    public Customer(int id, int systemId, int nr, String login, String password, String firstName, String lastName, String email, Boolean persistence,  String authToken){
         this.id = id;
+        this.systemId = systemId;
+        this.nr = nr;
         this.login = login;
         this.password = password;
         this.firstName = firstName;
@@ -50,6 +58,22 @@ public class Customer {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getSystemId() {
+        return systemId;
+    }
+
+    public void setSystemId(int systemId) {
+        this.systemId = systemId;
+    }
+
+    public int getNr() {
+        return nr;
+    }
+
+    public void setNr(int nr) {
+        this.nr = nr;
     }
 
     public String getLogin() {

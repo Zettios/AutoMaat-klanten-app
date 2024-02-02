@@ -177,9 +177,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(JSONArray jsonArray) {
                 try {
                     customer.setId((int) jsonArray.get(0));
-                    customer.setFirstName((String) jsonArray.get(1));
-                    customer.setLastName((String) jsonArray.get(2));
-                    customer.setEmail((String) jsonArray.get(3));
+                    customer.setSystemId((int) jsonArray.get(1));
+                    customer.setNr((int) jsonArray.get(2));
+                    customer.setFirstName((String) jsonArray.get(3));
+                    customer.setLastName((String) jsonArray.get(4));
+                    customer.setEmail((String) jsonArray.get(5));
                     customerDao.deleteAll();
                     customerDao.insertCustomer(customer);
                     loginHandler.post(() -> swapScene());

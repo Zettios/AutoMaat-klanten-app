@@ -20,7 +20,7 @@ public interface RentalDao {
     List<Rental> loadAllByIds(int[] rentalIds);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertAll(List<Car> cars);
+    void insertAll(List<Rental> Rental);
 
     @Delete
     void delete(Rental rental);

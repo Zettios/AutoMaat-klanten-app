@@ -143,7 +143,7 @@ public class CarListFragment extends Fragment {
                     storeCarDataLocally(allCars);
 
                     getActivity().runOnUiThread(() -> {
-                        carListAdapter = new CarListAdapter(cars);
+                        carListAdapter = new CarListAdapter(cars, getChildFragmentManager());
                         recyclerView.setAdapter(carListAdapter);
                     });
                 } catch (Exception e) {
@@ -259,7 +259,7 @@ public class CarListFragment extends Fragment {
         }
 
         getActivity().runOnUiThread(() -> {
-            carListAdapter = new CarListAdapter(cars);
+            carListAdapter = new CarListAdapter(cars, getChildFragmentManager());
             recyclerView.setAdapter(carListAdapter);
         });
     }

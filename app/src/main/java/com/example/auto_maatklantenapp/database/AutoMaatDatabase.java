@@ -12,7 +12,7 @@ import com.example.auto_maatklantenapp.dao.CarDao;
 import com.example.auto_maatklantenapp.dao.CustomerDao;
 import com.example.auto_maatklantenapp.dao.RentalDao;
 
-@Database(entities = {Car.class, Customer.class, Rental.class}, version = 5)
+@Database(entities = {Car.class, Customer.class, Rental.class}, version = 8)
 @TypeConverters(LocalDateConverter.class)
 public abstract class AutoMaatDatabase extends RoomDatabase {
     public abstract CarDao carDao();

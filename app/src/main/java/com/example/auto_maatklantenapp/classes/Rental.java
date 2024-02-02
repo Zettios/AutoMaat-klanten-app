@@ -6,8 +6,6 @@ import androidx.room.PrimaryKey;
 
 import com.example.auto_maatklantenapp.helper_classes.RentalState;
 
-import java.time.LocalDate;
-
 @Entity
 public class Rental {
     @PrimaryKey
@@ -24,10 +22,10 @@ public class Rental {
     public Double latitude;
 
     @ColumnInfo(name = "fromDate")
-    public LocalDate fromDate;
+    public String fromDate;
 
     @ColumnInfo(name = "toDate")
-    public LocalDate toDate;
+    public String toDate;
 
     @ColumnInfo(name = "state")
     public RentalState state;
@@ -38,11 +36,12 @@ public class Rental {
     @ColumnInfo(name = "customer")
     public int customerId;
 
-    public Rental(String code, Double longitude, Double latitude, LocalDate fromDate, LocalDate toDate, RentalState state, int carId, int customerId){
+    public Rental(int uid, String code, Double longitude, Double latitude, String fromDate, String toDate, RentalState state, int carId, int customerId){
+        this.uid = uid;
         this.code = code;
         this.longitude = longitude;
         this.latitude = latitude;
-        this. fromDate = fromDate;
+        this.fromDate = fromDate;
         this.toDate = toDate;
         this.state = state;
         this.carId = carId;

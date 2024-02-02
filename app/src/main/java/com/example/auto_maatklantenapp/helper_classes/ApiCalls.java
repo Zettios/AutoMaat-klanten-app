@@ -24,13 +24,13 @@ import okhttp3.Response;
 public class ApiCalls {
 
     JSONObject authToken;
-    String baseurl = "https://measured-adder-concrete.ngrok-free.app";
-    //String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
+    //String baseurl = "https://measured-adder-concrete.ngrok-free.app";
+    String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
 
     private static final String LOGIN_USER_URL = "/api/authenticate";
-    private static final String GET_USER_URL = "/api/AM/account";
+    private static final String GET_USER_URL = "/api/AM/me";
     private static final String REGISTER_USER_URL = "/api/AM/register";
     private static final String RESET_USER_PASSWORD_INIT_URL =  "/api/account/reset-password/init";
     private static final String USERS_ENDPOINT_URL = "/api/users";
@@ -112,13 +112,17 @@ public class ApiCalls {
                 if (response.isSuccessful() ) {
                     try {
                         String responseData = response.body().string();
-                        JSONObject jsonObject;
                         JSONArray jsonArray = new JSONArray();
-                            jsonObject = new JSONObject(responseData);
-                        jsonArray.put(jsonObject.get("id"));
-                        jsonArray.put(jsonObject.get("firstName"));
-                        jsonArray.put(jsonObject.get("lastName"));
-                        jsonArray.put(jsonObject.get("email"));
+
+                        JSONObject customerObject = new JSONObject(responseData);
+                        JSONObject systemUser = (JSONObject) customerObject.get("systemUser");
+
+                        jsonArray.put(customerObject.get("id"));
+                        jsonArray.put(systemUser.get("id"));
+                        jsonArray.put(customerObject.get("nr"));
+                        jsonArray.put(customerObject.get("firstName"));
+                        jsonArray.put(customerObject.get("lastName"));
+                        jsonArray.put(systemUser.get("email"));
 
                         callback.onSuccess(jsonArray);
                     } catch (JSONException e) {
@@ -261,9 +265,9 @@ public class ApiCalls {
     public void GetAllRentals(String authToken, int customerId, ApiCallback callback) {
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + RENTALS_ENDPOINT_URL;
-
+        String t = "integer(" + customerId + ")";
         HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
-        urlBuilder.addQueryParameter("customerId.equals", "integer(" + customerId + ")");
+        urlBuilder.addQueryParameter("customerId.equals", String.valueOf(customerId));
         String finalUrl = urlBuilder.build().toString();
 
         Request request = new Request.Builder()
@@ -281,13 +285,15 @@ public class ApiCalls {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String myResponse = response.body().string();
-                    JSONArray jsonArray = null;
+                    JSONArray jsonArray;
                     try {
                         jsonArray = new JSONArray(myResponse);
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
                     callback.onSuccess(jsonArray);
+                } else {
+                    callback.onSuccess(new JSONArray().put(response.code()));
                 }
             }
         });
@@ -334,8 +340,6 @@ public class ApiCalls {
                     if (response.isSuccessful()) {
                         responseData.put("title", "Success");
                         responseData.put("message", "Uw incident is succesvol binnengekomen");
-                    } else if (response.code() == 401) {
-
                     } else {
                         responseData.put("title", "Error");
                         responseData.put("message", "Er is iets misgegaan. Probeer het opnieuw of neem contact met ons op.");
