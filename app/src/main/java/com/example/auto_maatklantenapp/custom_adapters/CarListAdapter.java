@@ -1,5 +1,6 @@
 package com.example.auto_maatklantenapp.custom_adapters;
 
+import android.app.Activity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +22,12 @@ import java.util.List;
 public class CarListAdapter extends RecyclerView.Adapter<CarListRecyclerViewHolder> {
     private List<Car> cars;
     private FragmentManager fragmentManager;
+    private Activity activity;
 
-    public CarListAdapter(List<Car> cars, FragmentManager fragmentManager) {
+    public CarListAdapter(List<Car> cars, FragmentManager fragmentManager, Activity activity) {
         this.cars = cars;
         this.fragmentManager = fragmentManager;
+        this.activity = activity;
     }
 
     @Override
@@ -64,7 +67,8 @@ public class CarListAdapter extends RecyclerView.Adapter<CarListRecyclerViewHold
                     cars.get(position).getBody(),
                     carOptions,
                     carPrice,
-                    fragmentManager);
+                    fragmentManager,
+                    activity);
             dFragment.show(fragmentManager, "CarReservationDialogFragment");
         });
     }

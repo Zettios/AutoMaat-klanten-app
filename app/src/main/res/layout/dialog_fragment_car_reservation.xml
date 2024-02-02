@@ -101,7 +101,7 @@
             android:textSize="20sp" />
 
     <TextView
-            android:text="01/01/2000 - 01/01/3000"
+            android:text="yyyy-mm-dd - yyyy-mm-dd"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/txtDetailReservationDate"

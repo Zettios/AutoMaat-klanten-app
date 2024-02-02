@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.auto_maatklantenapp.accident.AccidentRapport;
+import com.example.auto_maatklantenapp.classes.Rental;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -258,6 +259,66 @@ public class ApiCalls {
                     }
                     callback.onSuccess(jsonArray);
                 }
+            }
+        });
+    }
+
+    public void sendCarReservation(String authToken, Rental rentalData, ApiCallback apiCallback) {
+        OkHttpClient client = new OkHttpClient();
+        String url = baseurl + RENTALS_ENDPOINT_URL;
+
+        JSONObject rentalObject = new JSONObject();
+        JSONObject customerObject = new JSONObject();
+        JSONObject carObject = new JSONObject();
+        try {
+            rentalObject.put("code", rentalData.getCode());
+            rentalObject.put("longitude", rentalData.getLongitude());
+            rentalObject.put("latitude", rentalData.getLatitude());
+            rentalObject.put("fromDate", rentalData.getFromDate());
+            rentalObject.put("toDate", rentalData.getToDate());
+            rentalObject.put("state", rentalData.getState());
+            rentalObject.put("inspections", null);
+
+            customerObject.put("id", rentalData.getCustomerId());
+            carObject.put("id", rentalData.getCarId());
+            rentalObject.put("customer", customerObject);
+            rentalObject.put("car", carObject);
+        } catch (Exception e) {
+            Log.d("AutoMaatApp", e.toString());
+            e.printStackTrace();
+        }
+
+        RequestBody formBody = RequestBody.create(rentalObject.toString(), JSON);
+        Request request = new Request.Builder()
+                .url(url)
+                .header("Authorization", "Bearer " + authToken)
+                .post(formBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                try {
+                    if (response.isSuccessful()) {
+                        JSONArray responseData = new JSONArray();
+                        responseData.put(response.code());
+                        responseData.put(rentalData.getCode());
+                        responseData.put(rentalData.getFromDate());
+                        apiCallback.onSuccess(responseData);
+                    } else {
+                        JSONArray responseData = new JSONArray();
+                        responseData.put(response.code());
+                        apiCallback.onSuccess(responseData);
+                    }
+                } catch (Exception e) {
+                    Log.d("AutoMaatApp", e.toString());
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                apiCallback.onFailure(e);
             }
         });
     }

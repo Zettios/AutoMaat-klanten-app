@@ -130,7 +130,7 @@ public class CarListFragmentTest {
         av.cars.add(car1);
         av.cars.add(car2);
 
-        av.carListAdapter =  new CarListAdapter(av.cars, null);
+        av.carListAdapter =  new CarListAdapter(av.cars, null, null);
 
         Bundle bundle = Mockito.mock(Bundle.class);
         when(bundle.getString("merk")).thenReturn("Toyota");
