@@ -12,9 +12,9 @@ public class AccidentRapport {
     String completed;
     String photos = null;
     String repairs = null;
-    Car car = null;
+    int carId = 0;
     String employee = null;
-    String rental = null;
+    int rentalId = 0;
 
 
     public String getCode() {
@@ -73,19 +73,23 @@ public class AccidentRapport {
         return repairs;
     }
 
-    public Car getCar() {
-        return car;
+    public int getCarId() {
+        return carId;
     }
 
-    public void setCar(Car car) {
-        this.car = car;
+    public void setCarId(int carId) {
+        this.carId = carId;
     }
 
     public String getEmployee() {
         return employee;
     }
 
-    public String getRental() {
-        return rental;
+    public int getRentalId() {
+        return rentalId;
+    }
+
+    public void setRentalId(int rentalId) {
+        this.rentalId = rentalId;
     }
 }

@@ -315,10 +315,10 @@ public class ApiCalls {
             accidentJsonObject.put("photoContentType", accidentReport.getPhotoContentType());
             accidentJsonObject.put("completed", accidentReport.getCompleted());
 
-            carJsonObject.put("id", 1);
+            carJsonObject.put("id", accidentReport.getCarId());
             accidentJsonObject.put("car", carJsonObject);
 
-            rentalJsonObject.put("id", 1);
+            rentalJsonObject.put("id", accidentReport.getRentalId());
             accidentJsonObject.put("rental", rentalJsonObject);
         } catch (Exception e) {
             Log.e("AutoMaatApp", e.toString());

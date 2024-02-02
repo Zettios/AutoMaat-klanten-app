@@ -22,43 +22,57 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.auto_maatklantenapp.accident.AccidentRapport;
 import com.example.auto_maatklantenapp.classes.Customer;
+import com.example.auto_maatklantenapp.classes.Rental;
 import com.example.auto_maatklantenapp.dao.CustomerDao;
 import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
 import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
 import com.example.auto_maatklantenapp.helper_classes.CameraFunctions;
 import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
+import com.example.auto_maatklantenapp.helper_classes.RentalState;
 import com.example.auto_maatklantenapp.listeners.OnExpiredTokenListener;
 import com.example.auto_maatklantenapp.listeners.OnInternetLossListener;
 import com.example.auto_maatklantenapp.listeners.OnOnlineListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class AccidentRapportFragment extends Fragment {
     CustomerDao customerDao;
     Customer customer;
+    InternetChecker internetChecker;
 
     OnExpiredTokenListener onExpiredTokenListener;
     OnInternetLossListener onInternetLossListener;
     OnOnlineListener onOnlineListener;
 
+    Spinner rental;
     EditText odoMeter;
     ImageView accidentPicture;
     Button takePicture;
     Button submit;
+
+    List<Rental> rentalItems;
+    List<String> rentalCodes;
+
+    ApiCalls api;
 
     CameraFunctions cameraFunctions;
     ActivityResultLauncher<Intent> startCamera;
@@ -79,12 +93,21 @@ public class AccidentRapportFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        InternetChecker internetChecker = new InternetChecker();
-
         View view = inflater.inflate(R.layout.fragment_accident_rapport, container, false);
         defineVariables(getActivity(), view);
         registerCameraResult();
         initializeCameraPermissionActivityResult();
+
+        if (internetChecker.isOnline(getActivity())) {
+            onOnlineListener.ResetOfflineVariable();
+            new Thread(() -> {
+                customer = customerDao.getFirstCustomer();
+                fetchRentals(customer, customer.authToken);
+            }).start();
+        } else {
+            onInternetLossListener.NotifyInternetLoss();
+            //new Thread(this::getOfflinereserveringen).start();
+        }
 
         takePicture.setOnClickListener(v -> {
             if (cameraFunctions.allPermissionsGranted(getContext())) {
@@ -114,6 +137,7 @@ public class AccidentRapportFragment extends Fragment {
 
     private void defineVariables(Activity activity, View view) {
         customerDao = ((MainActivity) activity).db.customerDao();
+        internetChecker = new InternetChecker();
 
         onExpiredTokenListener = (OnExpiredTokenListener) getContext();
         onInternetLossListener = (OnInternetLossListener) getContext();
@@ -122,6 +146,7 @@ public class AccidentRapportFragment extends Fragment {
         cameraFunctions = new CameraFunctions();
         submitResponseMessageHandler = new Handler(Looper.getMainLooper());
 
+        rental = view.findViewById(R.id.spnrReservedCars);
         odoMeter = view.findViewById(R.id.etOdoMeterInput);
         accidentPicture = view.findViewById(R.id.ivAccidentPicture);
         takePicture = view.findViewById(R.id.btnTakeFoto);
@@ -151,6 +176,63 @@ public class AccidentRapportFragment extends Fragment {
 
     private void endProcessingDataFeedback() {
         submit.setText(R.string.submit_text);
+    }
+
+    private void fetchRentals(Customer customer, String authToken) {
+        api = new ApiCalls();
+        api.GetAllRentals(authToken, customer.getId(), new ApiCallback() {
+            @Override
+            public void onSuccess(JSONArray jsonArray) {
+                rentalItems = new ArrayList<>();
+                rentalCodes = new ArrayList<>();
+                try {
+                    if (jsonArray.get(0).equals(401)) {
+                        customerDao.deleteAll();
+                        getActivity().runOnUiThread(() -> {
+                            Toast toast = Toast.makeText(getActivity(), "Log opnieuw in", Toast.LENGTH_SHORT);
+                            toast.show();
+                            onExpiredTokenListener.ReturnToLogin();
+                        });
+                    } else {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject rentalData = jsonArray.getJSONObject(i);
+
+                            int uid = rentalData.getInt("id");
+                            String code = rentalData.getString("code");
+                            Double longitude = rentalData.getDouble("longitude");
+                            Double latitude = rentalData.getDouble("latitude");
+                            String fromDate = rentalData.getString("fromDate");
+                            String toDate = rentalData.getString("toDate");
+                            RentalState state = RentalState.valueOf(rentalData.getString("state"));
+                            int customerId = rentalData.getJSONObject("customer").getInt("id");
+                            int carId = rentalData.getJSONObject("car").getInt("id");
+
+                            rentalCodes.add(rentalData.getString("code"));
+                            rentalItems.add(new Rental(uid, code, longitude, latitude,
+                                    fromDate, toDate, state, carId, customerId));
+                        }
+
+                        getActivity().runOnUiThread(() -> {
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                                    getContext(), android.R.layout.simple_spinner_item, rentalCodes);
+
+                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                            rental.setAdapter(adapter);
+                        });
+
+                    }
+                } catch (Exception e) {
+                    Log.d("AutoMaatApp", e.toString());
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(IOException e) {
+                Log.w("AutoMaatApp", "onfailure");
+                e.printStackTrace();
+            }
+        });
     }
 
     private void takePicture() {
@@ -213,7 +295,7 @@ public class AccidentRapportFragment extends Fragment {
     }
 
     private void submitReport() throws JSONException {
-        ApiCalls api = new ApiCalls();
+        api = new ApiCalls();
         if (validateData()) {
             disableSubmitButton();
             showProcessingDataFeedback();
@@ -264,6 +346,11 @@ public class AccidentRapportFragment extends Fragment {
     }
 
     private boolean validateData() {
+        if (rental.getSelectedItem() == null) {
+            internetChecker.networkErrorDialog(getContext(), "Error", "Er moet een reservering geselecteerd zijn om schade te kunnen melden.");
+            return false;
+        }
+
         if (odoMeter.getText().toString().trim().matches("")) {
             odoMeter.setError("Dit veld mag niet leeg zijn.");
             return false;
@@ -278,11 +365,13 @@ public class AccidentRapportFragment extends Fragment {
 
     private AccidentRapport createAccidentRapport() {
         AccidentRapport accidentRapport = new AccidentRapport();
-        accidentRapport.setCode("This is a code");
+        accidentRapport.setCode(rentalItems.get((int) rental.getSelectedItemId()).getCode());
         accidentRapport.setOdoMeter(Integer.parseInt(odoMeter.getText().toString()));
         accidentRapport.setResult("");
         accidentRapport.setPhoto(encodedImage);
         accidentRapport.setCompleted("");
+        accidentRapport.setCarId(rentalItems.get((int) rental.getSelectedItemId()).carId);
+        accidentRapport.setRentalId(rentalItems.get((int) rental.getSelectedItemId()).uid);
         return accidentRapport;
     }
 
