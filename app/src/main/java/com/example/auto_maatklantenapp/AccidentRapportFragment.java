@@ -32,7 +32,9 @@ import android.widget.Toast;
 import com.example.auto_maatklantenapp.accident.AccidentRapport;
 import com.example.auto_maatklantenapp.classes.Customer;
 import com.example.auto_maatklantenapp.classes.Rental;
+import com.example.auto_maatklantenapp.custom_adapters.CarListAdapter;
 import com.example.auto_maatklantenapp.dao.CustomerDao;
+import com.example.auto_maatklantenapp.dao.RentalDao;
 import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
 import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
 import com.example.auto_maatklantenapp.helper_classes.CameraFunctions;
@@ -57,6 +59,7 @@ import java.util.Objects;
 public class AccidentRapportFragment extends Fragment {
     CustomerDao customerDao;
     Customer customer;
+    RentalDao rentalDao;
     InternetChecker internetChecker;
 
     OnExpiredTokenListener onExpiredTokenListener;
@@ -106,7 +109,7 @@ public class AccidentRapportFragment extends Fragment {
             }).start();
         } else {
             onInternetLossListener.NotifyInternetLoss();
-            //new Thread(this::getOfflinereserveringen).start();
+            new Thread(this::getOfflineRentals).start();
         }
 
         takePicture.setOnClickListener(v -> {
@@ -137,6 +140,7 @@ public class AccidentRapportFragment extends Fragment {
 
     private void defineVariables(Activity activity, View view) {
         customerDao = ((MainActivity) activity).db.customerDao();
+        rentalDao = ((MainActivity) activity).db.rentalDao();
         internetChecker = new InternetChecker();
 
         onExpiredTokenListener = (OnExpiredTokenListener) getContext();
@@ -212,6 +216,8 @@ public class AccidentRapportFragment extends Fragment {
                                     fromDate, toDate, state, carId, customerId));
                         }
 
+                        storeRentalDataLocally(rentalItems);
+
                         getActivity().runOnUiThread(() -> {
                             ArrayAdapter<String> adapter = new ArrayAdapter<>(
                                     getContext(), android.R.layout.simple_spinner_item, rentalCodes);
@@ -232,6 +238,28 @@ public class AccidentRapportFragment extends Fragment {
                 Log.w("AutoMaatApp", "onfailure");
                 e.printStackTrace();
             }
+        });
+    }
+
+    public void storeRentalDataLocally(List<Rental> rentals) {
+        rentalDao.deleteAll();
+        rentalDao.insertAll(rentals);
+    }
+
+    private void getOfflineRentals() {
+        rentalItems = rentalDao.getAll();
+        rentalCodes = new ArrayList<>();
+
+        for (int index = 0; index < rentalItems.size(); index++) {
+            rentalCodes.add(rentalItems.get(index).getCode());
+        }
+
+        getActivity().runOnUiThread(() -> {
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                    getContext(), android.R.layout.simple_spinner_item, rentalCodes);
+
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            rental.setAdapter(adapter);
         });
     }
 

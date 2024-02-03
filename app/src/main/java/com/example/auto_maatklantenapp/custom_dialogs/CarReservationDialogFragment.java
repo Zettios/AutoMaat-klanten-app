@@ -21,9 +21,9 @@ import com.example.auto_maatklantenapp.classes.Rental;
 import com.example.auto_maatklantenapp.dao.CustomerDao;
 import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
 import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
+import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
 import com.example.auto_maatklantenapp.helper_classes.RentalState;
 import com.example.auto_maatklantenapp.listeners.BuildRentalNotification;
-import com.example.auto_maatklantenapp.listeners.OnExpiredTokenListener;
 import com.google.android.material.datepicker.MaterialDatePicker;
 
 import org.json.JSONArray;
@@ -40,6 +40,10 @@ public class CarReservationDialogFragment extends DialogFragment {
 
     CustomerDao customerDao;
     Customer customer;
+
+    InternetChecker internetChecker;
+
+    TextView reservationDate;
 
     int carId;
     String carBrandAndModel;
@@ -70,6 +74,7 @@ public class CarReservationDialogFragment extends DialogFragment {
         this.price = price;
         this.fragmentManager = fragmentManager;
         this.activity = activity;
+        this.internetChecker = new InternetChecker();
     }
 
     @Override
@@ -87,7 +92,7 @@ public class CarReservationDialogFragment extends DialogFragment {
         TextView detailBodyType = view.findViewById(R.id.txtDetailBody);
         TextView detailOptions = view.findViewById(R.id.txtDetailOption);
         TextView detailPrice = view.findViewById(R.id.txtDetailPrice);
-        TextView reservationDate = view.findViewById(R.id.txtDetailReservationDate);
+        reservationDate = view.findViewById(R.id.txtDetailReservationDate);
         Button pickDate = view.findViewById(R.id.btnPickDate);
         Button reserve = view.findViewById(R.id.btnReserverCar);
 
@@ -122,10 +127,28 @@ public class CarReservationDialogFragment extends DialogFragment {
         });
 
         reserve.setOnClickListener(v -> {
-            submitReservation();
+            if (internetChecker.isOnline(getActivity())) {
+                if (validateDate()) {
+                    submitReservation();
+                } else {
+                    internetChecker.networkErrorDialog(getActivity(),
+                            "Selecteer alstublieft een datum.");
+                }
+            } else {
+                internetChecker.networkErrorDialog(getActivity(),
+                        "U moet verbonden zijn met het internet om te kunnen reserveren.");
+            }
         });
 
         return builder.create();
+    }
+
+    public boolean validateDate() {
+        if (reservationDate.getText().equals("yyyy-mm-dd - yyyy-mm-dd")) {
+            return false;
+        }
+
+        return true;
     }
 
     public void submitReservation() {
@@ -140,7 +163,8 @@ public class CarReservationDialogFragment extends DialogFragment {
                 public void onSuccess(JSONArray jsonArray) {
                     try {
                         if ((int) jsonArray.get(0) == 201) {
-                            buildRentalNotification.MakeNotification();
+                            buildRentalNotification.ScheduleRentalNotification(rentalCode, from);
+                            dismiss();
                         } else {
                             Log.d("AutoMaatApp", "oop");
                         }

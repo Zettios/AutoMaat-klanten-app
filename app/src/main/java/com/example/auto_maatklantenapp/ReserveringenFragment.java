@@ -156,35 +156,25 @@ public class ReserveringenFragment extends Fragment {
             public void onSuccess(JSONArray jsonArray) {
                 List<Rental> rentals = new ArrayList<>();
                 try {
-                    if (jsonArray.get(0).equals(401)) {
-                        customerDao.deleteAll();
-                        getActivity().runOnUiThread(() -> {
-                            Toast toast = Toast.makeText(getActivity(), "Log opnieuw in", Toast.LENGTH_SHORT);
-                            toast.show();
-                            onExpiredTokenListener.ReturnToLogin();
-                        });
-                    } else {
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject rentalData = jsonArray.getJSONObject(i);
 
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject rentalData = jsonArray.getJSONObject(i);
+                        int uid = rentalData.getInt("id");
+                        String code = rentalData.getString("code");
+                        Double longitude = rentalData.getDouble("longitude");
+                        Double latitude = rentalData.getDouble("latitude");
+                        String fromDate = rentalData.getString("fromDate");
+                        String toDate = rentalData.getString("toDate");
+                        RentalState state = RentalState.valueOf(rentalData.getString("state"));
+                        int customerId = rentalData.getJSONObject("customer").getInt("id");
+                        int carId = rentalData.getJSONObject("car").getInt("id");
 
-                            int uid = rentalData.getInt("id");
-                            String code = rentalData.getString("code");
-                            Double longitude = rentalData.getDouble("longitude");
-                            Double latitude = rentalData.getDouble("latitude");
-                            String fromDate = rentalData.getString("fromDate");
-                            String toDate = rentalData.getString("toDate");
-                            RentalState state = RentalState.valueOf(rentalData.getString("state"));
-                            int customerId = rentalData.getJSONObject("customer").getInt("id");
-                            int carId = rentalData.getJSONObject("car").getInt("id");
-
-                            rentals.add(new Rental(uid, code, longitude, latitude,
-                                    fromDate, toDate, state, carId, customerId));
-                        }
-
-                        rentalDao.deleteAll();
-                        rentalDao.insertAll(rentals);
+                        rentals.add(new Rental(uid, code, longitude, latitude,
+                                fromDate, toDate, state, carId, customerId));
                     }
+
+                    rentalDao.deleteAll();
+                    rentalDao.insertAll(rentals);
                 } catch (Exception e) {
                     Log.d("AutoMaatApp", e.toString());
                     e.printStackTrace();
@@ -198,8 +188,17 @@ public class ReserveringenFragment extends Fragment {
 
             @Override
             public void onFailure(IOException e) {
-                Log.w("AutoMaatApp", "onfailure");
-                e.printStackTrace();
+                if (e.getMessage().equals("401")) {
+                    customerDao.deleteAll();
+                    getActivity().runOnUiThread(() -> {
+                        Toast toast = Toast.makeText(getActivity(), "Log opnieuw in", Toast.LENGTH_SHORT);
+                        toast.show();
+                        onExpiredTokenListener.ReturnToLogin();
+                    });
+                } else {
+                    Log.w("AutoMaatApp", "onfailure");
+                    e.printStackTrace();
+                }
             }
         });
     }

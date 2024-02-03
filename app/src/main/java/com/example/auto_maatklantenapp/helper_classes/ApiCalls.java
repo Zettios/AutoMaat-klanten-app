@@ -25,8 +25,8 @@ import okhttp3.Response;
 public class ApiCalls {
 
     JSONObject authToken;
-    String baseurl = "https://measured-adder-concrete.ngrok-free.app";
-    //String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
+    //String baseurl = "https://measured-adder-concrete.ngrok-free.app";
+    String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
 
@@ -326,7 +326,6 @@ public class ApiCalls {
     public void GetAllRentals(String authToken, int customerId, ApiCallback callback) {
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + RENTALS_ENDPOINT_URL;
-        String t = "integer(" + customerId + ")";
         HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
         urlBuilder.addQueryParameter("customerId.equals", String.valueOf(customerId));
         String finalUrl = urlBuilder.build().toString();
@@ -350,11 +349,15 @@ public class ApiCalls {
                     try {
                         jsonArray = new JSONArray(myResponse);
                     } catch (JSONException e) {
+                        Log.d("AutoMaatApp", e.toString());
                         throw new RuntimeException(e);
                     }
                     callback.onSuccess(jsonArray);
+                } else if (response.code() == 401) {
+                    IOException ioException = new IOException("401");
+                    callback.onFailure(ioException);
                 } else {
-                    callback.onSuccess(new JSONArray().put(response.code()));
+                    callback.onFailure(new IOException());
                 }
             }
         });

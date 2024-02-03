@@ -1,5 +1,8 @@
 package com.example.auto_maatklantenapp;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -8,25 +11,34 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.room.Room;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkerParameters;
+
+import android.Manifest;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.auto_maatklantenapp.database.AutoMaatDatabase;
+import com.example.auto_maatklantenapp.helper_classes.NotifyWorker;
 import com.example.auto_maatklantenapp.listeners.BuildRentalNotification;
 import com.example.auto_maatklantenapp.listeners.OnExpiredTokenListener;
 import com.example.auto_maatklantenapp.listeners.OnInternetLossListener;
 import com.example.auto_maatklantenapp.listeners.OnNavSelectionListener;
 import com.example.auto_maatklantenapp.listeners.OnOnlineListener;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements OnNavSelectionListener,
         OnExpiredTokenListener,
@@ -36,6 +48,14 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
 
     public AutoMaatDatabase db;
     Boolean internetLossNotified = false;
+
+    public final static String NOTIFICATION_CHANNEL_ID = "AutoMaat-01";
+    public final static String NOTIFICATION_CHANNEL_NAME = "AutoMaat Huurauto Herinnering";
+    public static final String workTag = "notificationWork";
+    int reservationCode;
+    String fromDate;
+
+    ActivityResultLauncher<String> pushNotificationPermissionLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +67,33 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
                         getResources().getString(R.string.database_name))
                 .fallbackToDestructiveMigration()
                 .build();
+
+        pushNotificationPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    buildNotificationChannel();
+                    Data inputData = new Data.Builder().putInt("AutoMaat"+reservationCode, reservationCode).build();
+
+                    try {
+                        Long currentTime = System.currentTimeMillis();
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        Date date = sdf.parse(fromDate);
+                        long millis = date.getTime();
+
+                        OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotifyWorker.class)
+                                .setInitialDelay(millis - currentTime, TimeUnit.MILLISECONDS)
+                                //.setInitialDelay(180000, TimeUnit.MILLISECONDS)
+                                .setInputData(inputData)
+                                .addTag(workTag)
+                                .build();
+
+                        WorkManager.getInstance(MainActivity.this).enqueue(notificationWork);
+                    } catch (Exception e) {
+                        Log.d("AutoMaatApp", e.toString());
+                        e.printStackTrace();
+                    }
+                }
+        );
     }
 
     @Override
@@ -106,60 +153,48 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
         }
     }
 
-    private final static String automaat_notification_channel = "Auto Maat Event Reminder";
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    @Override
+    public void ScheduleRentalNotification(int rentalCode, String fromDate) {
+        this.reservationCode = rentalCode;
+        this.fromDate = fromDate;
+        pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+    }
+
 
     public void buildNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //define the importance level of the notification
+            String description = "Herinnering voor de huurauto.";
             int importance = NotificationManager.IMPORTANCE_DEFAULT;
-
-            //build the actual notification channel, giving it a unique ID and name
-            NotificationChannel channel =
-                    new NotificationChannel(automaat_notification_channel, automaat_notification_channel, importance);
-
-            //we can optionally add a description for the channel
-            String description = "A channel which shows notifications about events at Manasia";
+            NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, importance);
             channel.setDescription(description);
-
-            //we can optionally set notification LED colour
-            channel.setLightColor(Color.MAGENTA);
-
-            // Register the channel with the system
-            NotificationManager notificationManager = (NotificationManager) getApplicationContext().
-                    getSystemService(Context.NOTIFICATION_SERVICE);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
-            }
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 
-    @Override
-    public void MakeNotification() {
-        try {
-            buildNotificationChannel();
-            Intent intent = new Intent(getApplicationContext(), SplashScreenActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, intent, PendingIntent.FLAG_IMMUTABLE);
-            String notificationTitle = "Reservering staat klaar";
-            String notificationText = "Uw auto reservering staat klaar.";
+    public void createNotification() {
+        Intent intent = new Intent(getApplicationContext(), SplashScreenActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, intent, PendingIntent.FLAG_IMMUTABLE);
+        String notificationTitle = "Reservering staat klaar";
+        String notificationText = "Uw auto reservering staat klaar.";
 
-            NotificationCompat.Builder notificationBuilder =
-                    new NotificationCompat.Builder(getApplicationContext(), automaat_notification_channel)
-                            .setSmallIcon(R.drawable.auto_maat_logo_compact)
-                            .setContentTitle(notificationTitle)
-                            .setContentText(notificationText)
-                            .setContentIntent(pendingIntent)
-                            .setAutoCancel(true)
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(getApplicationContext(), NOTIFICATION_CHANNEL_ID)
+                        .setSmallIcon(R.drawable.auto_maat_logo_compact)
+                        .setContentTitle(notificationTitle)
+                        .setContentText(notificationText)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-            NotificationManagerCompat notificationManager =
-                    NotificationManagerCompat.from(getApplicationContext());
+        NotificationManagerCompat notificationManager =
+                NotificationManagerCompat.from(getApplicationContext());
 
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                return;
-            }
-            notificationManager.notify(1, notificationBuilder.build());
-        } catch (Exception e) {
-            Log.d("AutoMaatApp", e.toString());
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            return;
         }
+        notificationManager.notify(1, notificationBuilder.build());
     }
 }
