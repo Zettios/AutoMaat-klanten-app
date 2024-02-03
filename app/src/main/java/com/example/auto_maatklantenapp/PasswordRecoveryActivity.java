@@ -45,7 +45,7 @@ public class PasswordRecoveryActivity extends AppCompatActivity {
         recoverBtn.setOnClickListener(v -> {
             if (internetChecker.isOnline(PasswordRecoveryActivity.this)) {
                 String email = emailField.getText().toString().trim();
-                if(isValidEmailAddress(emailField, email)){
+                if(isValidEmailAddress(email)){
                     SendRecoveryEmail(email);
                 }
             } else {
@@ -55,17 +55,18 @@ public class PasswordRecoveryActivity extends AppCompatActivity {
         });
     }
 
-    private boolean isValidEmailAddress(EditText emailField, String email){
-        if(TextUtils.isEmpty(email)){
-            emailField.setError("E-mail adres mag niet leeg zijn.");
-            return false;
+    public boolean isValidEmailAddress(String email){
+        boolean valid = true;
+        if(email.equals("")){
+            if (emailField != null) emailField.setError("E-mail adres mag niet leeg zijn.");
+            valid = false;
         }
 
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailField.setError("Voer een geldige e-mail in.");
-            return false;
+            if (emailField != null) emailField.setError("Voer een geldige e-mail in.");
+            valid = false;
         }
-        return true;
+        return valid;
     }
 
     private void SendRecoveryEmail(String email) {

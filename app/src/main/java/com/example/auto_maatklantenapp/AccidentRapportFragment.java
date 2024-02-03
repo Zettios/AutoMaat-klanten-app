@@ -190,43 +190,33 @@ public class AccidentRapportFragment extends Fragment {
                 rentalItems = new ArrayList<>();
                 rentalCodes = new ArrayList<>();
                 try {
-                    if (jsonArray.get(0).equals(401)) {
-                        customerDao.deleteAll();
-                        getActivity().runOnUiThread(() -> {
-                            Toast toast = Toast.makeText(getActivity(), "Log opnieuw in", Toast.LENGTH_SHORT);
-                            toast.show();
-                            onExpiredTokenListener.ReturnToLogin();
-                        });
-                    } else {
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject rentalData = jsonArray.getJSONObject(i);
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject rentalData = jsonArray.getJSONObject(i);
 
-                            int uid = rentalData.getInt("id");
-                            String code = rentalData.getString("code");
-                            Double longitude = rentalData.getDouble("longitude");
-                            Double latitude = rentalData.getDouble("latitude");
-                            String fromDate = rentalData.getString("fromDate");
-                            String toDate = rentalData.getString("toDate");
-                            RentalState state = RentalState.valueOf(rentalData.getString("state"));
-                            int customerId = rentalData.getJSONObject("customer").getInt("id");
-                            int carId = rentalData.getJSONObject("car").getInt("id");
+                        int uid = rentalData.getInt("id");
+                        String code = rentalData.getString("code");
+                        Double longitude = rentalData.getDouble("longitude");
+                        Double latitude = rentalData.getDouble("latitude");
+                        String fromDate = rentalData.getString("fromDate");
+                        String toDate = rentalData.getString("toDate");
+                        RentalState state = RentalState.valueOf(rentalData.getString("state"));
+                        int customerId = rentalData.getJSONObject("customer").getInt("id");
+                        int carId = rentalData.getJSONObject("car").getInt("id");
 
-                            rentalCodes.add(rentalData.getString("code"));
-                            rentalItems.add(new Rental(uid, code, longitude, latitude,
-                                    fromDate, toDate, state, carId, customerId));
-                        }
-
-                        storeRentalDataLocally(rentalItems);
-
-                        getActivity().runOnUiThread(() -> {
-                            ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                                    getContext(), android.R.layout.simple_spinner_item, rentalCodes);
-
-                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            rental.setAdapter(adapter);
-                        });
-
+                        rentalCodes.add(rentalData.getString("code"));
+                        rentalItems.add(new Rental(uid, code, longitude, latitude,
+                                fromDate, toDate, state, carId, customerId));
                     }
+
+                    storeRentalDataLocally(rentalItems);
+
+                    getActivity().runOnUiThread(() -> {
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                                getContext(), android.R.layout.simple_spinner_item, rentalCodes);
+
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        rental.setAdapter(adapter);
+                    });
                 } catch (Exception e) {
                     Log.d("AutoMaatApp", e.toString());
                     e.printStackTrace();
@@ -235,8 +225,17 @@ public class AccidentRapportFragment extends Fragment {
 
             @Override
             public void onFailure(IOException e) {
-                Log.w("AutoMaatApp", "onfailure");
-                e.printStackTrace();
+                if (e.getMessage().equals("401")) {
+                    customerDao.deleteAll();
+                    getActivity().runOnUiThread(() -> {
+                        Toast toast = Toast.makeText(getActivity(), "Log opnieuw in", Toast.LENGTH_SHORT);
+                        toast.show();
+                        onExpiredTokenListener.ReturnToLogin();
+                    });
+                } else {
+                    Log.w("AutoMaatApp", "onfailure");
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -373,7 +372,7 @@ public class AccidentRapportFragment extends Fragment {
         }
     }
 
-    private boolean validateData() {
+    public boolean validateData() {
         if (rental.getSelectedItem() == null) {
             internetChecker.networkErrorDialog(getContext(), "Error", "Er moet een reservering geselecteerd zijn om schade te kunnen melden.");
             return false;

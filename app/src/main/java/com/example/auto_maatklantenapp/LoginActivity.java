@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                 String username = usernameField.getText().toString().trim();
                 String password = passwordField.getText().toString().trim();
                 String persistence = String.valueOf(loginPersistanceBox.isChecked());
-                if(validateLoginData(usernameField, passwordField, username, password)) {
+                if(validateLoginData(username, password)) {
                     loginWithEmailAndPassword(username, password, persistence);
                 }
             } else {
@@ -112,16 +112,18 @@ public class LoginActivity extends AppCompatActivity {
         return customer != null;
     }
 
-    public boolean validateLoginData(EditText usernameField, EditText passwordField, String username, String password){
-        if(TextUtils.isEmpty(username)){
-            usernameField.setError("Username is Required.");
-            return false;
+    public boolean validateLoginData(String username, String password){
+        boolean valid = true;
+
+        if(username.equals("")){
+            if (usernameField != null) usernameField.setError("Username is Required.");
+            valid = false;
         }
-        if(TextUtils.isEmpty(password)){
-            passwordField.setError("Password is Required.");
-            return false;
+        if(password.equals("")){
+            if (passwordField != null) passwordField.setError("Password is Required.");
+            valid = false;
         }
-        return true;
+        return valid;
     }
 
     private void loginWithEmailAndPassword(String username, String password, String persistence){

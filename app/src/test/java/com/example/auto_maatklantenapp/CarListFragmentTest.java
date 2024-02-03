@@ -1,6 +1,7 @@
 package com.example.auto_maatklantenapp;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import android.os.Bundle;
@@ -38,7 +39,6 @@ public class CarListFragmentTest {
         carListFragment.maxSeats = new AtomicInteger();
         carListFragment.maxPrice = new AtomicInteger();
     }
-
 
     @Test
     public void formCarDataTest() throws JSONException {
@@ -103,12 +103,17 @@ public class CarListFragmentTest {
     }
 
     @Test
-    public void handleFilterDataTest() {
-        CarListFragment av = new CarListFragment();
-        av.cars = new ArrayList<>();
-        av.allCars = new ArrayList<>();
-        av.filteredCars = new ArrayList<>();
+    public void populateFilterDataArraysNoDataTest() {
+        assertTrue(carListFragment.merkArray.isEmpty());
+        assertTrue(carListFragment.modelArray.isEmpty());
+        assertTrue(carListFragment.brandstofArray.isEmpty());
+        assertTrue(carListFragment.bodyArray.isEmpty());
+        assertEquals(0, carListFragment.maxSeats.get());
+        assertEquals(0, carListFragment.maxPrice.get());
+    }
 
+    @Test
+    public void handleFilterDataTest() {
         Car car1 = Mockito.mock(Car.class);
         when(car1.getBrand()).thenReturn("Toyota");
         when(car1.getModel()).thenReturn("Camry");
@@ -125,12 +130,12 @@ public class CarListFragmentTest {
         when(car2.getNrOfSeats()).thenReturn(10);
         when(car2.getPrice()).thenReturn(105);
 
-        av.allCars.add(car1);
-        av.allCars.add(car2);
-        av.cars.add(car1);
-        av.cars.add(car2);
+        carListFragment.allCars.add(car1);
+        carListFragment.allCars.add(car2);
+        carListFragment.cars.add(car1);
+        carListFragment.cars.add(car2);
 
-        av.carListAdapter =  new CarListAdapter(av.cars, null, null);
+        carListFragment.carListAdapter =  new CarListAdapter(carListFragment.cars, null, null);
 
         Bundle bundle = Mockito.mock(Bundle.class);
         when(bundle.getString("merk")).thenReturn("Toyota");
@@ -140,13 +145,51 @@ public class CarListFragmentTest {
         when(bundle.getString("amountOfSeats")).thenReturn("5");
         when(bundle.getString("maxPrice")).thenReturn("100");
 
-        av.handleFilterData(bundle);
+        carListFragment.handleFilterData(bundle);
 
-        assertEquals("Toyota", av.filteredCars.get(0).getBrand());
-        assertEquals("Camry", av.filteredCars.get(0).getModel());
-        assertEquals("GASOLINE", av.filteredCars.get(0).getFuel());
-        assertEquals("SEDAN", av.filteredCars.get(0).getBody());
-        assertEquals(5, av.filteredCars.get(0).getNrOfSeats());
-        assertEquals(100, av.filteredCars.get(0).getPrice());
+        assertEquals("Toyota", carListFragment.filteredCars.get(0).getBrand());
+        assertEquals("Camry", carListFragment.filteredCars.get(0).getModel());
+        assertEquals("GASOLINE", carListFragment.filteredCars.get(0).getFuel());
+        assertEquals("SEDAN", carListFragment.filteredCars.get(0).getBody());
+        assertEquals(5, carListFragment.filteredCars.get(0).getNrOfSeats());
+        assertEquals(100, carListFragment.filteredCars.get(0).getPrice());
+    }
+
+    @Test
+    public void handleFilterDataNoResultTest() {
+        Car car1 = Mockito.mock(Car.class);
+        when(car1.getBrand()).thenReturn("Toyota");
+        when(car1.getModel()).thenReturn("Camry");
+        when(car1.getFuel()).thenReturn("GASOLINE");
+        when(car1.getBody()).thenReturn("SEDAN");
+        when(car1.getNrOfSeats()).thenReturn(5);
+        when(car1.getPrice()).thenReturn(100);
+
+        Car car2 = Mockito.mock(Car.class);
+        when(car2.getBrand()).thenReturn("BMW");
+        when(car2.getModel()).thenReturn("3 Series");
+        when(car2.getFuel()).thenReturn("HYBRID");
+        when(car2.getBody()).thenReturn("SUV");
+        when(car2.getNrOfSeats()).thenReturn(10);
+        when(car2.getPrice()).thenReturn(105);
+
+        carListFragment.allCars.add(car1);
+        carListFragment.allCars.add(car2);
+        carListFragment.cars.add(car1);
+        carListFragment.cars.add(car2);
+
+        carListFragment.carListAdapter =  new CarListAdapter(carListFragment.cars, null, null);
+
+        Bundle bundle = Mockito.mock(Bundle.class);
+        when(bundle.getString("merk")).thenReturn("Toyota");
+        when(bundle.getString("model")).thenReturn("3 Series");
+        when(bundle.getString("brandstof")).thenReturn("HYBRID");
+        when(bundle.getString("body")).thenReturn("SEDAN");
+        when(bundle.getString("amountOfSeats")).thenReturn("1");
+        when(bundle.getString("maxPrice")).thenReturn("9");
+
+        carListFragment.handleFilterData(bundle);
+
+        assertTrue(carListFragment.filteredCars.isEmpty());
     }
 }
