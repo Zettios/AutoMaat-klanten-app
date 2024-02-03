@@ -141,17 +141,6 @@ public class ApiCalls {
         });
     }
 
-    public String getAuthToken() throws JSONException {
-        if (authToken != null) {
-            try {
-                return authToken.getString("id_token");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
     public void registerNewAccount(JSONObject jsonBody, ApiCallback callback) {
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + REGISTER_USER_URL;
@@ -267,26 +256,7 @@ public class ApiCalls {
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + RENTALS_ENDPOINT_URL;
 
-        JSONObject rentalObject = new JSONObject();
-        JSONObject customerObject = new JSONObject();
-        JSONObject carObject = new JSONObject();
-        try {
-            rentalObject.put("code", rentalData.getCode());
-            rentalObject.put("longitude", rentalData.getLongitude());
-            rentalObject.put("latitude", rentalData.getLatitude());
-            rentalObject.put("fromDate", rentalData.getFromDate());
-            rentalObject.put("toDate", rentalData.getToDate());
-            rentalObject.put("state", rentalData.getState());
-            rentalObject.put("inspections", null);
-
-            customerObject.put("id", rentalData.getCustomerId());
-            carObject.put("id", rentalData.getCarId());
-            rentalObject.put("customer", customerObject);
-            rentalObject.put("car", carObject);
-        } catch (Exception e) {
-            Log.d("AutoMaatApp", e.toString());
-            e.printStackTrace();
-        }
+        JSONObject rentalObject = createRentalPostObject(rentalData);
 
         RequestBody formBody = RequestBody.create(rentalObject.toString(), JSON);
         Request request = new Request.Builder()
@@ -321,6 +291,32 @@ public class ApiCalls {
                 apiCallback.onFailure(e);
             }
         });
+    }
+
+    public JSONObject createRentalPostObject(Rental rentalData) {
+        JSONObject rentalObject = new JSONObject();
+        JSONObject customerObject = new JSONObject();
+        JSONObject carObject = new JSONObject();
+        try {
+            rentalObject.put("code", rentalData.getCode());
+            rentalObject.put("longitude", rentalData.getLongitude());
+            rentalObject.put("latitude", rentalData.getLatitude());
+            rentalObject.put("fromDate", rentalData.getFromDate());
+            rentalObject.put("toDate", rentalData.getToDate());
+            rentalObject.put("state", rentalData.getState());
+            rentalObject.put("inspections", null);
+
+            customerObject.put("id", rentalData.getCustomerId());
+            rentalObject.put("customer", customerObject);
+
+            carObject.put("id", rentalData.getCarId());
+            rentalObject.put("car", carObject);
+        } catch (Exception e) {
+            Log.d("AutoMaatApp", e.toString());
+            e.printStackTrace();
+        }
+
+        return rentalObject;
     }
 
     public void GetAllRentals(String authToken, int customerId, ApiCallback callback) {
@@ -363,30 +359,11 @@ public class ApiCalls {
         });
     }
 
-    public void sendAccidentReport(AccidentRapport accidentReport, String authToken, ApiCallback apiCallback) {
+    public void sendAccidentRapport(AccidentRapport accidentRapport, String authToken, ApiCallback apiCallback) {
         OkHttpClient client = new OkHttpClient();
         String url = baseurl + ACCIDENT_RAPPORT_ENDPOINT_URL;
 
-        JSONObject accidentJsonObject = new JSONObject();
-        JSONObject carJsonObject = new JSONObject();
-        JSONObject rentalJsonObject = new JSONObject();
-
-        try {
-            accidentJsonObject.put("code", accidentReport.getCode());
-            accidentJsonObject.put("odometer", accidentReport.getOdoMeter());
-            accidentJsonObject.put("result", accidentReport.getResult());
-            accidentJsonObject.put("photo", accidentReport.getPhoto());
-            accidentJsonObject.put("photoContentType", accidentReport.getPhotoContentType());
-            accidentJsonObject.put("completed", accidentReport.getCompleted());
-
-            carJsonObject.put("id", accidentReport.getCarId());
-            accidentJsonObject.put("car", carJsonObject);
-
-            rentalJsonObject.put("id", accidentReport.getRentalId());
-            accidentJsonObject.put("rental", rentalJsonObject);
-        } catch (Exception e) {
-            Log.e("AutoMaatApp", e.toString());
-        }
+        JSONObject accidentJsonObject = createAccidentRapportObject(accidentRapport);
 
         RequestBody formBody = RequestBody.create(accidentJsonObject.toString(), JSON);
         Request request = new Request.Builder()
@@ -420,5 +397,30 @@ public class ApiCalls {
                 apiCallback.onFailure(e);
             }
         });
+    }
+
+    public JSONObject createAccidentRapportObject(AccidentRapport accidentRapport) {
+        JSONObject accidentJsonObject = new JSONObject();
+        JSONObject carJsonObject = new JSONObject();
+        JSONObject rentalJsonObject = new JSONObject();
+
+        try {
+            accidentJsonObject.put("code", accidentRapport.getCode());
+            accidentJsonObject.put("odometer", accidentRapport.getOdoMeter());
+            accidentJsonObject.put("result", accidentRapport.getResult());
+            accidentJsonObject.put("photo", accidentRapport.getPhoto());
+            accidentJsonObject.put("photoContentType", accidentRapport.getPhotoContentType());
+            accidentJsonObject.put("completed", accidentRapport.getCompleted());
+
+            carJsonObject.put("id", accidentRapport.getCarId());
+            accidentJsonObject.put("car", carJsonObject);
+
+            rentalJsonObject.put("id", accidentRapport.getRentalId());
+            accidentJsonObject.put("rental", rentalJsonObject);
+        } catch (Exception e) {
+            Log.e("AutoMaatApp", e.toString());
+        }
+
+        return accidentJsonObject;
     }
 }

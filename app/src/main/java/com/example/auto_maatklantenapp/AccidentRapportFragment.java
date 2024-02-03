@@ -32,7 +32,6 @@ import android.widget.Toast;
 import com.example.auto_maatklantenapp.accident.AccidentRapport;
 import com.example.auto_maatklantenapp.classes.Customer;
 import com.example.auto_maatklantenapp.classes.Rental;
-import com.example.auto_maatklantenapp.custom_adapters.CarListAdapter;
 import com.example.auto_maatklantenapp.dao.CustomerDao;
 import com.example.auto_maatklantenapp.dao.RentalDao;
 import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
@@ -329,7 +328,7 @@ public class AccidentRapportFragment extends Fragment {
 
             new Thread(() -> {
                 customer = customerDao.getFirstCustomer();
-                api.sendAccidentReport(createAccidentRapport(), customer.authToken, new ApiCallback() {
+                api.sendAccidentRapport(createAccidentRapport(), customer.authToken, new ApiCallback() {
                     @Override
                     public void onSuccess(JSONArray jsonArray) {
                         try {
