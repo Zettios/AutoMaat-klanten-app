@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.auto_maatklantenapp.classes.Car;
 import com.example.auto_maatklantenapp.classes.Customer;
+import com.example.auto_maatklantenapp.custom_adapters.CarListAdapter;
 import com.example.auto_maatklantenapp.dao.CustomerDao;
 import com.example.auto_maatklantenapp.dao.RentalDao;
 import com.example.auto_maatklantenapp.helper_classes.ApiCallback;
@@ -40,6 +42,9 @@ public class ReserveringenFragment extends Fragment {
     Customer customer;
     RentalDao rentalDao;
 
+    List<Rental> rentals;
+    List<Rental> allRentals;
+
     OnInternetLossListener onInternetLossListener;
     OnOnlineListener onOnlineListener;
     OnExpiredTokenListener onExpiredTokenListener;
@@ -47,6 +52,8 @@ public class ReserveringenFragment extends Fragment {
     InternetChecker internetChecker;
     RecyclerView recyclerView;
     RentalListAdapter rentalListAdapter;
+
+    ArrayList<String> codeArray;
 
     public ReserveringenFragment() {
     }
@@ -73,10 +80,32 @@ public class ReserveringenFragment extends Fragment {
             }).start();
         } else {
             onInternetLossListener.NotifyInternetLoss();
-            //new Thread(this::getOfflinereserveringen).start();
+            new Thread(this::getOfflineReserveringen).start();
         }
 
         return view;
+    }
+
+    public void populateFilterDataArrays(Rental rentalData) {
+        Log.w("AutoMaatApp", "CodeArray: " + codeArray);
+        if (!codeArray.contains(rentalData.getCode())) {
+            codeArray.add(rentalData.getCode());
+        }
+
+    }
+
+    private void getOfflineReserveringen() {
+        rentals = rentalDao.getAll();
+        allRentals = rentalDao.getAll();
+
+        for (int index = 0; index < rentals.size(); index++) {
+            populateFilterDataArrays(rentals.get(index));
+        }
+
+        getActivity().runOnUiThread(() -> {
+            rentalListAdapter = new RentalListAdapter(rentals);
+            recyclerView.setAdapter(rentalListAdapter);
+        });
     }
 
     private int getCustomerId() {
@@ -106,6 +135,8 @@ public class ReserveringenFragment extends Fragment {
     private void defineVariables(Activity activity, View view) {
         customerDao = ((MainActivity) activity).db.customerDao();
         rentalDao = ((MainActivity) activity).db.rentalDao();
+
+        codeArray = new ArrayList<>();
 
         internetChecker = new InternetChecker();
 
