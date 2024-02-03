@@ -35,7 +35,7 @@ public class RentalListAdapter extends RecyclerView.Adapter<RentalViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull RentalViewHolder holder, int position) {
-        holder.getRentalCode().setText(String.valueOf(rentals.get(position).getCarId()));
+        holder.getRentalCode().setText(String.valueOf(rentals.get(position).getCode()));
         holder.getRentalPeriod().setText(rentals.get(position).getFromDate() + " t/m " + rentals.get(position).getToDate());
     }
 

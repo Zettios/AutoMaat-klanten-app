@@ -5,9 +5,9 @@
         android:id="@+id/clReserveringLijstContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        tools:context=".ReserveringenFragment">
+        tools:context=".ReserveringenFragment"
+        android:layout_margin="10dp">
 
 
     <androidx.recyclerview.widget.RecyclerView
