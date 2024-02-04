@@ -279,9 +279,8 @@ public class ApiCalls {
                         responseData.put(rentalData.getFromDate());
                         apiCallback.onSuccess(responseData);
                     } else {
-                        JSONArray responseData = new JSONArray();
-                        responseData.put(response.code());
-                        apiCallback.onSuccess(responseData);
+                        IOException ioException = new IOException(String.valueOf(response.code()));
+                        apiCallback.onFailure(ioException);
                     }
                 } catch (Exception e) {
                     Log.d("AutoMaatApp", e.toString());
