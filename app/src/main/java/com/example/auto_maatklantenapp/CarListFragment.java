@@ -33,6 +33,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CarListFragment extends Fragment {
@@ -154,7 +155,11 @@ public class CarListFragment extends Fragment {
 
             @Override
             public void onFailure(IOException e) {
+                Log.w("AutoMaatApp", e.toString());
                 e.printStackTrace();
+                if (Objects.equals(e.getMessage(), "404")) {
+                    getOfflineCars();
+                }
             }
         });
     }
@@ -189,6 +194,7 @@ public class CarListFragment extends Fragment {
 
             @Override
             public void onFailure(IOException e) {
+                Log.w("AutoMaatApp", e.toString());
                 e.printStackTrace();
             }
         });

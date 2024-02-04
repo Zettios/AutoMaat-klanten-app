@@ -108,30 +108,6 @@ public class ReserveringenFragment extends Fragment {
         });
     }
 
-    private int getCustomerId() {
-        final int[] customerId = {0};
-
-        ApiCalls api = new ApiCalls();
-        api.GetDataFromUsers(new ApiCallback() {
-            @Override
-            public void onSuccess(JSONArray jsonArray) {
-                try {
-                    JSONObject user = jsonArray.getJSONObject(0);
-                    customerId[0] = user.getInt("id");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        return customerId[0];
-    }
-
     private void defineVariables(Activity activity, View view) {
         customerDao = ((MainActivity) activity).db.customerDao();
         rentalDao = ((MainActivity) activity).db.rentalDao();
@@ -195,8 +171,10 @@ public class ReserveringenFragment extends Fragment {
                         toast.show();
                         onExpiredTokenListener.ReturnToLogin();
                     });
+                } else if (e.getMessage().equals("404")) {
+                    getOfflineReserveringen();
                 } else {
-                    Log.w("AutoMaatApp", "onfailure");
+                    Log.w("AutoMaatApp", e.toString());
                     e.printStackTrace();
                 }
             }

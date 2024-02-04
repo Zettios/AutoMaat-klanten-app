@@ -232,11 +232,6 @@ public class ApiCalls {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onFailure(e);
-            }
-
-            @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String myResponse = response.body().string();
@@ -247,7 +242,15 @@ public class ApiCalls {
                         throw new RuntimeException(e);
                     }
                     callback.onSuccess(jsonArray);
+                } else {
+                    IOException ioException = new IOException(String.valueOf(response.code()));
+                    callback.onFailure(ioException);
                 }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
             }
         });
     }
@@ -349,11 +352,9 @@ public class ApiCalls {
                         throw new RuntimeException(e);
                     }
                     callback.onSuccess(jsonArray);
-                } else if (response.code() == 401) {
-                    IOException ioException = new IOException("401");
-                    callback.onFailure(ioException);
                 } else {
-                    callback.onFailure(new IOException());
+                    IOException ioException = new IOException(String.valueOf(response.code()));
+                    callback.onFailure(ioException);
                 }
             }
         });
