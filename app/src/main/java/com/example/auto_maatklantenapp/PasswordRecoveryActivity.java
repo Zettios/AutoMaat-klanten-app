@@ -74,9 +74,7 @@ public class PasswordRecoveryActivity extends AppCompatActivity {
         apiCalls.resetPasswordInit(email, new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
-                PasswordRecoveryActivity.this.runOnUiThread(() -> {
-                    onResponseDialog("Bericht", "Er is een e-mail verstuurt naar het gegeven e-mail adres.\nControleer uw e-mail om uw wachtwoord opnieuw in te stellen.");
-                });
+                PasswordRecoveryActivity.this.runOnUiThread(() -> onResponseDialog("Bericht", "Er is een e-mail verstuurt naar het gegeven e-mail adres.\nControleer uw e-mail om uw wachtwoord opnieuw in te stellen."));
             }
 
             @Override

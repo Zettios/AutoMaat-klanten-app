@@ -112,7 +112,9 @@ public class RegisterActivity extends AppCompatActivity {
             jsonBody.put("firstName", registerFieldData[RegistrationData.FIRST_NAME.toInt()].getText().toString().trim());
             jsonBody.put("lastName", registerFieldData[RegistrationData.LAST_NAME.toInt()].getText().toString().trim());
             jsonBody.put("email", registerFieldData[RegistrationData.EMAIL.toInt()].getText().toString().trim());
+            jsonBody.put("langKey", "en");
             jsonBody.put("password", registerFieldData[RegistrationData.PASSWORD.toInt()].getText().toString().trim());
+            Log.d("AutoMaatApp", jsonBody.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
