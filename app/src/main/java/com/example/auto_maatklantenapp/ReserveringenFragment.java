@@ -151,15 +151,15 @@ public class ReserveringenFragment extends Fragment {
 
                     rentalDao.deleteAll();
                     rentalDao.insertAll(rentals);
+
+                    getActivity().runOnUiThread(() -> {
+                        rentalListAdapter = new RentalListAdapter(rentals);
+                        recyclerView.setAdapter(rentalListAdapter);
+                    });
                 } catch (Exception e) {
                     Log.d("AutoMaatApp", e.toString());
                     e.printStackTrace();
                 }
-
-                getActivity().runOnUiThread(() -> {
-                    rentalListAdapter = new RentalListAdapter(rentals);
-                    recyclerView.setAdapter(rentalListAdapter);
-                });
             }
 
             @Override

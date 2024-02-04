@@ -4,9 +4,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -14,15 +11,12 @@ import androidx.room.Room;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
-import androidx.work.WorkerParameters;
 
 import android.Manifest;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -54,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
     public static final String workTag = "notificationWork";
     int reservationCode;
     String fromDate;
+    int currentScreen = -1;
 
     ActivityResultLauncher<String> pushNotificationPermissionLauncher;
 
@@ -99,33 +94,55 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
     @Override
     public void OnNavSelection(int nav_id) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction;
         Fragment fragment;
-
         switch (nav_id) {
             case 1:
-                fragment = CarListFragment.newInstance();
+                if (currentScreen != 1) {
+                    fragment = CarListFragment.newInstance();
+                    currentScreen = 1;
+                    initFragment(fragmentManager, fragment);
+                }
                 break;
             case 2:
-                fragment = ReserveringenFragment.newInstance();
+                if (currentScreen != 2) {
+                    fragment = ReserveringenFragment.newInstance();
+                    currentScreen = 2;
+                    initFragment(fragmentManager, fragment);
+                }
                 break;
             case 3:
-                fragment = AccidentRapportFragment.newInstance();
+                if (currentScreen != 3) {
+                    fragment = AccidentRapportFragment.newInstance();
+                    currentScreen = 3;
+                    initFragment(fragmentManager, fragment);
+                }
                 break;
             case 4:
-                fragment = SupportFragment.newInstance();
+                if (currentScreen != 4) {
+                    fragment = SupportFragment.newInstance();
+                    currentScreen = 4;
+                    initFragment(fragmentManager, fragment);
+                }
                 break;
             case 5:
-                fragment = new LogoutFragment();
+                if (currentScreen != 5) {
+                    fragment = new LogoutFragment();
+                    currentScreen = 5;
+                    initFragment(fragmentManager, fragment);
+                }
                 break;
             default:
                 fragment = CarListFragment.newInstance();
+                initFragment(fragmentManager, fragment);
+                currentScreen = 1;
                 break;
         }
+    }
 
-        fragmentTransaction = fragmentManager.beginTransaction();
+    public void initFragment(FragmentManager fragmentManager, Fragment fragment) {
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);
-        //fragmentTransaction.addToBackStack(null);
+
         fragmentTransaction.replace(R.id.fcvFragmentContainer, fragment, "");
         fragmentTransaction.commit();
     }
@@ -171,30 +188,5 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }
-    }
-
-    public void createNotification() {
-        Intent intent = new Intent(getApplicationContext(), SplashScreenActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, intent, PendingIntent.FLAG_IMMUTABLE);
-        String notificationTitle = "Reservering staat klaar";
-        String notificationText = "Uw auto reservering staat klaar.";
-
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(getApplicationContext(), NOTIFICATION_CHANNEL_ID)
-                        .setSmallIcon(R.drawable.auto_maat_logo_compact)
-                        .setContentTitle(notificationTitle)
-                        .setContentText(notificationText)
-                        .setContentIntent(pendingIntent)
-                        .setAutoCancel(true)
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(getApplicationContext());
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        notificationManager.notify(1, notificationBuilder.build());
     }
 }

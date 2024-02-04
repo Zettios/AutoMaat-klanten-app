@@ -217,7 +217,7 @@ public class AccidentRapportFragment extends Fragment {
                         rental.setAdapter(adapter);
                     });
                 } catch (Exception e) {
-                    Log.d("AutoMaatApp", e.toString());
+                    Log.e("AutoMaatApp", e.toString());
                     e.printStackTrace();
                 }
             }
