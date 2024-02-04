@@ -86,12 +86,9 @@ public class ApiCalls {
 
                         callback.onSuccess(jsonArray);
                     }
-                } else if (response.code() == 400 || response.code() == 401) {
-                    JSONArray failureResponse = new JSONArray();
-                    failureResponse.put(response.code());
-                    callback.onSuccess(failureResponse);
                 } else {
-                    IOException e = new IOException("Iets is totaal mis gegaan.");
+                    Log.d("AutoMaatApp", String.valueOf(response.code()));
+                    IOException e = new IOException(String.valueOf(response.code()));
                     callback.onFailure(e);
                 }
             }

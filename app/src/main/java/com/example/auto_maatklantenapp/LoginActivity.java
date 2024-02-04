@@ -25,6 +25,7 @@ import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
 import org.json.JSONArray;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -142,29 +143,31 @@ public class LoginActivity extends AppCompatActivity {
                             customer.setAuthToken((String) jsonArray.get(4));
 
                             getUserData(api, (String) jsonArray.get(4));
-                        } else if (responseCode == 400 || responseCode == 401) {
-                            loginHandler.post(() ->
-                                    internetChecker
-                                    .networkErrorDialog(LoginActivity.this,
-                                            "Account error",
-                                            "Geen gebruiker gevonden. Controleer uw gebruikersnaam en wachtwoord."));
-                        } else {
-                            loginHandler.post(() ->
-                                    internetChecker
-                                    .networkErrorDialog(LoginActivity.this,
-                                            "Login error",
-                                            "Er is iets misgegaan bij het inloggen. Controleer uw internet of probeer het later opnieuw."));
                         }
 
                     } catch (Exception e) {
-                        Log.d("AutoMaatApp", e.toString());
+                        Log.w("AutoMaatApp", e.toString());
                         e.printStackTrace();
                     }
                 }
 
                 @Override
                 public void onFailure(IOException e) {
+                    Log.w("AutoMaatApp", e.toString());
                     e.printStackTrace();
+                    if (Objects.equals(e.getMessage(), "400") || Objects.equals(e.getMessage(), "401")) {
+                        loginHandler.post(() ->
+                                internetChecker
+                                        .networkErrorDialog(LoginActivity.this,
+                                                "Account error",
+                                                "Geen gebruiker gevonden. Controleer uw gebruikersnaam en wachtwoord."));
+                    } else {
+                        loginHandler.post(() ->
+                                internetChecker
+                                        .networkErrorDialog(LoginActivity.this,
+                                                "Login error",
+                                                "Er is iets misgegaan bij het inloggen. Controleer uw internet of probeer het later opnieuw."));
+                    }
                 }
             }, username, password, Boolean.parseBoolean(persistence));
         } catch (IOException e) {
