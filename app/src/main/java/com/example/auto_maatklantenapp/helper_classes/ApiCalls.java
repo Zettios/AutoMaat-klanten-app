@@ -25,8 +25,8 @@ import okhttp3.Response;
 public class ApiCalls {
 
     JSONObject authToken;
-    //String baseurl = "https://measured-adder-concrete.ngrok-free.app";
-    String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
+    String baseurl = "https://measured-adder-concrete.ngrok-free.app";
+    //String baseurl = "https://cheetah-inviting-miserably.ngrok-free.app";
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
 
@@ -93,6 +93,38 @@ public class ApiCalls {
                 } else {
                     IOException e = new IOException("Iets is totaal mis gegaan.");
                     callback.onFailure(e);
+                }
+            }
+        });
+    }
+
+    public void GetCarDetails(int carId, ApiCallback callback) {
+        OkHttpClient client = new OkHttpClient();
+        String url = baseurl + CARS_ENDPOINT_URL + "/" + carId;
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String myResponse = response.body().string();
+                    try {
+                        JSONObject carData = new JSONObject(myResponse);
+                        callback.onSuccess(new JSONArray().put(carData));
+                    } catch (JSONException e) {
+                        Log.d("AutoMaatApp", e.toString());
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    callback.onFailure(new IOException());
                 }
             }
         });
