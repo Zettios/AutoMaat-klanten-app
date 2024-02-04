@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
@@ -24,6 +25,7 @@ import com.example.auto_maatklantenapp.helper_classes.ApiCalls;
 import com.example.auto_maatklantenapp.helper_classes.InternetChecker;
 import com.example.auto_maatklantenapp.helper_classes.RentalState;
 import com.example.auto_maatklantenapp.listeners.BuildRentalNotification;
+import com.example.auto_maatklantenapp.listeners.OnExpiredTokenListener;
 import com.google.android.material.datepicker.MaterialDatePicker;
 
 import org.json.JSONArray;
@@ -31,12 +33,14 @@ import org.json.JSONArray;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Random;
 
 public class CarReservationDialogFragment extends DialogFragment {
     FragmentManager fragmentManager;
     Activity activity;
     BuildRentalNotification buildRentalNotification;
+    OnExpiredTokenListener onExpiredTokenListener;
 
     CustomerDao customerDao;
     Customer customer;
@@ -75,6 +79,7 @@ public class CarReservationDialogFragment extends DialogFragment {
         this.fragmentManager = fragmentManager;
         this.activity = activity;
         this.internetChecker = new InternetChecker();
+        onExpiredTokenListener = (OnExpiredTokenListener) getContext();
     }
 
     @Override
@@ -165,8 +170,6 @@ public class CarReservationDialogFragment extends DialogFragment {
                         if ((int) jsonArray.get(0) == 201) {
                             buildRentalNotification.ScheduleRentalNotification(rentalCode, from);
                             dismiss();
-                        } else {
-                            Log.d("AutoMaatApp", "oop");
                         }
                     } catch (Exception e) {
                         Log.d("AutoMaatApp", e.toString());
@@ -176,8 +179,22 @@ public class CarReservationDialogFragment extends DialogFragment {
 
                 @Override
                 public void onFailure(IOException e) {
-                    Log.d("AutoMaatApp", e.toString());
-                    e.printStackTrace();
+                    if (Objects.equals(e.getMessage(), "401")) {
+                        customerDao.deleteAll();
+                        getActivity().runOnUiThread(() -> {
+                            Toast toast = Toast.makeText(getActivity(), "Log opnieuw in", Toast.LENGTH_SHORT);
+                            toast.show();
+                            onExpiredTokenListener.ReturnToLogin();
+                        });
+                    } else if (Objects.equals(e.getMessage(), "404")) {
+                        getActivity().runOnUiThread(() -> Toast.makeText(
+                                getContext(),
+                                "Probeer het later opnieuw",
+                                Toast.LENGTH_SHORT).show());
+                    } else {
+                        Log.d("AutoMaatApp", e.toString());
+                        e.printStackTrace();
+                    }
                 }
             });
         }).start();

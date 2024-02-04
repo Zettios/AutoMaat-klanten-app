@@ -231,8 +231,10 @@ public class AccidentRapportFragment extends Fragment {
                         toast.show();
                         onExpiredTokenListener.ReturnToLogin();
                     });
+                } else if (e.getMessage().equals("404")) {
+                    getOfflineRentals();
                 } else {
-                    Log.w("AutoMaatApp", "onfailure");
+                    Log.w("AutoMaatApp", e.toString());
                     e.printStackTrace();
                 }
             }

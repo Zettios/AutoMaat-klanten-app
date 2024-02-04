@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements OnNavSelectionLis
 
         fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.setReorderingAllowed(true);
-        fragmentTransaction.addToBackStack(null);
+        //fragmentTransaction.addToBackStack(null);
         fragmentTransaction.replace(R.id.fcvFragmentContainer, fragment, "");
         fragmentTransaction.commit();
     }

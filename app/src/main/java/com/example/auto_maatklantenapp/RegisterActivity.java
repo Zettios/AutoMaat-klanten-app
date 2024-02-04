@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
     EditText[] registerFieldData;
@@ -111,7 +112,9 @@ public class RegisterActivity extends AppCompatActivity {
             jsonBody.put("firstName", registerFieldData[RegistrationData.FIRST_NAME.toInt()].getText().toString().trim());
             jsonBody.put("lastName", registerFieldData[RegistrationData.LAST_NAME.toInt()].getText().toString().trim());
             jsonBody.put("email", registerFieldData[RegistrationData.EMAIL.toInt()].getText().toString().trim());
+            jsonBody.put("langKey", "en");
             jsonBody.put("password", registerFieldData[RegistrationData.PASSWORD.toInt()].getText().toString().trim());
+            Log.d("AutoMaatApp", jsonBody.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -119,19 +122,12 @@ public class RegisterActivity extends AppCompatActivity {
         api.registerNewAccount(jsonBody, new ApiCallback() {
             @Override
             public void onSuccess(JSONArray jsonArray) {
-                Log.d("AutoMaatApp", jsonArray.toString());
                 RegisterActivity.this.runOnUiThread(() -> {
                     try {
-                        if (jsonArray.get(0).equals(1)) {
-                            onResponseDialog("Success",
-                                    (String) jsonArray.get(1),
-                                    (Integer) jsonArray.get(0));
-                        } else {
-                            onResponseDialog("Melding",
-                                    (String) jsonArray.get(1),
-                                    (Integer) jsonArray.get(0));
-                        }
+                        onResponseDialog("Success",
+                                (String) jsonArray.get(0),1);
                     } catch (Exception e) {
+                        Log.w("AutoMaatApp", e.toString());
                         e.printStackTrace();
                     }
                 });
@@ -139,7 +135,19 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(IOException e) {
-                Log.e("AutoMaatApp", e.toString());
+                Log.w("AutoMaatApp", e.toString());
+                e.printStackTrace();
+                RegisterActivity.this.runOnUiThread(() -> {
+                    if (Objects.equals(e.getMessage(), "500")) {
+                        onResponseDialog("Melding",
+                                "Gebruikers bestaat al",
+                                -1);
+                    } else {
+                        onResponseDialog("Melding",
+                                "Er is iets misgegaan, probeer het later opnieuw.",
+                                -1);
+                    }
+                });
             }
         });
     }

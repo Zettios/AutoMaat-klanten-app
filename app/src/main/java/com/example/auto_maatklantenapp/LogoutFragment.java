@@ -17,7 +17,7 @@ import com.example.auto_maatklantenapp.helper_classes.NavSelection;
 import com.example.auto_maatklantenapp.listeners.OnNavSelectionListener;
 
 public class LogoutFragment extends Fragment {
-    Button logoutBtn, cancelBtn;
+    Button logoutBtn;
     OnNavSelectionListener onNavSelectionListener;
     CustomerDao customerDao;
     Handler logoutHandler;
@@ -36,27 +36,15 @@ public class LogoutFragment extends Fragment {
 
     private void defineVariables(Activity activity, View view) {
         logoutBtn = view.findViewById(R.id.logoutBtn);
-        cancelBtn = view.findViewById(R.id.cancelBtn);
         customerDao = ((MainActivity) activity).db.customerDao();
         logoutHandler = new Handler(Looper.getMainLooper());
 
-        cancelBtn.setOnClickListener(v -> {
-            swapToMain();
-        });
-
         logoutBtn.setOnClickListener(v -> {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    logoutUser();
-                    logoutHandler.post(() -> swapToLogin(activity));
-                }
+            new Thread(() -> {
+                logoutUser();
+                logoutHandler.post(() -> swapToLogin(activity));
             }).start();
         });
-    }
-
-    private void swapToMain() {
-        onNavSelectionListener.OnNavSelection(NavSelection.CAR_LIST.getNumVal());
     }
 
     private void swapToLogin(Activity activity) {

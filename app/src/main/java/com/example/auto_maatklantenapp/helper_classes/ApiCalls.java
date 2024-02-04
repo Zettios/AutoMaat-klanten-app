@@ -86,12 +86,9 @@ public class ApiCalls {
 
                         callback.onSuccess(jsonArray);
                     }
-                } else if (response.code() == 400 || response.code() == 401) {
-                    JSONArray failureResponse = new JSONArray();
-                    failureResponse.put(response.code());
-                    callback.onSuccess(failureResponse);
                 } else {
-                    IOException e = new IOException("Iets is totaal mis gegaan.");
+                    Log.d("AutoMaatApp", String.valueOf(response.code()));
+                    IOException e = new IOException(String.valueOf(response.code()));
                     callback.onFailure(e);
                 }
             }
@@ -190,15 +187,13 @@ public class ApiCalls {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
-                JSONArray responseData = new JSONArray();
                 if(response.isSuccessful()) {
-                    responseData.put(1);
-                    responseData.put("Account aangemaakt, log alstublieft in.");
+                    JSONArray responseData = new JSONArray();
+                    responseData.put("Account aangemaakt, activeer uw account via uw e-mail.");
                     callback.onSuccess(responseData);
                 } else {
-                    responseData.put(-1);
-                    responseData.put("Gebruiker bestaat al.");
-                    callback.onSuccess(responseData);
+                    IOException ioException = new IOException(String.valueOf(response.code()));
+                    callback.onFailure(ioException);
                 }
             }
         });
@@ -264,11 +259,6 @@ public class ApiCalls {
 
         client.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onFailure(e);
-            }
-
-            @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String myResponse = response.body().string();
@@ -279,7 +269,15 @@ public class ApiCalls {
                         throw new RuntimeException(e);
                     }
                     callback.onSuccess(jsonArray);
+                } else {
+                    IOException ioException = new IOException(String.valueOf(response.code()));
+                    callback.onFailure(ioException);
                 }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onFailure(e);
             }
         });
     }
@@ -308,9 +306,8 @@ public class ApiCalls {
                         responseData.put(rentalData.getFromDate());
                         apiCallback.onSuccess(responseData);
                     } else {
-                        JSONArray responseData = new JSONArray();
-                        responseData.put(response.code());
-                        apiCallback.onSuccess(responseData);
+                        IOException ioException = new IOException(String.valueOf(response.code()));
+                        apiCallback.onFailure(ioException);
                     }
                 } catch (Exception e) {
                     Log.d("AutoMaatApp", e.toString());
@@ -381,11 +378,9 @@ public class ApiCalls {
                         throw new RuntimeException(e);
                     }
                     callback.onSuccess(jsonArray);
-                } else if (response.code() == 401) {
-                    IOException ioException = new IOException("401");
-                    callback.onFailure(ioException);
                 } else {
-                    callback.onFailure(new IOException());
+                    IOException ioException = new IOException(String.valueOf(response.code()));
+                    callback.onFailure(ioException);
                 }
             }
         });
