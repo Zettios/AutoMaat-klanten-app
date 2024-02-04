@@ -155,15 +155,13 @@ public class ApiCalls {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) {
-                JSONArray responseData = new JSONArray();
                 if(response.isSuccessful()) {
-                    responseData.put(1);
-                    responseData.put("Account aangemaakt, log alstublieft in.");
+                    JSONArray responseData = new JSONArray();
+                    responseData.put("Account aangemaakt, activeer uw account via uw e-mail.");
                     callback.onSuccess(responseData);
                 } else {
-                    responseData.put(-1);
-                    responseData.put("Gebruiker bestaat al.");
-                    callback.onSuccess(responseData);
+                    IOException ioException = new IOException(String.valueOf(response.code()));
+                    callback.onFailure(ioException);
                 }
             }
         });
